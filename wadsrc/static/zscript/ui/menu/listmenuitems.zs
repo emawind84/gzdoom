@@ -87,7 +87,7 @@ class ListMenuItemStaticPatch : ListMenuItem
 	Font mFont;
 	int mColor;
 
-	void Init(ListMenuDescriptor desc, double x, double y, TextureID patch, bool centered = false, const char *substitute = "")
+	void Init(ListMenuDescriptor desc, double x, double y, TextureID patch, bool centered = false, String substitute = "")
 	{
 		Super.Init(x, y);
 		mTexture = patch;
@@ -139,9 +139,9 @@ class ListMenuItemStaticPatch : ListMenuItem
 
 class ListMenuItemStaticPatchCentered : ListMenuItemStaticPatch
 {
-	void Init(double x, double y, TextureID patch)
+	void Init(ListMenuDescriptor desc, double x, double y, TextureID patch)
 	{
-		Super.Init(x, y, patch, true);
+		Super.Init(desc, x, y, patch, true);
 	}
 }
 
