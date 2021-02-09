@@ -41,6 +41,7 @@ enum { VX, VZ, VY };
 #define MD3_MAGIC			0x33504449
 #define NUMVERTEXNORMALS	162
 #define MD3_MAX_SURFACES	32
+#define MD3_MIN_MODELS	4
 
 FTextureID LoadSkin(const char * path, const char * fn);
 
@@ -415,7 +416,6 @@ public:
 
 
 
-#define MAX_MODELS_PER_FRAME 4
 
 //
 // [BB] Model rendering flags.
@@ -439,10 +439,11 @@ enum
 
 struct FSpriteModelFrame
 {
-	int modelIDs[MAX_MODELS_PER_FRAME];
-	FTextureID skinIDs[MAX_MODELS_PER_FRAME];
-	FTextureID surfaceskinIDs[MAX_MODELS_PER_FRAME][MD3_MAX_SURFACES];
-	int modelframes[MAX_MODELS_PER_FRAME];
+	uint8_t modelsAmount = 0;
+	TArray<int> modelIDs;
+	TArray<FTextureID> skinIDs;
+	TArray<FTextureID> surfaceskinIDs;
+	TArray<int> modelframes;
 	float xscale, yscale, zscale;
 	// [BB] Added zoffset, rotation parameters and flags.
 	// Added xoffset, yoffset

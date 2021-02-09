@@ -240,8 +240,9 @@ void FUE1Model::RenderFrame( FModelRenderer *renderer, FTexture *skin, int frame
 		FTexture *sskin = skin;
 		if ( !sskin )
 		{
-			if ( curSpriteMDLFrame->surfaceskinIDs[curMDLIndex][groups[i].texNum].isValid() )
-				sskin = TexMan(curSpriteMDLFrame->surfaceskinIDs[curMDLIndex][groups[i].texNum]);
+			int ssIndex = groups[i].texNum + curMDLIndex * MD3_MAX_SURFACES;
+			if (curSpriteMDLFrame->surfaceskinIDs[ssIndex].isValid())
+				sskin = TexMan(curSpriteMDLFrame->surfaceskinIDs[ssIndex]);
 			if ( !sskin )
 			{
 				vofs += vsize;
@@ -300,9 +301,12 @@ void FUE1Model::BuildVertexBuffer( FModelRenderer *renderer )
 
 void FUE1Model::AddSkins( uint8_t *hitlist )
 {
-	for ( int i=0; i<numGroups; i++ )
-		if ( curSpriteMDLFrame->surfaceskinIDs[curMDLIndex][groups[i].texNum].isValid() )
-			hitlist[curSpriteMDLFrame->surfaceskinIDs[curMDLIndex][groups[i].texNum].GetIndex()] |= FTextureManager::HIT_Flat;
+	for (int i = 0; i < numGroups; i++)
+	{
+		int ssIndex = groups[i].texNum + curMDLIndex * MD3_MAX_SURFACES;
+		if (curSpriteMDLFrame->surfaceskinIDs[ssIndex].isValid())
+			hitlist[curSpriteMDLFrame->surfaceskinIDs[ssIndex].GetIndex()] |= FTextureManager::HIT_Flat;
+	}
 }
 
 FUE1Model::~FUE1Model()
