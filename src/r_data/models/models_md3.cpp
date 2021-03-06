@@ -307,7 +307,7 @@ void FMD3Model::AddSkins(uint8_t *hitlist)
 	for (unsigned i = 0; i < Surfaces.Size(); i++)
 	{
 		int ssIndex = i + curMDLIndex * MD3_MAX_SURFACES;
-		if (curSpriteMDLFrame->surfaceskinIDs[ssIndex].isValid())
+		if (curSpriteMDLFrame && curSpriteMDLFrame->surfaceskinIDs[ssIndex].isValid())
 		{
 			hitlist[curSpriteMDLFrame->surfaceskinIDs[ssIndex].GetIndex()] |= FTextureManager::HIT_Flat;
 		}
@@ -358,14 +358,17 @@ void FMD3Model::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame
 		FTexture *surfaceSkin = skin;
 		if (!surfaceSkin)
 		{
-			int ssIndex = i + curMDLIndex * MD3_MAX_SURFACES;
-			if (curSpriteMDLFrame->surfaceskinIDs[ssIndex].isValid())
+			if (curSpriteMDLFrame)
 			{
-				surfaceSkin = TexMan(curSpriteMDLFrame->surfaceskinIDs[ssIndex]);
-			}
-			else if (surf->numSkins > 0 && surf->Skins[0].isValid())
-			{
-				surfaceSkin = TexMan(surf->Skins[0]);
+				int ssIndex = i + curMDLIndex * MD3_MAX_SURFACES;
+				if (curSpriteMDLFrame->surfaceskinIDs[ssIndex].isValid())
+				{
+					surfaceSkin = TexMan(curSpriteMDLFrame->surfaceskinIDs[ssIndex]);
+				}
+				else if (surf->numSkins > 0 && surf->Skins[0].isValid())
+				{
+					surfaceSkin = TexMan(surf->Skins[0]);
+				}
 			}
 
 			if (!surfaceSkin)
