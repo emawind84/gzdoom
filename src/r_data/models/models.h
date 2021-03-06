@@ -41,7 +41,7 @@ enum { VX, VZ, VY };
 #define MD3_MAGIC			0x33504449
 #define NUMVERTEXNORMALS	162
 #define MD3_MAX_SURFACES	32
-#define MD3_MIN_MODELS	4
+#define MIN_MODELS	4
 
 FTextureID LoadSkin(const char * path, const char * fn);
 
