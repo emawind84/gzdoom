@@ -169,6 +169,8 @@ public:
 	void ApplyMatrices();
 	void ApplyLightIndex(int index);
 
+	void EnableDrawBuffers(int count);
+
 	void SetVertexBuffer(FVertexBuffer *vb)
 	{
 		mVertexBuffer = vb;
@@ -504,14 +506,9 @@ public:
 	bool SetDepthClamp(bool on)
 	{
 		bool res = mLastDepthClamp;
-#ifdef __MOBILE__
-        if(gl.glesVer > 2)
-        {
-#endif
+#ifndef __MOBILE__
 		if (!on) glDisable(GL_DEPTH_CLAMP);
 		else glEnable(GL_DEPTH_CLAMP);
-#ifdef __MOBILE__
-        }
 #endif
 		mLastDepthClamp = on;
 		return res;
@@ -535,17 +532,6 @@ public:
 	EPassType GetPassType()
 	{
 		return mPassType;
-	}
-
-	void EnableDrawBuffers(int count)
-	{
-		count = MIN(count, 3);
-		if (mNumDrawBuffers != count)
-		{
-			static GLenum buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-			glDrawBuffers(count, buffers);
-			mNumDrawBuffers = count;
-		}
 	}
 
 	int GetPassDrawBufferCount()

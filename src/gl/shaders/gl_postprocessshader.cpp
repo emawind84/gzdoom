@@ -93,8 +93,8 @@ void PostProcessShaderInstance::Run()
 
 	GLRenderer->mBuffers->BindNextFB();
 	GLRenderer->mBuffers->BindCurrentTexture(0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
 	mProgram.Bind();
 
@@ -105,9 +105,9 @@ void PostProcessShaderInstance::Run()
 
 	GLRenderer->RenderScreenQuad();
 
-	glActiveTexture(GL_TEXTURE0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	GL(glActiveTexture(GL_TEXTURE0));
+	GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 	GLRenderer->mBuffers->NextTexture();
 
 	FGLDebug::PopGroup();
@@ -188,22 +188,22 @@ void PostProcessShaderInstance::UpdateUniforms()
 	TMap<FString, PostProcessUniformValue>::Pair *pair;
 	while (it.NextPair(pair))
 	{
-		int location = glGetUniformLocation(mProgram, pair->Key.GetChars());
+		GL(int location = glGetUniformLocation(mProgram, pair->Key.GetChars()));
 		if (location != -1)
 		{
 			switch (pair->Value.Type)
 			{
 			case PostProcessUniformType::Float:
-				glUniform1f(location, (float)pair->Value.Values[0]);
+				GL(glUniform1f(location, (float)pair->Value.Values[0]));
 				break;
 			case PostProcessUniformType::Int:
-				glUniform1i(location, (int)pair->Value.Values[0]);
+				GL(glUniform1i(location, (int)pair->Value.Values[0]));
 				break;
 			case PostProcessUniformType::Vec2:
-				glUniform2f(location, (float)pair->Value.Values[0], (float)pair->Value.Values[1]);
+				GL(glUniform2f(location, (float)pair->Value.Values[0], (float)pair->Value.Values[1]));
 				break;
 			case PostProcessUniformType::Vec3:
-				glUniform3f(location, (float)pair->Value.Values[0], (float)pair->Value.Values[1], (float)pair->Value.Values[2]);
+				GL(glUniform3f(location, (float)pair->Value.Values[0], (float)pair->Value.Values[1], (float)pair->Value.Values[2]));
 				break;
 			default:
 				break;
@@ -219,7 +219,7 @@ void PostProcessShaderInstance::BindTextures()
 	TMap<FString, FString>::Pair *pair;
 	while (it.NextPair(pair))
 	{
-		int location = glGetUniformLocation(mProgram, pair->Key.GetChars());
+		GL(int location = glGetUniformLocation(mProgram, pair->Key.GetChars()));
 		if (location == -1)
 			continue;
 
@@ -227,9 +227,9 @@ void PostProcessShaderInstance::BindTextures()
 		FTexture *tex = TexMan(TexMan.CheckForTexture(name, ETextureType::Any));
 		if (tex && tex->UseType != ETextureType::Null)
 		{
-			glUniform1i(location, textureUnit);
+			GL(glUniform1i(location, textureUnit));
 
-			glActiveTexture(GL_TEXTURE0 + textureUnit);
+			GL(glActiveTexture(GL_TEXTURE0 + textureUnit));
 			auto it = mTextureHandles.find(tex);
 			if (it == mTextureHandles.end())
 			{
@@ -238,16 +238,16 @@ void PostProcessShaderInstance::BindTextures()
 				tex->CopyTrueColorPixels(&bitmap, 0, 0);
 
 				GLuint handle = 0;
-				glGenTextures(1, &handle);
-				glBindTexture(GL_TEXTURE_2D, handle);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, tex->GetWidth(), tex->GetHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, bitmap.GetPixels());
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				GL(glGenTextures(1, &handle));
+				GL(glBindTexture(GL_TEXTURE_2D, handle));
+				GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, tex->GetWidth(), tex->GetHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, bitmap.GetPixels()));
+				GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+				GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 				mTextureHandles[tex] = handle;
 			}
 			else
 			{
-				glBindTexture(GL_TEXTURE_2D, it->second);
+				GL(glBindTexture(GL_TEXTURE_2D, it->second));
 			}
 
 			textureUnit++;
