@@ -288,6 +288,7 @@ unsigned int *FModelVertexBuffer::LockIndexBuffer(unsigned int size)
 	{
 		GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_id));
 		GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(unsigned int), NULL, GL_STATIC_DRAW));
+		void *ptr;
 		if (!gl.legacyMode)
 		{
 			GL(ptr = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, size * sizeof(unsigned int), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
