@@ -1105,6 +1105,7 @@ public:
 	DVector3		OldRenderPos;
 	DVector3		Vel;
 	DVector2		SpriteOffset;
+	DVector3		WorldOffset;
 	double			Speed;
 	double			FloatSpeed;
 	TObjPtr<DActorModelData*>		modelData;
