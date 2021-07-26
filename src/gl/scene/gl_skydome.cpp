@@ -322,12 +322,28 @@ inline void FSkyVertexBuffer::RenderRow(int prim, int row)
 
 void FSkyVertexBuffer::RenderDome(FMaterial *tex, int mode)
 {
-	PalEntry pe = tex->tex->GetSkyCapColor(false);
-	GLRenderer->mSceneClearColor[0] = pe.r / 255.f;
-	GLRenderer->mSceneClearColor[1] = pe.g / 255.f;
-	GLRenderer->mSceneClearColor[2] = pe.b / 255.f;
-	if (!gl_skydome) return;
 	int rc = mRows + 1;
+
+	// The caps only get drawn for the main layer but not for the overlay.
+	if (mode == SKYMODE_MAINLAYER && tex != NULL)
+	{
+		PalEntry pe = tex->tex->GetSkyCapColor(false);
+		gl_RenderState.SetObjectColor(pe);
+		gl_RenderState.EnableTexture(false);
+		gl_RenderState.Apply();
+		RenderRow(GL_TRIANGLE_FAN, 0);
+
+		pe = tex->tex->GetSkyCapColor(true);
+		gl_RenderState.SetObjectColor(pe);
+		gl_RenderState.Apply();
+		RenderRow(GL_TRIANGLE_FAN, rc);
+		gl_RenderState.EnableTexture(true);
+		// The color array can only be activated now if this is drawn without shader
+		if (gl.legacyMode)
+		{
+			glEnableClientState(GL_COLOR_ARRAY);
+		}
+	}
 	gl_RenderState.SetObjectColor(0xffffffff);
 	gl_RenderState.Apply();
 	for (int i = 1; i <= mRows; i++)
@@ -484,6 +500,15 @@ static void RenderBox(FTextureID texno, FMaterial * gltex, float x_offset, bool 
 //-----------------------------------------------------------------------------
 void GLSkyPortal::DrawContents()
 {
+	if (!gl_skydome && origin->texture[0])
+	{
+		PalEntry pe = origin->texture[0]->tex->GetSkyCapColor(false);
+		GLRenderer->mSceneClearColor[0] = pe.r / 255.f;
+		GLRenderer->mSceneClearColor[1] = pe.g / 255.f;
+		GLRenderer->mSceneClearColor[2] = pe.b / 255.f;
+		return;
+	}
+	
 	bool drawBoth = false;
 
 	// We have no use for Doom lighting special handling here, so disable it for this function.
