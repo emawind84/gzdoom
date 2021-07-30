@@ -1,6 +1,6 @@
-# Welcome to LZDoom!
+# Welcome to QuestZDoom a fork of LZDoom for Oculus Quest!
 
-[![Build Status](https://github.com/drfrag666/gzdoom/workflows/Continuous%20Integration/badge.svg)](https://github.com/drfrag666/gzdoom/actions?query=workflow%3A%22Continuous+Integration%22)
+[![Build Status](https://github.com/emawind84/gzdoom/actions/workflows/continuous_integration.yml/badge.svg?branch=questzdoom)](https://github.com/emawind84/gzdoom/actions/workflows/continuous_integration.yml)
 
 ## LZDoom is a classic style GZDoom fork with lower system requirements
 
