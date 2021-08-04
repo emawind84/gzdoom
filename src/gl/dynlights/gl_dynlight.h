@@ -62,5 +62,16 @@ bool gl_GetLight(int group, Plane & p, FDynamicLight * light, bool checkside, FD
 void gl_AddLightToList(int group, FDynamicLight * light, FDynLightData &ldata);
 void gl_UploadLights(FDynLightData &data);
 
+inline bool gl_IsDistanceCulled(FDynamicLight *light)
+{
+	double dist3 = gl_light_distance_cull * gl_light_distance_cull;
+	if (dist3 <= 0.0)
+		return false;
+
+	double dist1 = (light->Pos - r_viewpoint.Pos).LengthSquared();
+	if (dist1 > dist3)
+		return true;
+	return false;
+}
 
 #endif

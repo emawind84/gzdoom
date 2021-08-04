@@ -194,6 +194,11 @@ int gl_SetDynModelLight(AActor *self, int dynlightindex)
 			while (node) // check all lights touching a subsector
 			{
 				FDynamicLight *light = node->lightsource;
+				if (!light->IsActive() || gl_IsDistanceCulled(light))
+				{
+					node=node->nextLight;
+					continue;
+				}
 				if (light->ShouldLightActor(self))
 				{
 					int group = subsector->sector->PortalGroup;

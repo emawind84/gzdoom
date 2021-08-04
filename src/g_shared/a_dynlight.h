@@ -5,6 +5,7 @@
 #include "g_levellocals.h"
 
 EXTERN_CVAR(Bool, gl_lights)
+EXTERN_CVAR(Float, gl_light_distance_cull)
 
 class FSerializer;
 

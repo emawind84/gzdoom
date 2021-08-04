@@ -2788,6 +2788,7 @@ GLLIGHTMNU_LIGHTPARTICLES			= "Lights affect particles";
 GLLIGHTMNU_LIGHTSHADOWMAP			= "Light shadowmaps";
 GLLIGHTMNU_LIGHTSHADOWMAPQUALITY	= "Shadowmap quality";
 GLLIGHTMNU_LIGHTSHADOWMAPFILTER		= "Shadowmap filter";
+GLLIGHTMNU_LIGHTSCULL				= "Lights Cull Distance";
 
 // OpenGL Preferences
 GLPREFMNU_TITLE 				= "OPENGL PREFERENCES";

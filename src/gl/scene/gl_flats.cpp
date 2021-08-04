@@ -126,7 +126,7 @@ void GLFlat::SetupSubsectorLights(int pass, subsector_t * sub, int *dli)
 	{
 		FDynamicLight * light = node->lightsource;
 			
-		if (!light->IsActive())
+		if (!light->IsActive() || gl_IsDistanceCulled(light))
 		{
 			node=node->nextLight;
 			continue;

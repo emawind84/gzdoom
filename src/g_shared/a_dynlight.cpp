@@ -87,6 +87,9 @@ CUSTOM_CVAR (Bool, gl_lights, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOIN
 	else AActor::DeleteAllAttachedLights();
 }
 
+CVAR(Float, gl_light_max_intensity, 1000.0, 0);
+CVAR(Float, gl_light_distance_cull, 4000.0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
+
 //==========================================================================
 //
 //==========================================================================
@@ -267,6 +270,7 @@ void FDynamicLight::Activate()
 		m_currentRadius = float(m_cycler.GetVal());
 	}
 	if (m_currentRadius <= 0) m_currentRadius = 1;
+	else if (m_currentRadius > gl_light_max_intensity) m_currentRadius = gl_light_max_intensity;
 }
 
 
@@ -385,6 +389,7 @@ void FDynamicLight::Tick()
 		break;
 	}
 	if (m_currentRadius <= 0) m_currentRadius = 1;
+	else if (m_currentRadius > gl_light_max_intensity) m_currentRadius = gl_light_max_intensity;
 	UpdateLocation();
 }
 

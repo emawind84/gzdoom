@@ -2625,6 +2625,7 @@ OptionMenu "GLLightOptions" protected
 	Option "$GLLIGHTMNU_LIGHTSHADOWMAP",		gl_light_shadowmap,		"YesNo"
 	Option "$GLLIGHTMNU_LIGHTSHADOWMAPQUALITY", gl_shadowmap_quality,	"ShadowMapQuality"
 	Option "$GLLIGHTMNU_LIGHTSHADOWMAPFILTER", 	gl_shadowmap_filter,	"ShadowMapFilter"
+	ScaleSlider "$GLLIGHTMNU_LIGHTSCULL",		gl_light_distance_cull, 0.0, 16000.0, 500.0, "Culling disabled"
 }
 
 OptionMenu "OpenGLOptions" protected
