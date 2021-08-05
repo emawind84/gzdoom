@@ -55,6 +55,7 @@
 //==========================================================================
 FDynLightData lightdata;
 
+
 void GLWall::SetupLights()
 {
 	if (RenderStyle == STYLE_Add && !glset.lightadditivesurfaces) return;	// no lights on additively blended surfaces.
