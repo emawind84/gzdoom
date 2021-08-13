@@ -183,7 +183,7 @@ void FModelRenderer::RenderModel(float x, float y, float z, FSpriteModelFrame *s
 void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 {
 	AActor * playermo = players[consoleplayer].camera;
-	FSpriteModelFrame *smf = FindModelFrame(psp->Caller->GetClass(), psp->GetSprite(), psp->GetFrame(), false);
+	FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->Caller->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
 
 	// [BB] No model found for this sprite, so we can't render anything.
 	if (smf == nullptr)
@@ -983,7 +983,7 @@ bool IsHUDModelForPlayerAvailable (player_t * player)
 	// [MK] check that at least one psprite uses models
 	for (DPSprite *psp = player->psprites; psp != nullptr && psp->GetID() < PSP_TARGETCENTER; psp = psp->GetNext())
 	{
-		FSpriteModelFrame *smf = FindModelFrame(psp->Caller->GetClass(), psp->GetSprite(), psp->GetFrame(), false);
+		FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->Caller->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
 		if ( smf != nullptr ) return true;
 	}
 	return false;

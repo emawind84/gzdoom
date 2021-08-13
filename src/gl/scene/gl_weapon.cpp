@@ -280,7 +280,7 @@ void GLSceneDrawer::SetupWeaponLight()
 	{
 		if (psp->GetState() != nullptr)
 		{
-			FSpriteModelFrame *smf = FindModelFrame(psp->Caller->GetClass(), psp->GetState()->sprite, psp->GetState()->GetFrame(), false);
+			FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->Caller->GetClass(), psp->GetState()->sprite, psp->GetState()->GetFrame(), false): nullptr;
 			if (smf)
 			{
 				weapondynlightindex[psp] = gl_SetDynModelLight(playermo, -1);
@@ -526,7 +526,7 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector, bool hudModelStep)
 			{
 				if (gl_lights && GLRenderer->mLightCount && FixedColormap == CM_DEFAULT && gl_light_sprites)
 				{
-					FSpriteModelFrame *smf = FindModelFrame(psp->Caller->GetClass(), psp->GetSprite(), psp->GetState()->GetFrame(), false);
+					FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->Caller->GetClass(), psp->GetSprite(), psp->GetState()->GetFrame(), false) : nullptr;
 					if (!smf || gl.legacyMode)	// For models with per-pixel lighting this was done in a previous pass.
 					{
 						gl_SetDynSpriteLight(playermo, NULL);
