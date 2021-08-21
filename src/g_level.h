@@ -255,6 +255,7 @@ enum ELevelFlags : unsigned int
 	LEVEL3_E4M8SPECIAL			= 0x00004000,
 	LEVEL3_E4M6SPECIAL			= 0x00008000,
 	LEVEL3_LIGHTCREATED			= 0x00080000,	// a light had been created in the last frame
+	LEVEL3_AVOID_HAZARDS		= 0x00100000,	// another MBF thing.
 };
 
 
