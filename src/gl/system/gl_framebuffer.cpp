@@ -142,7 +142,7 @@ void OpenGLFrameBuffer::InitializeState()
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0f);
-	glDepthFunc(GL_LESS);
+	GL(glDepthFunc(GL_LESS));
 
 	glEnable(GL_DITHER);
 	glDisable(GL_CULL_FACE);
@@ -154,14 +154,14 @@ void OpenGLFrameBuffer::InitializeState()
 #ifndef __MOBILE__
 	glEnable(GL_DEPTH_CLAMP);
 #endif
-	glDisable(GL_DEPTH_TEST);
-	if (gl.legacyMode) glEnable(GL_TEXTURE_2D);
+	GL(glDisable(GL_DEPTH_TEST));
+	if (gl.legacyMode) GL(glEnable(GL_TEXTURE_2D));
 #ifndef __MOBILE__
-	glDisable(GL_LINE_SMOOTH);
+	GL(glDisable(GL_LINE_SMOOTH));
 #endif
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	GL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 	GLRenderer->Initialize(GetWidth(), GetHeight());
 	GLRenderer->SetOutputViewport(nullptr);
@@ -241,7 +241,6 @@ void OpenGLFrameBuffer::Swap()
 	if (gl_finish && !swapbefore) glFinish();
 
     gl_RenderState.SetVertexBuffer(NULL);
-
 	Finish.Unclock();
 	camtexcount = 0;
 	FHardwareTexture::UnbindAll();
@@ -258,15 +257,15 @@ void OpenGLFrameBuffer::SetVSync(bool vsync)
 {
 	// Switch to the default frame buffer because some drivers associate the vsync state with the bound FB object.
 	GLint oldDrawFramebufferBinding = 0, oldReadFramebufferBinding = 0;
-	glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &oldDrawFramebufferBinding);
-	glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &oldReadFramebufferBinding);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	GL(glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &oldDrawFramebufferBinding));
+	GL(glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &oldReadFramebufferBinding));
+	GL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
+	GL(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
 
 	Super::SetVSync(vsync);
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, oldDrawFramebufferBinding);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, oldReadFramebufferBinding);
+	GL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, oldDrawFramebufferBinding));
+	GL(glBindFramebuffer(GL_READ_FRAMEBUFFER, oldReadFramebufferBinding));
 }
 
 //===========================================================================
@@ -396,16 +395,18 @@ bool OpenGLFrameBuffer::Begin2D(bool copy3d)
 	gl_RenderState.mProjectionMatrix.ortho(0, GetWidth(), GetHeight(), 0, -1.0f, 1.0f);
 	gl_RenderState.ApplyMatrices();
 
-	glDisable(GL_DEPTH_TEST);
+	GL(glDisable(GL_DEPTH_TEST));
 
 #ifndef __MOBILE__
 	// Korshun: ENABLE AUTOMAP ANTIALIASING!!!
 	if (gl_aalines)
-		glEnable(GL_LINE_SMOOTH);
+	{
+		GL(glEnable(GL_LINE_SMOOTH));
+	}
 	else
 	{
-		glDisable(GL_MULTISAMPLE);
-		glDisable(GL_LINE_SMOOTH);
+		GL(glDisable(GL_MULTISAMPLE));
+		GL(glDisable(GL_LINE_SMOOTH));
 		glLineWidth(1.0);
 	}
 #endif

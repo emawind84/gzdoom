@@ -27,6 +27,7 @@
 **/
 
 #include "gl/system/gl_system.h"
+#include "gl/system/gl_debug.h"
 #include "w_wad.h"
 #include "cmdlib.h"
 #include "sc_man.h"
@@ -66,7 +67,7 @@ VSMatrix FGLModelRenderer::GetViewToWorldMatrix()
 
 void FGLModelRenderer::BeginDrawModel(AActor *actor, FSpriteModelFrame *smf, const VSMatrix &objectToWorldMatrix, bool mirrored)
 {
-	glDepthFunc(GL_LEQUAL);
+	GL(glDepthFunc(GL_LEQUAL));
 	gl_RenderState.EnableTexture(true);
 	// [BB] In case the model should be rendered translucent, do back face culling.
 	// This solves a few of the problems caused by the lack of depth sorting.
@@ -75,7 +76,7 @@ void FGLModelRenderer::BeginDrawModel(AActor *actor, FSpriteModelFrame *smf, con
 	if (!(actor->RenderStyle == LegacyRenderStyles[STYLE_Normal]) && !(smf->flags & MDL_DONTCULLBACKFACES))
 	{
 		glEnable(GL_CULL_FACE);
-		glFrontFace((mirrored ^ GLPortal::isMirrored()) ? GL_CCW : GL_CW);
+		GL(glFrontFace((mirrored ^ GLPortal::isMirrored()) ? GL_CCW : GL_CW));
 	}
 
 	gl_RenderState.mModelMatrix = objectToWorldMatrix;
@@ -86,14 +87,14 @@ void FGLModelRenderer::EndDrawModel(AActor *actor, FSpriteModelFrame *smf)
 {
 	gl_RenderState.EnableModelMatrix(false);
 
-	glDepthFunc(GL_LESS);
+	GL(glDepthFunc(GL_LESS));
 	if (!(actor->RenderStyle == LegacyRenderStyles[STYLE_Normal]) && !(smf->flags & MDL_DONTCULLBACKFACES))
 		glDisable(GL_CULL_FACE);
 }
 
 void FGLModelRenderer::BeginDrawHUDModel(AActor *actor, const VSMatrix &objectToWorldMatrix, bool mirrored)
 {
-	glDepthFunc(GL_LEQUAL);
+	GL(glDepthFunc(GL_LEQUAL));
 
 	/* hack the depth range to prevent view model from poking into walls */
     gldepthmin = 0;
@@ -106,7 +107,7 @@ void FGLModelRenderer::BeginDrawHUDModel(AActor *actor, const VSMatrix &objectTo
 	if (!(actor->RenderStyle == LegacyRenderStyles[STYLE_Normal]))
 	{
 		glEnable(GL_CULL_FACE);
-		glFrontFace((mirrored ^ GLPortal::isMirrored()) ? GL_CW : GL_CCW);
+		GL(glFrontFace((mirrored ^ GLPortal::isMirrored()) ? GL_CW : GL_CCW));
 	}
 
 	gl_RenderState.mModelMatrix = objectToWorldMatrix;
@@ -117,7 +118,7 @@ void FGLModelRenderer::EndDrawHUDModel(AActor *actor)
 {
 	gl_RenderState.EnableModelMatrix(false);
 
-	glDepthFunc(GL_LESS);
+	GL(glDepthFunc(GL_LESS));
 	if (!(actor->RenderStyle == LegacyRenderStyles[STYLE_Normal]))
 		glDisable(GL_CULL_FACE);
 
@@ -155,12 +156,12 @@ void FGLModelRenderer::SetMaterial(FTexture *skin, bool clampNoFilter, int trans
 
 void FGLModelRenderer::DrawArrays(int start, int count)
 {
-	glDrawArrays(GL_TRIANGLES, start, count);
+	GL(glDrawArrays(GL_TRIANGLES, start, count));
 }
 
 void FGLModelRenderer::DrawElements(int numIndices, size_t offset)
 {
-	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, (void*)(intptr_t)offset);
+	GL(glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, (void*)(intptr_t)offset));
 }
 
 //===========================================================================
@@ -180,7 +181,7 @@ FModelVertexBuffer::FModelVertexBuffer(bool needindex, bool singleframe)
 	ibo_id = 0;
 	if (needindex)
 	{
-		glGenBuffers(1, &ibo_id);	// The index buffer can always be a real buffer.
+		GL(glGenBuffers(1, &ibo_id));	// The index buffer can always be a real buffer.
 	}
 }
 
@@ -192,15 +193,15 @@ FModelVertexBuffer::FModelVertexBuffer(bool needindex, bool singleframe)
 
 void FModelVertexBuffer::BindVBO()
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_id);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+	GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_id));
+	GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
 	if (!gl.legacyMode)
 	{
-		glEnableVertexAttribArray(VATTR_VERTEX);
-		glEnableVertexAttribArray(VATTR_TEXCOORD);
-		glEnableVertexAttribArray(VATTR_VERTEX2);
-		glEnableVertexAttribArray(VATTR_NORMAL);
-		glDisableVertexAttribArray(VATTR_COLOR);
+		GL(glEnableVertexAttribArray(VATTR_VERTEX));
+		GL(glEnableVertexAttribArray(VATTR_TEXCOORD));
+		GL(glEnableVertexAttribArray(VATTR_VERTEX2));
+		GL(glEnableVertexAttribArray(VATTR_NORMAL));
+		GL(glDisableVertexAttribArray(VATTR_COLOR));
 	}
 	else
 	{
@@ -220,7 +221,7 @@ FModelVertexBuffer::~FModelVertexBuffer()
 {
 	if (ibo_id != 0)
 	{
-		glDeleteBuffers(1, &ibo_id);
+		GL(glDeleteBuffers(1, &ibo_id));
 	}
 	if (vbo_ptr != nullptr)
 	{
@@ -238,12 +239,18 @@ FModelVertex *FModelVertexBuffer::LockVertexBuffer(unsigned int size)
 {
 	if (vbo_id > 0)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-		glBufferData(GL_ARRAY_BUFFER, size * sizeof(FModelVertex), nullptr, GL_STATIC_DRAW);
+		GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
+		GL(glBufferData(GL_ARRAY_BUFFER, size * sizeof(FModelVertex), nullptr, GL_STATIC_DRAW));
+		FModelVertex *map;
 		if (!gl.legacyMode)
-			return (FModelVertex*)glMapBufferRange(GL_ARRAY_BUFFER, 0, size * sizeof(FModelVertex), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+		{
+			GL(map = (FModelVertex*)glMapBufferRange(GL_ARRAY_BUFFER, 0, size * sizeof(FModelVertex), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
+		}
 		else
-			return (FModelVertex*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+		{
+			GL(map = (FModelVertex*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+		}
+		return map;
 	}
 	else
 	{
@@ -264,8 +271,8 @@ void FModelVertexBuffer::UnlockVertexBuffer()
 {
 	if (vbo_id > 0)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-		glUnmapBuffer(GL_ARRAY_BUFFER);
+		GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
+		GL(glUnmapBuffer(GL_ARRAY_BUFFER));
 	}
 }
 
@@ -279,12 +286,18 @@ unsigned int *FModelVertexBuffer::LockIndexBuffer(unsigned int size)
 {
 	if (ibo_id != 0)
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(unsigned int), NULL, GL_STATIC_DRAW);
+		GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_id));
+		GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, size * sizeof(unsigned int), NULL, GL_STATIC_DRAW));
+		void *ptr;
 		if (!gl.legacyMode)
-			return (unsigned int*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, size * sizeof(unsigned int), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+		{
+			GL(ptr = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, size * sizeof(unsigned int), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
+		}
 		else
-			return (unsigned int*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+		{
+			GL(ptr = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
+		}
+		return (unsigned int*)ptr;
 	}
 	else
 	{
@@ -302,8 +315,8 @@ void FModelVertexBuffer::UnlockIndexBuffer()
 {
 	if (ibo_id > 0)
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_id);
-		glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+		GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_id));
+		GL(glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER));
 	}
 }
 
@@ -318,34 +331,34 @@ static TArray<FModelVertex> iBuffer;
 
 void FModelVertexBuffer::SetupFrame(FModelRenderer *renderer, unsigned int frame1, unsigned int frame2, unsigned int size)
 {
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+	GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
 	if (vbo_id > 0)
 	{
 		if (!gl.legacyMode)
 		{
-			glVertexAttribPointer(VATTR_VERTEX, 3, GL_FLOAT, false, sizeof(FModelVertex), &VMO[frame1].x);
-			glVertexAttribPointer(VATTR_TEXCOORD, 2, GL_FLOAT, false, sizeof(FModelVertex), &VMO[frame1].u);
-			glVertexAttribPointer(VATTR_VERTEX2, 3, GL_FLOAT, false, sizeof(FModelVertex), &VMO[frame2].x);
-			glVertexAttribPointer(VATTR_NORMAL, 4, GL_INT_2_10_10_10_REV, true, sizeof(FModelVertex), &VMO[frame2].packedNormal);
+			GL(glVertexAttribPointer(VATTR_VERTEX, 3, GL_FLOAT, false, sizeof(FModelVertex), &VMO[frame1].x));
+			GL(glVertexAttribPointer(VATTR_TEXCOORD, 2, GL_FLOAT, false, sizeof(FModelVertex), &VMO[frame1].u));
+			GL(glVertexAttribPointer(VATTR_VERTEX2, 3, GL_FLOAT, false, sizeof(FModelVertex), &VMO[frame2].x));
+			GL(glVertexAttribPointer(VATTR_NORMAL, 4, GL_INT_2_10_10_10_REV, true, sizeof(FModelVertex), &VMO[frame2].packedNormal));
 		}
 		else
 		{
 			// only used for single frame models so there is no vertex2 here, which has no use without a shader.
-			glVertexPointer(3, GL_FLOAT, sizeof(FModelVertex), &VMO[frame1].x);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(FModelVertex), &VMO[frame1].u);
+			GL(glVertexPointer(3, GL_FLOAT, sizeof(FModelVertex), &VMO[frame1].x));
+			GL(glTexCoordPointer(2, GL_FLOAT, sizeof(FModelVertex), &VMO[frame1].u));
 		}
 	}
 	else if (frame1 == frame2 || size == 0 || gl_RenderState.GetInterpolationFactor() == 0.f)
 	{
-		glVertexPointer(3, GL_FLOAT, sizeof(FModelVertex), &vbo_ptr[frame1].x);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(FModelVertex), &vbo_ptr[frame1].u);
+		GL(glVertexPointer(3, GL_FLOAT, sizeof(FModelVertex), &vbo_ptr[frame1].x));
+		GL(glTexCoordPointer(2, GL_FLOAT, sizeof(FModelVertex), &vbo_ptr[frame1].u));
 	}
 	else
 	{
 		// must interpolate
 		iBuffer.Resize(size);
-		glVertexPointer(3, GL_FLOAT, sizeof(FModelVertex), &iBuffer[0].x);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(FModelVertex), &vbo_ptr[frame1].u);
+		GL(glVertexPointer(3, GL_FLOAT, sizeof(FModelVertex), &iBuffer[0].x));
+		GL(glTexCoordPointer(2, GL_FLOAT, sizeof(FModelVertex), &vbo_ptr[frame1].u));
 		float frac = gl_RenderState.GetInterpolationFactor();
 		for (unsigned i = 0; i < size; i++)
 		{
