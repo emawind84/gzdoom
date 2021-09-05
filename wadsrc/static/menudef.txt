@@ -569,6 +569,7 @@ OptionMenu "ChatControlsMenu" protected
 OptionMenu "WeaponsControlMenu" protected
 {
 	Title "$CNTRLMNU_WEAPONS_TITLE"
+	Indent 140
 	ScrollTop 2
 	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
 
@@ -920,7 +921,7 @@ OptionMenu "SWROptions" protected
 OptionMenu "VideoOptions" protected
 {
 	Title "$DSPLYMNU_TITLE"
-
+	Indent 180
 	Submenu "$DSPLYMNU_GLOPT", 			"OpenGLOptions"
 	Submenu "$GLMNU_DYNLIGHT",			"GLLightOptions"
 	StaticText " "
@@ -1029,6 +1030,7 @@ OptionValue ZDoomStrife
 OptionMenu "HUDOptions" protected
 {
 	Title "$HUDMNU_TITLE"
+	Indent 200
 	Submenu "$HUDMNU_SCALEOPT",				"ScalingOptions"
 	Submenu "$HUDMNU_ALTHUD",				"AltHudOptions"
 	Submenu "$HUDMNU_MESSAGE", 				"MessageOptions"
@@ -1195,7 +1197,7 @@ OptionValue AlwaysTally
 OptionMenu "MiscOptions" protected
 {
 	Title "$MISCMNU_TITLE"
-	//Indent 220
+	Indent 220
 	IfOption(Windows)
 	{
 		Option "$MISCMNU_MERGEKEYS", 			"k_mergekeys", "OnOff"
@@ -2401,7 +2403,7 @@ OptionMenu VRHUDOptions protected
 OptionMenu VROptionsMenu protected
 {
 	Title "VR OPTIONS"
-
+	Indent 200
 	StaticText ""
 	Submenu "VR HUD/Automap Options",	"VRHUDOptions"
 	StaticText ""
@@ -2759,6 +2761,7 @@ OptionMenu "GLTextureGLOptions" protected
 OptionMenu "GLLightOptions" protected
 {
 	Title "$GLLIGHTMNU_TITLE"
+	Indent 200
 	Option "$GLLIGHTMNU_LIGHTSENABLED",			gl_lights,				"OnOff"
 	Option "$GLLIGHTMNU_CLIPLIGHTS",			gl_lights_checkside,	"YesNo"
 	Option "$GLLIGHTMNU_LIGHTSPRITES",			gl_light_sprites,		"YesNo"

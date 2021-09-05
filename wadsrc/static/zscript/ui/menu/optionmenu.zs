@@ -82,7 +82,7 @@ class OptionMenuDescriptor : MenuDescriptor native
 			thiswidth = mItems[i].GetIndent();
 			if (thiswidth > widest) widest = thiswidth;
 		}
-		mIndent =  widest + 4;
+		//mIndent =  widest + 4;
 	}
 }
 
@@ -420,7 +420,11 @@ class OptionMenu : Menu
 	virtual int GetIndent()
 	{
 		int indent = mDesc.mIndent;
-		if (indent > 280)
+		if (indent == 0)
+		{
+			indent = screen.GetWidth() / 2;
+		}
+		else if (indent > 280)
 		{ // kludge for the compatibility options with their extremely long labels
 			if (indent + 40 <= CleanWidth_1)
 			{
