@@ -1151,7 +1151,7 @@ DEFINE_ACTION_FUNCTION(AActor, A_ClearOverlays)
 		{
 			if (id >= PSP_TARGETCENTER)
 				break;
-			else if (id == PSP_STRIFEHANDS || id == PSP_WEAPON || id == PSP_FLASH)
+			else if (id == PSP_STRIFEHANDS || id == PSP_WEAPON || id == PSP_OFFHANDWEAPON || id == PSP_FLASH)
 				continue;
 		}
 

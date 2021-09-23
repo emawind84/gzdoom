@@ -4517,6 +4517,7 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 
 	if (t1->player != NULL && t1->player->mo->OverrideAttackPosDir)
 	{
+		// TODO I need to change this for offhand weapon
 		fromPos = t1->player->mo->AttackPos;
 		direction = t1->player->mo->AttackDir(t1, angle, pitch);
 	}
@@ -4527,7 +4528,11 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 
 	// We need to check the defaults of the replacement here
 	AActor *puffDefaults = GetDefaultByType(pufftype->GetReplacement());
-	
+	AActor *weapon;
+	if (t1->player != nullptr)
+	{
+		weapon = (flags & LAF_ISOFFHAND) ? t1->player->OffhandWeapon : t1->player->ReadyWeapon;
+	}
 	TData.hitGhosts = (t1->player != NULL &&
 		t1->player->ReadyWeapon != NULL &&
 		(t1->player->ReadyWeapon->flags2 & MF2_THRUGHOST)) ||

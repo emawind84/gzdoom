@@ -82,12 +82,17 @@ void GLSceneDrawer::DrawPSprite (player_t * player,DPSprite *psp, float sx, floa
 	float			scalex;
 	float			ftexturemid;
 	
-	// [BB] In the HUD model step we just render the model and break out. 
-	if ( hudModelStep )
+	if (psp->GetCaller() != nullptr)
 	{
-		gl_RenderHUDModel(psp, sx, sy);
-		return;
+		FSpriteModelFrame *smf = FindModelFrame(psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetFrame(), false);
+		if (smf != nullptr)
+		{
+			gl_RenderHUDModel(psp, sx, sy);
+			return;
+		}
 	}
+
+	s3d::Stereo3DMode::getCurrentMode().AdjustPlayerSprites(psp->GetCaller() == player->OffhandWeapon);
 
 	// decide which patch to use
 	bool mirror;
@@ -124,7 +129,6 @@ void GLSceneDrawer::DrawPSprite (player_t * player,DPSprite *psp, float sx, floa
 	// killough 12/98: fix psprite positioning problem
 	ftexturemid = 100.f - sy - r.top - psp->GetYAdjust(screenblocks >= 11);
 
-	AActor * wi=player->ReadyWeapon;
 	scale = (SCREENHEIGHT*vw) / (SCREENWIDTH * 200.0f);
 	y1 = viewwindowy + vh / 2 - (ftexturemid * scale);
 	y2 = y1 + (r.height * scale) + 1;
@@ -251,7 +255,7 @@ void GLSceneDrawer::DrawPSprite (player_t * player,DPSprite *psp, float sx, floa
 		if (r_PlayerSprites3DMode == BACK_ONLY)
 			return;
 
-		FState* spawn = wi->FindState(NAME_Spawn);
+		FState* spawn = player->ReadyWeapon->FindState(NAME_Spawn);
 
 		lump = sprites[spawn->sprite].GetSpriteFrame(0, 0, 0., &mirror);
 		if (!lump.isValid()) return;
@@ -329,6 +333,8 @@ void GLSceneDrawer::DrawPSprite (player_t * player,DPSprite *psp, float sx, floa
 	}
 
 	gl_RenderState.AlphaFunc(GL_GEQUAL, 0.5f);
+
+	s3d::Stereo3DMode::getCurrentMode().UnAdjustPlayerSprites();
 }
 
 //==========================================================================
@@ -414,35 +420,9 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector, bool hudModelStep)
 		viewsector == nullptr)
 		return;
 
-	if (!hudModelStep)
-	{
-		s3d::Stereo3DMode::getCurrentMode().AdjustPlayerSprites();
-	}
-
 	float bobx, boby, wx, wy;
-	DPSprite *weapon;
 
 	P_BobWeapon(camera->player, &bobx, &boby, r_viewpoint.TicFrac);
-
-	// Interpolate the main weapon layer once so as to be able to add it to other layers.
-	if ((weapon = camera->player->FindPSprite(PSP_WEAPON)) != nullptr)
-	{
-		if (weapon->firstTic)
-		{
-			wx = weapon->x;
-			wy = weapon->y;
-		}
-		else
-		{
-			wx = weapon->oldx + (weapon->x - weapon->oldx) * r_viewpoint.TicFrac;
-			wy = weapon->oldy + (weapon->y - weapon->oldy) * r_viewpoint.TicFrac;
-		}
-	}
-	else
-	{
-		wx = 0;
-		wy = 0;
-	}
 
 	if (FixedColormap) 
 	{
@@ -521,6 +501,21 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector, bool hudModelStep)
 	// light mode here to draw the weapon sprite.
 	int oldlightmode = glset.lightmode;
 	if (glset.lightmode >= 8) glset.lightmode = 2;
+
+	DPSprite *readyWeaponPsp = camera->player->FindPSprite(PSP_WEAPON);
+	DPSprite *offhandWeaponPsp = camera->player->FindPSprite(PSP_OFFHANDWEAPON);
+
+	if (player->OffhandWeapon != nullptr)
+	{
+		DPSprite *offhandpsp = player->GetPSprite(PSP_OFFHANDWEAPON);
+		offhandpsp->SetCaller(player->OffhandWeapon);
+		FState *idle = player->OffhandWeapon->FindState(NAME_Ready);
+		if (idle == nullptr) idle = player->OffhandWeapon->SpawnState;
+		offhandpsp->SetState(idle);
+		offhandpsp->y = offhandpsp->oldy = WEAPONTOP;
+		offhandpsp->Sprite = player->OffhandWeapon->sprite;
+		offhandWeaponPsp = offhandpsp;
+	}
 
 	for(DPSprite *psp = player->psprites; psp != nullptr && psp->GetID() < PSP_TARGETCENTER; psp = psp->GetNext())
 	{
@@ -660,8 +655,28 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector, bool hudModelStep)
 				sy += boby;
 			}
 
-			if (psp->Flags & PSPF_ADDWEAPON && psp->GetID() != PSP_WEAPON)
+			if (psp->Flags & PSPF_ADDWEAPON && !(psp->GetID() == PSP_WEAPON || psp->GetID() == PSP_OFFHANDWEAPON))
 			{
+				// Interpolate the main weapon layer once so as to be able to add it to other layers.
+				DPSprite *weapon = psp->GetCaller() == player->ReadyWeapon ? readyWeaponPsp : offhandWeaponPsp;
+				if (weapon != nullptr)
+				{
+					if (weapon->firstTic)
+					{
+						wx = weapon->x;
+						wy = weapon->y;
+					}
+					else
+					{
+						wx = weapon->oldx + (weapon->x - weapon->oldx) * r_viewpoint.TicFrac;
+						wy = weapon->oldy + (weapon->y - weapon->oldy) * r_viewpoint.TicFrac;
+					}
+				}
+				else
+				{
+					wx = 0;
+					wy = 0;
+				}
 				sx += wx;
 				sy += wy;
 			}

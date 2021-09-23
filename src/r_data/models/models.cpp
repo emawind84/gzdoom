@@ -186,18 +186,22 @@ void FModelRenderer::RenderModel(float x, float y, float z, FSpriteModelFrame *s
 void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 {
 	AActor * playermo = players[consoleplayer].camera;
-	FSpriteModelFrame *smf = FindModelFrame(playermo->player->ReadyWeapon->GetClass(), psp->GetSprite(), psp->GetFrame(), false);
+	FSpriteModelFrame *smf = FindModelFrame(psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetFrame(), false);
 
 	// [BB] No model found for this sprite, so we can't render anything.
 	if (smf == nullptr)
 		return;
 
-    long oculusquest_rightHanded = vr_control_scheme < 10;
+	long oculusquest_rightHanded = vr_control_scheme < 10;
 
-    // The model position and orientation has to be drawn independently from the position of the player,
+	// The model position and orientation has to be drawn independently from the position of the player,
 	// but we need to position it correctly in the world for light to work properly.
 	VSMatrix objectToWorldMatrix = GetViewToWorldMatrix();
-	if (s3d::Stereo3DMode::getCurrentMode().GetHandTransform(oculusquest_rightHanded ? 1 : 0, &objectToWorldMatrix))
+	int hand = oculusquest_rightHanded ? 1 : 0;
+	if (psp->GetCaller() == playermo->player->OffhandWeapon) {
+		hand = 1 - hand;
+	}
+	if (s3d::Stereo3DMode::getCurrentMode().GetHandTransform(hand, &objectToWorldMatrix))
 	{
 		float scale = 0.01f;
 		objectToWorldMatrix.scale(scale, scale, scale);
@@ -236,7 +240,7 @@ void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 	BeginDrawHUDModel(playermo, objectToWorldMatrix, orientation < 0);
 	uint32_t trans = psp->GetTranslation() != 0 ? psp->GetTranslation() : 0;
 	if ((psp->Flags & PSPF_PLAYERTRANSLATED)) trans = psp->Owner->mo->Translation;
-	RenderFrameModels(smf, psp->GetState(), psp->GetTics(), playermo->player->ReadyWeapon->GetClass(), trans);
+	RenderFrameModels(smf, psp->GetState(), psp->GetTics(), psp->GetCaller()->GetClass(), trans);
 	EndDrawHUDModel(playermo);
 }
 

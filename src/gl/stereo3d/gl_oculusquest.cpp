@@ -288,9 +288,9 @@ namespace s3d
         GLRenderer->mScreenViewport.height = sceneHeight;
     }
 
-    void OculusQuestMode::AdjustPlayerSprites() const
+    void OculusQuestMode::AdjustPlayerSprites(bool isOffhandSprite) const
     {
-        GetWeaponTransform(&gl_RenderState.mModelMatrix);
+        GetWeaponTransform(&gl_RenderState.mModelMatrix, isOffhandSprite);
 
         float scale = 0.000625f * vr_weaponScale;
         gl_RenderState.mModelMatrix.scale(scale, -scale, scale);
@@ -357,12 +357,13 @@ namespace s3d
         return false;
     }
 
-    bool OculusQuestMode::GetWeaponTransform(VSMatrix* out) const
+    bool OculusQuestMode::GetWeaponTransform(VSMatrix* out, bool isOffhandWeapon) const
     {
-        long oculusquest_rightHanded = vr_control_scheme < 10;
-        if (GetHandTransform(oculusquest_rightHanded ? 1 : 0, out))
+        bool oculusquest_rightHanded = vr_control_scheme < 10;
+        int hand = isOffhandWeapon ? 1 - oculusquest_rightHanded : oculusquest_rightHanded;
+        if (GetHandTransform(hand ? 1 : 0, out))
         {
-            if (!oculusquest_rightHanded)
+            if (!hand)
                 out->scale(-1.0f, 1.0f, 1.0f);
             return true;
         }
@@ -390,7 +391,7 @@ namespace s3d
     static DVector3 MapWeaponDir(AActor* actor, DAngle yaw, DAngle pitch, bool isOffhandWeapon = false)
     {
         LSMatrix44 mat;
-        if (!s3d::Stereo3DMode::getCurrentMode().GetWeaponTransform(&mat))
+        if (!s3d::Stereo3DMode::getCurrentMode().GetWeaponTransform(&mat, false))
         {
             double pc = pitch.Cos();
 

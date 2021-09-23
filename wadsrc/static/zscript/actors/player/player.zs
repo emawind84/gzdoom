@@ -2711,6 +2711,7 @@ struct PlayerInfo native play	// self is what internally is known as player_t
 	native uint16 WeaponState;
 	native Weapon ReadyWeapon;
 	native Weapon PendingWeapon;
+	native Actor OffhandWeapon;
 	native PSprite psprites;
 	native int cheats;
 	native int timefreezer;

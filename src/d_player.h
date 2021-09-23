@@ -327,6 +327,7 @@ public:
 
 	AActor	   *ReadyWeapon = nullptr;
 	AActor	   *PendingWeapon = nullptr;			// WP_NOCHANGE if not changing
+	AActor     *OffhandWeapon = nullptr;
 	TObjPtr<DPSprite*> psprites = nullptr; // view sprites (gun, etc)
 
 	int			cheats = 0;					// bit flags

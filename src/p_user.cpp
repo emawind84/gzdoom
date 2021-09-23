@@ -371,6 +371,7 @@ void player_t::CopyFrom(player_t &p, bool copyPSP)
 	WeaponState = p.WeaponState;
 	ReadyWeapon = p.ReadyWeapon;
 	PendingWeapon = p.PendingWeapon;
+	OffhandWeapon = p.OffhandWeapon;
 	cheats = p.cheats;
 	timefreezer = p.timefreezer;
 	refire = p.refire;
@@ -1830,6 +1831,7 @@ DEFINE_FIELD_X(PlayerInfo, player_t, spreecount)
 DEFINE_FIELD_X(PlayerInfo, player_t, WeaponState)
 DEFINE_FIELD_X(PlayerInfo, player_t, ReadyWeapon)
 DEFINE_FIELD_X(PlayerInfo, player_t, PendingWeapon)
+DEFINE_FIELD_X(PlayerInfo, player_t, OffhandWeapon)
 DEFINE_FIELD_X(PlayerInfo, player_t, psprites)
 DEFINE_FIELD_X(PlayerInfo, player_t, cheats)
 DEFINE_FIELD_X(PlayerInfo, player_t, timefreezer)
