@@ -943,6 +943,7 @@ enum ELineAttackFlags
 	LAF_OVERRIDEZ      = 1 << 5,
 	LAF_ABSOFFSET      = 1 << 6,
 	LAF_ABSPOSITION    = 1 << 7,
+	LAF_ISOFFHAND      = 1 << 8,
 }
 
 enum ELineTraceFlags

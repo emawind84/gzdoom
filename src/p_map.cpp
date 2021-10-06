@@ -4499,6 +4499,7 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 		if ( damage > 0) {
             //Haptics
             long rightHanded = vr_control_scheme < 10;
+			rightHanded = (flags & LAF_ISOFFHAND) ? 1 - rightHanded : rightHanded;
             QzDoom_Vibrate(150, rightHanded ? 1 : 0, 0.8);
 			QzDoom_HapticEvent("fire_weapon", rightHanded ? 2 : 1, 100 * C_GetExternalHapticLevelValue("fire_weapon"), 0, 0);
 
@@ -4517,9 +4518,16 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 
 	if (t1->player != NULL && t1->player->mo->OverrideAttackPosDir)
 	{
-		// TODO I need to change this for offhand weapon
-		fromPos = t1->player->mo->AttackPos;
-		direction = t1->player->mo->AttackDir(t1, angle, pitch);
+		if (flags & LAF_ISOFFHAND)
+		{
+			fromPos = t1->player->mo->OffhandPos;
+			direction = t1->player->mo->OffhandDir(t1, angle, pitch);
+		}
+		else 
+		{
+			fromPos = t1->player->mo->AttackPos;
+			direction = t1->player->mo->AttackDir(t1, angle, pitch);
+		}
 	}
 	else
 	{
@@ -4534,8 +4542,8 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 		weapon = (flags & LAF_ISOFFHAND) ? t1->player->OffhandWeapon : t1->player->ReadyWeapon;
 	}
 	TData.hitGhosts = (t1->player != NULL &&
-		t1->player->ReadyWeapon != NULL &&
-		(t1->player->ReadyWeapon->flags2 & MF2_THRUGHOST)) ||
+		weapon != NULL &&
+		(weapon->flags2 & MF2_THRUGHOST)) ||
 		(puffDefaults && (puffDefaults->flags2 & MF2_THRUGHOST));
 	
 	spawnSky = (puffDefaults && (puffDefaults->flags3 & MF3_SKYEXPLODE));

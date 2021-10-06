@@ -335,6 +335,7 @@ enum	// P_LineAttack flags
 	LAF_OVERRIDEZ =     1 << 5,
 	LAF_ABSOFFSET =     1 << 6,
 	LAF_ABSPOSITION =   1 << 7,
+	LAF_ISOFFHAND   =   1 << 8,
 };
 
 AActor *P_LineAttack(AActor *t1, DAngle angle, double distance, DAngle pitch, int damage, FName damageType, PClassActor *pufftype, int flags = 0, FTranslatedLineTarget *victim = NULL, int *actualdamage = NULL, double sz = 0.0, double offsetforward = 0.0, double offsetside = 0.0);

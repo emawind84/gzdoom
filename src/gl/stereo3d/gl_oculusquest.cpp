@@ -361,7 +361,7 @@ namespace s3d
     {
         bool oculusquest_rightHanded = vr_control_scheme < 10;
         int hand = isOffhandWeapon ? 1 - oculusquest_rightHanded : oculusquest_rightHanded;
-        if (GetHandTransform(hand ? 1 : 0, out))
+        if (GetHandTransform(hand, out))
         {
             if (!hand)
                 out->scale(-1.0f, 1.0f, 1.0f);
@@ -391,7 +391,7 @@ namespace s3d
     static DVector3 MapWeaponDir(AActor* actor, DAngle yaw, DAngle pitch, bool isOffhandWeapon = false)
     {
         LSMatrix44 mat;
-        if (!s3d::Stereo3DMode::getCurrentMode().GetWeaponTransform(&mat, false))
+        if (!s3d::Stereo3DMode::getCurrentMode().GetWeaponTransform(&mat, isOffhandWeapon))
         {
             double pc = pitch.Cos();
 
