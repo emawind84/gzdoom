@@ -513,7 +513,6 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector, bool hudModelStep)
 		if (idle == nullptr) idle = player->OffhandWeapon->SpawnState;
 		offhandpsp->SetState(idle);
 		offhandpsp->y = offhandpsp->oldy = WEAPONTOP;
-		offhandpsp->Sprite = player->OffhandWeapon->sprite;
 		offhandWeaponPsp = offhandpsp;
 	}
 
