@@ -4601,12 +4601,8 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 	// LAF_ABSOFFSET: Ignore the angle.
 
 	DVector3 tempos;
-	const auto& stereo3dMode = s3d::Stereo3DMode::getCurrentMode();
-	if (!stereo3dMode.IsMono())
-	{
-		tempos = fromPos;
-	}
-	else if (flags & LAF_ABSPOSITION)
+
+	if (flags & LAF_ABSPOSITION)
 	{
 		tempos = DVector3(offsetforward, offsetside, sz);
 	}
@@ -4617,7 +4613,7 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 	else if (0.0 == offsetforward && 0.0 == offsetside)
 	{
 		// Default case so exact comparison is enough
-		tempos = t1->PosAtZ(shootz);
+		tempos = fromPos;
 	}
 	else
 	{
