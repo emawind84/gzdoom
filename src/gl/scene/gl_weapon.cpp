@@ -250,12 +250,12 @@ void GLSceneDrawer::DrawPSprite (player_t * player,DPSprite *psp, float sx, floa
 		qd.Render(GL_TRIANGLE_STRIP);
 	}
 
-	if (psp->GetID() == PSP_WEAPON && s3d::Stereo3DMode::getCurrentMode().RenderPlayerSpritesCrossed())
+	if ((psp->GetID() == PSP_WEAPON || psp->GetID() == PSP_OFFHANDWEAPON) && s3d::Stereo3DMode::getCurrentMode().RenderPlayerSpritesCrossed())
 	{
 		if (r_PlayerSprites3DMode == BACK_ONLY)
 			return;
 
-		FState* spawn = player->ReadyWeapon->FindState(NAME_Spawn);
+		FState* spawn = psp->GetCaller()->FindState(NAME_Spawn);
 
 		lump = sprites[spawn->sprite].GetSpriteFrame(0, 0, 0., &mirror);
 		if (!lump.isValid()) return;
