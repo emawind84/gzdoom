@@ -511,6 +511,8 @@ OptionMenu "ActionControlsMenu" protected
 	StaticText ""
 	Control    "$CNTRLMNU_ATTACK"           , "+attack"
 	Control    "$CNTRLMNU_ALTATTACK"        , "+altattack"
+	Control    "$CNTRLMNU_OH_ATTACK"        , "+oh_attack"
+	Control    "$CNTRLMNU_OH_ALTATTACK"     , "+oh_altatk"
 	Control    "$CNTRLMNU_RELOAD"           , "+reload"
 	Control    "$CNTRLMNU_ZOOM"             , "+zoom"
 

@@ -441,27 +441,45 @@ class PlayerPawn : Actor
 	void CheckWeaponFire ()
 	{
 		let player = self.player;
-		let weapon = player.ReadyWeapon;
-
-		if (weapon == NULL)
-			return;
+		let ready_weapon = player.ReadyWeapon;
+		let offhand_weapon = player.OffhandWeapon;
 
 		// Check for fire. Some weapons do not auto fire.
-		if ((player.WeaponState & WF_WEAPONREADY) && (player.cmd.buttons & BT_ATTACK))
+		if (ready_weapon != NULL && (player.WeaponState & WF_WEAPONREADY) && (player.cmd.buttons & BT_ATTACK))
 		{
-			if (!player.attackdown || !weapon.bNoAutofire)
+			if (!player.attackdown || !ready_weapon.bNoAutofire)
 			{
 				player.attackdown = true;
 				FireWeapon (NULL);
 				return;
 			}
 		}
-		else if ((player.WeaponState & WF_WEAPONREADYALT) && (player.cmd.buttons & BT_ALTATTACK))
+		else if (ready_weapon != NULL && (player.WeaponState & WF_WEAPONREADYALT) && (player.cmd.buttons & BT_ALTATTACK))
 		{
-			if (!player.attackdown || !weapon.bNoAutofire)
+			if (!player.attackdown || !ready_weapon.bNoAutofire)
 			{
 				player.attackdown = true;
 				FireWeaponAlt (NULL);
+				return;
+			}
+		}
+		else if (offhand_weapon != NULL && (player.WeaponState & WF_OFFHANDREADY) && (player.cmd.buttons & BT_OFFHANDATTACK))
+		{
+			if (!player.attackdown || !offhand_weapon.bNoAutofire)
+			{
+				player.attackdown = true;
+				console.printf("offhand fire");
+				//FireWeapon (NULL, true);
+				return;
+			}
+		}
+		else if (offhand_weapon != NULL && (player.WeaponState & WF_OFFHANDREADYALT) && (player.cmd.buttons & BT_OFFHANDALTATTACK))
+		{
+			if (!player.attackdown || !offhand_weapon.bNoAutofire)
+			{
+				player.attackdown = true;
+				console.printf("offhand alt fire");
+				//FireWeaponAlt (NULL, true);
 				return;
 			}
 		}
@@ -517,8 +535,12 @@ class PlayerPawn : Actor
 			// or if it's from an inventory item that the player no longer owns. 
 			if ((pspr.Caller == null ||
 				(pspr.Caller is "Inventory" && Inventory(pspr.Caller).Owner != pspr.Owner.mo) ||
-				(pspr.Caller is "Weapon" && pspr.Caller != pspr.Owner.ReadyWeapon)))
+				(pspr.Caller is "Weapon" && (pspr.Caller != pspr.Owner.ReadyWeapon && pspr.Caller != pspr.Owner.OffhandWeapon))))
 			{
+				// if (pspr.Caller is "Inventory" && Inventory(pspr.Caller).Owner != pspr.Owner.mo)
+				// {
+				// 	console.printf("###444");
+				// }
 				pspr.Destroy();
 			}
 			else
@@ -539,7 +561,7 @@ class PlayerPawn : Actor
 			else
 			{
 				CheckWeaponChange();
-				if (player.WeaponState & (WF_WEAPONREADY | WF_WEAPONREADYALT))
+				if (player.WeaponState & (WF_WEAPONREADY | WF_WEAPONREADYALT | WF_OFFHANDREADY | WF_OFFHANDREADYALT))
 				{
 					CheckWeaponFire();
 				}
@@ -1708,6 +1730,7 @@ class PlayerPawn : Actor
 		{
 			if (player.ReadyWeapon != null)
 			{
+				console.printf("###222");
 				let psp = player.GetPSprite(PSP_WEAPON);
 				if (psp) 
 				{
@@ -1716,6 +1739,19 @@ class PlayerPawn : Actor
 				}
 				player.SetPsprite(PSP_WEAPON, player.ReadyWeapon.GetReadyState());
 			}
+
+			if (player.OffhandWeapon != null)
+			{
+				console.printf("###333");
+				let psp = player.GetPSprite(PSP_OFFHANDWEAPON);
+				if (psp) 
+				{
+					psp.y = WEAPONTOP;
+					player.OffhandWeapon.ResetPSprite(psp);
+				}
+				player.SetPsprite(PSP_OFFHANDWEAPON, player.OffhandWeapon.GetReadyState());
+			}
+
 			return;
 		}
 
@@ -2711,7 +2747,7 @@ struct PlayerInfo native play	// self is what internally is known as player_t
 	native uint16 WeaponState;
 	native Weapon ReadyWeapon;
 	native Weapon PendingWeapon;
-	native Actor OffhandWeapon;
+	native Weapon OffhandWeapon;
 	native PSprite psprites;
 	native int cheats;
 	native int timefreezer;

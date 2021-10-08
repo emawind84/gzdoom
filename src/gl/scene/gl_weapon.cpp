@@ -505,17 +505,6 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector, bool hudModelStep)
 	DPSprite *readyWeaponPsp = camera->player->FindPSprite(PSP_WEAPON);
 	DPSprite *offhandWeaponPsp = camera->player->FindPSprite(PSP_OFFHANDWEAPON);
 
-	if (player->OffhandWeapon != nullptr)
-	{
-		DPSprite *offhandpsp = player->GetPSprite(PSP_OFFHANDWEAPON);
-		offhandpsp->SetCaller(player->OffhandWeapon);
-		FState *idle = player->OffhandWeapon->FindState(NAME_Ready);
-		if (idle == nullptr) idle = player->OffhandWeapon->SpawnState;
-		offhandpsp->SetState(idle);
-		offhandpsp->y = offhandpsp->oldy = WEAPONTOP;
-		offhandWeaponPsp = offhandpsp;
-	}
-
 	for(DPSprite *psp = player->psprites; psp != nullptr && psp->GetID() < PSP_TARGETCENTER; psp = psp->GetNext())
 	{
 		auto rs = psp->GetRenderStyle(playermo->RenderStyle, playermo->Alpha);

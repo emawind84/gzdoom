@@ -204,6 +204,7 @@ enum EWeaponReadyFlags
 	WRF_ALLOWUSER2 = 256,
 	WRF_ALLOWUSER3 = 512,
 	WRF_ALLOWUSER4 = 1024,
+	WRF_ISOFFHAND = 2048,
 };
 
 // Flags for A_SelectWeapon
@@ -844,6 +845,9 @@ enum EButtons
 	BT_USER4		= 1<<24,
 
 	BT_RUN			= 1<<25,
+
+	BT_OFFHANDATTACK    = 1<<26,
+	BT_OFFHANDALTATTACK = 1<<27,
 };
 
 // Flags for GetAngle
@@ -1260,6 +1264,8 @@ enum EWeaponState
 	WF_USER2OK			= 1 << 9,
 	WF_USER3OK			= 1 << 10,
 	WF_USER4OK			= 1 << 11,
+	WF_OFFHANDREADY		= 1 << 12,
+	WF_OFFHANDREADYALT	= 1 << 13,
 };
 
 // these flags are for filtering actor visibility based on certain conditions of the renderer's feature support.

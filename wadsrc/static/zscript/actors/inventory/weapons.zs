@@ -381,6 +381,37 @@ class Weapon : StateProvider
 		return;
 	}
 
+	static void DoOffhandWeaponToFire (PlayerPawn pawn, bool prim, bool alt)
+	{
+		let player = pawn.player;
+		let weapon = player.OffhandWeapon;
+		if (!weapon)
+		{
+			return;
+		}
+
+		// Change player from attack state
+		if (pawn.InStateSequence(pawn.curstate, pawn.MissileState) ||
+			pawn.InStateSequence(pawn.curstate, pawn.MeleeState))
+		{
+			pawn.PlayIdle ();
+		}
+
+		// Play ready sound, if any.
+		let psp = player.GetPSprite(PSP_OFFHANDWEAPON);
+		if (weapon.ReadySound && psp && psp.curState == weapon.FindState('Ready'))
+		{
+			if (!weapon.bReadySndHalf || random[WpnReadySnd]() < 128)
+			{
+				pawn.A_StartSound(weapon.ReadySound, CHAN_WEAPON);
+			}
+		}
+
+		// Prepare for firing action.
+		player.WeaponState |= ((prim ? WF_OFFHANDREADY : 0) | (alt ? WF_OFFHANDREADYALT : 0));
+		return;
+	}
+
 	static void DoReadyWeaponToBob (PlayerInfo player)
 	{
 		if (player.ReadyWeapon)
@@ -412,11 +443,18 @@ class Weapon : StateProvider
 	action void A_WeaponReady(int flags = 0)
 	{
 		if (!player) return;
-														DoReadyWeaponToSwitch(player, !(flags & WRF_NoSwitch));
-		if ((flags & WRF_NoFire) != WRF_NoFire)			DoReadyWeaponToFire(player.mo, !(flags & WRF_NoPrimary), !(flags & WRF_NoSecondary));
-		if (!(flags & WRF_NoBob))						DoReadyWeaponToBob(player);
+		if (flags & WRF_IsOffhand)
+		{
+			if ((flags & WRF_NoFire) != WRF_NoFire) DoOffhandWeaponToFire(player.mo, !(flags & WRF_NoPrimary), !(flags & WRF_NoSecondary));
+		}
+		else
+		{
+			DoReadyWeaponToSwitch(player, !(flags & WRF_NoSwitch));
+			if ((flags & WRF_NoFire) != WRF_NoFire) DoReadyWeaponToFire(player.mo, !(flags & WRF_NoPrimary), !(flags & WRF_NoSecondary));
+			if (!(flags & WRF_NoBob)) DoReadyWeaponToBob(player);
+		}
 
-		player.WeaponState |= GetButtonStateFlags(flags);														
+		player.WeaponState |= GetButtonStateFlags(flags);
 		DoReadyWeaponDisableSwitch(player, flags & WRF_DisableSwitch);
 	}
 

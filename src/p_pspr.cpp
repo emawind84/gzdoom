@@ -76,6 +76,7 @@ enum EWRF_Options
 	WRF_AllowUser2		= 1 << 8,
 	WRF_AllowUser3		= 1 << 9,
 	WRF_AllowUser4		= 1 << 10,
+	WRF_IsOffhand		= 1 << 11,
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -289,6 +290,10 @@ DPSprite *player_t::GetPSprite(PSPLayers layer)
 	{
 		newcaller = mo;
 	}
+	else if (layer == PSP_OFFHANDWEAPON)
+	{
+		newcaller = OffhandWeapon;
+	}
 	else
 	{
 		newcaller = ReadyWeapon;
@@ -457,6 +462,10 @@ void DPSprite::SetState(FState *newstate, bool pending)
 	{ // A_WeaponReady will re-set these as needed
 		Owner->WeaponState &= ~(WF_WEAPONREADY | WF_WEAPONREADYALT | WF_WEAPONBOBBING | WF_WEAPONSWITCHOK | WF_WEAPONRELOADOK | WF_WEAPONZOOMOK |
 								WF_USER1OK | WF_USER2OK | WF_USER3OK | WF_USER4OK);
+	}
+	if (ID == PSP_OFFHANDWEAPON)
+	{
+		Owner->WeaponState &= ~(WF_OFFHANDREADY | WF_OFFHANDREADYALT);
 	}
 
 	processPending = pending;

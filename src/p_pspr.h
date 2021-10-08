@@ -160,6 +160,8 @@ void DoReadyWeaponToBob(AActor *self);
 void DoReadyWeaponToFire(AActor *self, bool primary = true, bool secondary = true);
 void DoReadyWeaponToSwitch(AActor *self, bool switchable = true);
 
+void DoOffhandWeaponToFire(AActor *self, bool primary = true, bool secondary = true);
+
 void A_ReFire(AActor *self, FState *state = NULL);
 
 #endif	// __P_PSPR_H__

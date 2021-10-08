@@ -143,6 +143,8 @@ enum
 	WF_USER2OK			= 1 << 9,
 	WF_USER3OK			= 1 << 10,
 	WF_USER4OK			= 1 << 11,
+	WF_OFFHANDREADY		= 1 << 12,
+	WF_OFFHANDREADYALT	= 1 << 13,
 };
 
 // The VM cannot deal with this as an invalid pointer because it performs a read barrier on every object pointer read.
