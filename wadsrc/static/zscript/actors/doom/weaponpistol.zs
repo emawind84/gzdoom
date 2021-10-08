@@ -57,7 +57,7 @@ extend class StateProvider
 	// This is also used by the shotgun and chaingun
 	//===========================================================================
 	
-	protected action void GunShot(bool accurate, Class<Actor> pufftype, double pitch)
+	protected action void GunShot(bool accurate, Class<Actor> pufftype, double pitch, int laflags = 0)
 	{
 		int damage = 5 * random[GunShot](1, 3);
 		double ang = angle;
@@ -67,7 +67,7 @@ extend class StateProvider
 			ang += Random2[GunShot]() * (5.625 / 256);
 		}
 
-		LineAttack(ang, PLAYERMISSILERANGE, pitch, damage, 'Hitscan', pufftype);
+		LineAttack(ang, PLAYERMISSILERANGE, pitch, damage, 'Hitscan', pufftype, laflags);
 	}
 	
 	//===========================================================================

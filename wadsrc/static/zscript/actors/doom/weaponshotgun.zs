@@ -55,7 +55,7 @@ class Shotgun : DoomWeapon
 extend class StateProvider
 {
 
-	action void A_FireShotgun()
+	action void A_FireShotgun(int flags = 0)
 	{
 		if (player == null)
 		{
@@ -63,7 +63,7 @@ extend class StateProvider
 		}
 
 		A_StartSound ("weapons/shotgf", CHAN_WEAPON);
-		Weapon weap = player.ReadyWeapon;
+		Weapon weap = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
@@ -77,7 +77,7 @@ extend class StateProvider
 
 		for (int i = 0; i < 7; i++)
 		{
-			GunShot (false, "BulletPuff", pitch);
+			GunShot (false, "BulletPuff", pitch, flags);
 		}
 	}
 

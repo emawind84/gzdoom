@@ -360,7 +360,7 @@ class PlayerPawn : Actor
 	//
 	//---------------------------------------------------------------------------
 
-	virtual void FireWeapon (State stat)
+	virtual void FireWeapon (State stat, bool isOffhandWeapon = false)
 	{
 		let player = self.player;
 		
@@ -371,7 +371,7 @@ class PlayerPawn : Actor
 			return;
 		}
 
-		let weapn = player.ReadyWeapon;
+		let weapn = isOffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapn == null || !weapn.CheckAmmo (Weapon.PrimaryFire, true))
 		{
 			return;
@@ -384,7 +384,7 @@ class PlayerPawn : Actor
 		{
 			stat = weapn.GetAtkState(!!player.refire);
 		}
-		player.SetPsprite(PSP_WEAPON, stat);
+		player.SetPsprite(isOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, stat);
 		if (!weapn.bNoAlert)
 		{
 			SoundAlert (self, false);
@@ -397,7 +397,7 @@ class PlayerPawn : Actor
 	//
 	//---------------------------------------------------------------------------
 
-	virtual void FireWeaponAlt (State stat)
+	virtual void FireWeaponAlt (State stat, bool isOffhandWeapon = false)
 	{
 		// [SO] 9/2/02: People were able to do an awful lot of damage
 		// when they were observers...
@@ -406,7 +406,7 @@ class PlayerPawn : Actor
 			return;
 		}
 
-		let weapn = player.ReadyWeapon;
+		let weapn = isOffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapn == null || weapn.FindState('AltFire') == null || !weapn.CheckAmmo (Weapon.AltFire, true))
 		{
 			return;
@@ -421,7 +421,7 @@ class PlayerPawn : Actor
 			stat = weapn.GetAltAtkState(!!player.refire);
 		}
 
-		player.SetPsprite(PSP_WEAPON, stat);
+		player.SetPsprite(isOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, stat);
 		if (!weapn.bNoAlert)
 		{
 			SoundAlert (self, false);
@@ -469,7 +469,7 @@ class PlayerPawn : Actor
 			{
 				player.attackdown = true;
 				console.printf("offhand fire");
-				//FireWeapon (NULL, true);
+				FireWeapon (NULL, true);
 				return;
 			}
 		}
@@ -479,7 +479,7 @@ class PlayerPawn : Actor
 			{
 				player.attackdown = true;
 				console.printf("offhand alt fire");
-				//FireWeaponAlt (NULL, true);
+				FireWeaponAlt (NULL, true);
 				return;
 			}
 		}
