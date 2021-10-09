@@ -195,7 +195,7 @@ class StateProvider : Inventory
 		let player = self.player;
 		if (!player) return null;
 
-		let weapon = player.ReadyWeapon;
+		let weapon = (flags & FPF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
 
 		FTranslatedLineTarget t;
 
@@ -217,7 +217,7 @@ class StateProvider : Inventory
 			// Temporarily adjusts the pitch
 			double saved_player_pitch = self.Pitch;
 			self.Pitch += pitch;
-			let misl = SpawnPlayerMissile (missiletype, shootangle, ofs.X, ofs.Y, spawnheight, t, false, (flags & FPF_NOAUTOAIM) != 0);
+			let misl = SpawnPlayerMissile (missiletype, shootangle, ofs.X, ofs.Y, spawnheight, t, false, (flags & FPF_NOAUTOAIM) != 0, (flags & FPF_ISOFFHAND) ? ALF_ISOFFHAND : 0);
 			self.Pitch = saved_player_pitch;
 
 			// automatic handling of seeker missiles

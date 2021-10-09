@@ -315,6 +315,7 @@ enum EFireCustomMissileFlags
 	FPF_AIMATANGLE = 1,
 	FPF_TRANSFERTRANSLATION = 2,
 	FPF_NOAUTOAIM = 4,
+	FPF_ISOFFHAND = 8,
 };
 
 // Flags for A_Teleport
