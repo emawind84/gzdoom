@@ -2808,7 +2808,7 @@ struct PlayerInfo native play	// self is what internally is known as player_t
 
 	native bool PoisonPlayer(Actor poisoner, Actor source, int poison);
 	native void PoisonDamage(Actor source, int damage, bool playPainSound);
-	native void SetPsprite(int id, State stat, bool pending = false);
+	native void SetPsprite(int id, State stat, bool pending = false, Actor newcaller = null);
 	native void SetSafeFlash(Weapon weap, State flashstate, int index);
 	native PSprite GetPSprite(int id) const;
 	native PSprite FindPSprite(int id) const;

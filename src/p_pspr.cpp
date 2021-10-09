@@ -257,10 +257,10 @@ DEFINE_ACTION_FUNCTION(_PlayerInfo, FindPSprite)	// the underscore is needed to 
 //
 //------------------------------------------------------------------------
 
-void P_SetPsprite(player_t *player, PSPLayers id, FState *state, bool pending)
+void P_SetPsprite(player_t *player, PSPLayers id, FState *state, bool pending, AActor *newcaller)
 {
 	if (player == nullptr) return;
-	auto psp = player->GetPSprite(id);
+	auto psp = player->GetPSprite(id, newcaller);
 	if (psp) psp->SetState(state, pending);
 }
 
@@ -270,16 +270,17 @@ DEFINE_ACTION_FUNCTION(_PlayerInfo, SetPSprite)	// the underscore is needed to g
 	PARAM_INT(id);
 	PARAM_POINTER(state, FState);
 	PARAM_BOOL(pending);
-	P_SetPsprite(self, (PSPLayers)id, state, pending);
+	PARAM_POINTER(newcaller, AActor);
+	P_SetPsprite(self, (PSPLayers)id, state, pending, newcaller);
 	return 0;
 }
 
-DPSprite *player_t::GetPSprite(PSPLayers layer)
+DPSprite *player_t::GetPSprite(PSPLayers layer, AActor *newcaller)
 {
 	AActor *oldcaller = nullptr;
-	AActor *newcaller = nullptr;
 
-	if (layer >= PSP_TARGETCENTER)
+	if (newcaller != nullptr) {}
+	else if (layer >= PSP_TARGETCENTER)
 	{
 		if (mo != nullptr)
 		{
@@ -1230,6 +1231,7 @@ void P_SetupPsprites(player_t *player, bool startweaponup)
 	player->DestroyPSprites();
 
 	// Spawn the ready weapon
+	// TODO add offhand weapon here
 	player->PendingWeapon = !startweaponup ? player->ReadyWeapon : WP_NOCHANGE;
 	P_BringUpWeapon (player);
 }

@@ -69,7 +69,7 @@ extend class StateProvider
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
 				return;
 			
-			player.SetPsprite(PSP_FLASH, weap.FindState('Flash'), true);
+			player.SetPsprite(PSP_FLASH, weap.FindState('Flash'), true, weap);
 		}
 		player.mo.PlayAttacking2 ();
 

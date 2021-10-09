@@ -71,19 +71,19 @@ extend class StateProvider
 	}
 	
 	//===========================================================================
-	action void A_FirePistol()
+	action void A_FirePistol(int flags = 0)
 	{
 		bool accurate;
 
 		if (player != null)
 		{
-			Weapon weap = player.ReadyWeapon;
+			Weapon weap = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
 			if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 			{
 				if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
 					return;
 
-				player.SetPsprite(PSP_FLASH, weap.FindState('Flash'), true);
+				player.SetPsprite(PSP_FLASH, weap.FindState('Flash'), true, weap);
 			}
 			player.mo.PlayAttacking2 ();
 
@@ -95,6 +95,6 @@ extend class StateProvider
 		}
 
 		A_StartSound ("weapons/pistol", CHAN_WEAPON);
-		GunShot (accurate, "BulletPuff", BulletSlope ());
+		GunShot (accurate, "BulletPuff", BulletSlope (), flags);
 	}
 }

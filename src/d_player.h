@@ -432,7 +432,7 @@ public:
 	// Used ONLY for compatibility with the old hardcoded layers.
 	// Make sure that a state is properly set after calling this unless
 	// you are 100% sure the context already implies the layer exists.
-	DPSprite *GetPSprite(PSPLayers layer);
+	DPSprite *GetPSprite(PSPLayers layer, AActor *newcaller = nullptr);
 
 	// [Nash] set player FOV
 	void SetFOV(float fov);
