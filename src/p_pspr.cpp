@@ -1312,13 +1312,13 @@ void P_SetSafeFlash(AActor *weapon, player_t *player, FState *flashstate, int in
 				if (cls->OwnsState(flashstate + index))
 				{
 					// we're ok so set the state
-					P_SetPsprite(player, PSP_FLASH, flashstate + index, true);
+					P_SetPsprite(player, PSP_FLASH, flashstate + index, true, weapon);
 					return;
 				}
 				else
 				{
 					// oh, no! The state is beyond the end of the state table so use the original flash state.
-					P_SetPsprite(player, PSP_FLASH, flashstate, true);
+					P_SetPsprite(player, PSP_FLASH, flashstate, true, weapon);
 					return;
 				}
 			}
@@ -1335,7 +1335,7 @@ void P_SetSafeFlash(AActor *weapon, player_t *player, FState *flashstate, int in
 			index = 0;
 		}
 	}
-	P_SetPsprite(player, PSP_FLASH, flashstate + index, true);
+	P_SetPsprite(player, PSP_FLASH, flashstate + index, true, weapon);
 }
 
 DEFINE_ACTION_FUNCTION(_PlayerInfo, SetSafeFlash)
