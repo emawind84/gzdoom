@@ -348,7 +348,7 @@ class StateProvider : Inventory
 		let player = self.player;
 		if (!player) return;
 
-		let weapon = player.ReadyWeapon;
+		let weapon = (flags & RGF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
 
 		if (useammo && weapon != NULL && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{

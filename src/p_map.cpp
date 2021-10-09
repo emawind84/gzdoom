@@ -5257,6 +5257,7 @@ static ETraceStatus ProcessRailHit(FTraceResults &res, void *userdata)
 void P_RailAttack(FRailParams *p)
 {
 	DVector3 start;
+	DVector3 direction;
 	FTraceResults trace;
 
 	PClassActor *puffclass = p->puff;
@@ -5283,16 +5284,31 @@ void P_RailAttack(FRailParams *p)
 		puffflags |= PF_NORANDOMZ;
 	}
 
-	DVector2 xy = source->Vec2Angle(p->offset_xy, angle - 90.);
+	if (source->player != NULL && source->player->mo->OverrideAttackPosDir)
+	{
+		if (p->flags & RAF_ISOFFHAND)
+		{
+			start = source->player->mo->OffhandPos;
+			direction = source->player->mo->OffhandDir(source, angle, pitch);
+		}
+		else 
+		{
+			start = source->player->mo->AttackPos;
+			direction = source->player->mo->AttackDir(source, angle, pitch);
+		}
+	}
+	else
+	{
+		DVector2 xy = source->Vec2Angle(p->offset_xy, angle - 90.);
+		start = DVector3(xy.X, xy.Y, shootz);
+		direction = vec;
+	}
 
 	RailData rail_data;
 	rail_data.Caller = source;
 	rail_data.limit = p->limit;
 	rail_data.count = 0;
 	rail_data.StopAtOne = !!(p->flags & RAF_NOPIERCE);
-	start.X = xy.X;
-	start.Y = xy.Y;
-	start.Z = shootz;
 
 	int flags;
 
@@ -5333,7 +5349,7 @@ void P_RailAttack(FRailParams *p)
 			rail_data.UseThruBits = !!(thepuff->flags8 & MF8_ALLOWTHRUBITS);
 	}
 
-	Trace(start, source->Sector, vec, p->distance, MF_SHOOTABLE, ML_BLOCKEVERYTHING, source, trace,	flags, ProcessRailHit, &rail_data);
+	Trace(start, source->Sector, direction, p->distance, MF_SHOOTABLE, ML_BLOCKEVERYTHING, source, trace,	flags, ProcessRailHit, &rail_data);
 
 	// Hurt anything the trace hit
 	unsigned int i;

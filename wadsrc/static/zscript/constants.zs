@@ -244,6 +244,7 @@ enum ERailFlags
 	RGF_FULLBRIGHT = 8,
 	RGF_CENTERZ = 16,
 	RGF_NORANDOMPUFFZ = 32,
+	RGF_ISOFFHAND = 64,
 };
 
 // Flags for A_Mushroom
