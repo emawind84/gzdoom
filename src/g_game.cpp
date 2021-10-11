@@ -421,15 +421,20 @@ CCMD (cinemamode)
 
 CCMD (weapnext)
 {
+	int hand = 0;
+	if (argv.argc() > 1)
+	{
+		hand = atoi (argv[1]);
+	}
 	auto mo = players[consoleplayer].mo;
 	if (mo)
 	{
 		// Needs to be redone
 		IFVIRTUALPTRNAME(mo, NAME_PlayerPawn, PickNextWeapon)
 		{
-			VMValue param[] = { mo };
+			VMValue param[] = { mo, hand };
 			VMReturn ret((void**)&SendItemUse);
-			VMCall(func, param, 1, &ret, 1);
+			VMCall(func, param, 2, &ret, 1);
 		}
 	}
 
@@ -440,7 +445,8 @@ CCMD (weapnext)
 		StatusBar->AttachMessage(Create<DHUDMessageFadeOut>(SmallFont, SendItemUse->GetTag(),
 			1.5f, 0.90f, 0, 0, (EColorRange)*nametagcolor, 2.f, 0.35f), MAKE_ID( 'W', 'E', 'P', 'N' ));
 	}
-	if (SendItemUse != players[consoleplayer].ReadyWeapon)
+	auto weapon = hand ? players[consoleplayer].OffhandWeapon : players[consoleplayer].ReadyWeapon;
+	if (SendItemUse != weapon)
 	{
 		S_Sound(CHAN_AUTO, 0, "misc/weaponchange", 1.0, ATTN_NONE);
 	}
@@ -448,15 +454,20 @@ CCMD (weapnext)
 
 CCMD (weapprev)
 {
+	int hand = 0;
+	if (argv.argc() > 1)
+	{
+		hand = atoi (argv[1]);
+	}
 	auto mo = players[consoleplayer].mo;
 	if (mo)
 	{
 		// Needs to be redone
 		IFVIRTUALPTRNAME(mo, NAME_PlayerPawn, PickPrevWeapon)
 		{
-			VMValue param[] = { mo };
+			VMValue param[] = { mo, hand };
 			VMReturn ret((void**)&SendItemUse);
-			VMCall(func, param, 1, &ret, 1);
+			VMCall(func, param, 2, &ret, 1);
 		}
 	}
 
@@ -467,7 +478,8 @@ CCMD (weapprev)
 		StatusBar->AttachMessage(Create<DHUDMessageFadeOut>(SmallFont, SendItemUse->GetTag(),
 			1.5f, 0.90f, 0, 0, (EColorRange)*nametagcolor, 2.f, 0.35f), MAKE_ID( 'W', 'E', 'P', 'N' ));
 	}
-	if (SendItemUse != players[consoleplayer].ReadyWeapon)
+	auto weapon = hand ? players[consoleplayer].OffhandWeapon : players[consoleplayer].ReadyWeapon;
+	if (SendItemUse != weapon)
 	{
 		S_Sound(CHAN_AUTO, 0, "misc/weaponchange", 1.0, ATTN_NONE);
 	}

@@ -577,6 +577,8 @@ OptionMenu "WeaponsControlMenu" protected
 	StaticText ""
 	Control    "$CNTRLMNU_NEXTWEAPON"     , "weapnext"
 	Control    "$CNTRLMNU_PREVIOUSWEAPON" , "weapprev"
+	Control    "$CNTRLMNU_NEXTWEAPON"     , "weapnext 1"
+	Control    "$CNTRLMNU_PREVIOUSWEAPON" , "weapprev 1"
 
 	StaticText ""
 	Control    "$CNTRLMNU_SLOT1"          , "slot 1"

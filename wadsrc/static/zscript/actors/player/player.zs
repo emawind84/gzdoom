@@ -513,7 +513,8 @@ class PlayerPawn : Actor
 		if ((player.PendingWeapon != WP_NOCHANGE || player.health <= 0) &&
 			player.WeaponState & WF_WEAPONSWITCHOK)
 		{
-			DropWeapon();
+			let flags = player.PendingWeapon.bOffhandWeapon ? LAF_ISOFFHAND : 0;
+			DropWeapon(flags);
 		}
 	}
 	
@@ -551,9 +552,11 @@ class PlayerPawn : Actor
 			pspr = pspr.Next;
 		}
 
-		if ((health > 0) || (player.ReadyWeapon != null && !player.ReadyWeapon.bNoDeathInput))
+		if ((health > 0) || 
+			(player.ReadyWeapon != null && !player.ReadyWeapon.bNoDeathInput) ||
+			(player.OffhandWeapon != null && !player.OffhandWeapon.bNoDeathInput))
 		{
-			if (player.ReadyWeapon == null)
+			if (player.ReadyWeapon == null || player.OffhandWeapon == null)
 			{
 				if (player.PendingWeapon != WP_NOCHANGE)
 					player.mo.BringUpWeapon();
@@ -1768,7 +1771,14 @@ class PlayerPawn : Actor
 		}
 
 		player.PendingWeapon = WP_NOCHANGE;
-		player.ReadyWeapon = weapon;
+		if (weapon.bOffhandWeapon)
+		{
+			player.OffhandWeapon = weapon;
+		}
+		else
+		{
+			player.ReadyWeapon = weapon;
+		}
 		player.mo.weaponspecial = 0;
 
 		if (weapon != null)
@@ -1776,12 +1786,13 @@ class PlayerPawn : Actor
 			weapon.PlayUpSound(self);
 			player.refire = 0;
 
-			let psp = player.GetPSprite(PSP_WEAPON);
+			let wlayer = weapon.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON;
+			let psp = player.GetPSprite(wlayer);
 			if (psp) psp.y = player.cheats & CF_INSTANTWEAPSWITCH? WEAPONTOP : WEAPONBOTTOM;
 			// make sure that the previous weapon's flash state is terminated.
 			// When coming here from a weapon drop it may still be active.
 			player.SetPsprite(PSP_FLASH, null);
-			player.SetPsprite(PSP_WEAPON, weapon.GetUpState());
+			player.SetPsprite(wlayer, weapon.GetUpState());
 		}
 	}
 	
@@ -1794,7 +1805,7 @@ class PlayerPawn : Actor
 	//
 	//===========================================================================
 
-	Weapon BestWeapon(Class<Ammo> ammotype)
+	Weapon BestWeapon(Class<Ammo> ammotype, int flags = 0)
 	{
 		Weapon bestMatch = NULL;
 		int bestOrder = int.max;
@@ -1807,6 +1818,12 @@ class PlayerPawn : Actor
 			let weap = Weapon(item);
 			if (weap == null)
 				continue;
+
+			if (weap.bOffhandWeapon && !(flags & LAF_ISOFFHAND) ||
+				!weap.bOffhandWeapon && (flags & LAF_ISOFFHAND))
+			{
+				continue;
+			}
 
 			// Don't select it if it's worse than what was already found.
 			if (weap.SelectionOrder > bestOrder)
@@ -1853,7 +1870,7 @@ class PlayerPawn : Actor
 	//
 	//---------------------------------------------------------------------------
 
-	void DropWeapon ()
+	void DropWeapon (int flags = 0)
 	{
 		let player = self.player;
 		if (player == null)
@@ -1862,10 +1879,10 @@ class PlayerPawn : Actor
 		}
 		// Since the weapon is dropping, stop blocking switching.
 		player.WeaponState &= ~WF_DISABLESWITCH;
-		Weapon weap = player.ReadyWeapon;
+		Weapon weap = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
 		if ((weap != null) && (player.health > 0 || !weap.bNoDeathDeselect))
 		{
-			player.SetPsprite(PSP_WEAPON, weap.GetDownState());
+			player.SetPsprite((flags & LAF_ISOFFHAND) ? PSP_OFFHANDWEAPON : PSP_WEAPON, weap.GetDownState());
 		}
 	}
 	
@@ -1879,16 +1896,17 @@ class PlayerPawn : Actor
 	//
 	//===========================================================================
 
-	Weapon PickNewWeapon(Class<Ammo> ammotype)
+	Weapon PickNewWeapon(Class<Ammo> ammotype, int flags = 0)
 	{
-		Weapon best = BestWeapon (ammotype);
+		Weapon best = BestWeapon (ammotype, flags);
 
 		if (best != NULL)
 		{
 			player.PendingWeapon = best;
-			if (player.ReadyWeapon != NULL)
+			Weapon weapon = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+			if (weapon != NULL)
 			{
-				DropWeapon();
+				DropWeapon(flags);
 			}
 			else if (player.PendingWeapon != WP_NOCHANGE)
 			{
@@ -2226,11 +2244,13 @@ class PlayerPawn : Actor
 	//
 	//===========================================================================
 
-	bool, int, int FindMostRecentWeapon()
+	bool, int, int FindMostRecentWeapon(int hand = 0)
 	{
 		let player = self.player;
-		let ReadyWeapon = player.ReadyWeapon;
-		if (player.PendingWeapon != WP_NOCHANGE)
+		let weapon = hand ? player.OffhandWeapon : player.ReadyWeapon;
+		if (player.PendingWeapon != WP_NOCHANGE &&
+			((player.PendingWeapon.bOffhandWeapon && hand == 1) || 
+			(!player.PendingWeapon.bOffhandWeapon && hand == 0)))
 		{
 			// Workaround for the current inability 
 			bool found;
@@ -2239,19 +2259,19 @@ class PlayerPawn : Actor
 			[found, slot, index] = player.weapons.LocateWeapon(player.PendingWeapon.GetClass());
 			return found, slot, index;
 		}
-		else if (ReadyWeapon != null)
+		else if (weapon != null)
 		{
 			bool found;
 			int slot;
 			int index;
-			[found, slot, index] = player.weapons.LocateWeapon(ReadyWeapon.GetClass());
+			[found, slot, index] = player.weapons.LocateWeapon(weapon.GetClass());
 			if (!found)
 			{
 				// If the current weapon wasn't found and is powered up,
 				// look for its non-powered up version.
-				if (ReadyWeapon.bPOWERED_UP && ReadyWeapon.SisterWeaponType != null)
+				if (weapon.bPOWERED_UP && weapon.SisterWeaponType != null)
 				{
-					[found, slot, index] = player.weapons.LocateWeapon(ReadyWeapon.SisterWeaponType);
+					[found, slot, index] = player.weapons.LocateWeapon(weapon.SisterWeaponType);
 					return found, slot, index;
 				}
 				return false, 0, 0;
@@ -2275,21 +2295,21 @@ class PlayerPawn : Actor
 	//===========================================================================
 	const NUM_WEAPON_SLOTS = 10;
 
-	virtual Weapon PickNextWeapon()
+	virtual Weapon PickNextWeapon(int hand = 0)
 	{
 		let player = self.player;
 		bool found;
 		int startslot, startindex;
 		int slotschecked = 0;
 
-		[found, startslot, startindex] = FindMostRecentWeapon();
-		let ReadyWeapon = player.ReadyWeapon;
-		if (ReadyWeapon == null || found)
+		[found, startslot, startindex] = FindMostRecentWeapon(hand);
+		let weapon = hand ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon == null || found)
 		{
 			int slot;
 			int index;
 
-			if (ReadyWeapon == null)
+			if (weapon == null)
 			{
 				startslot = NUM_WEAPON_SLOTS - 1;
 				startindex = player.weapons.SlotSize(startslot) - 1;
@@ -2310,13 +2330,15 @@ class PlayerPawn : Actor
 				}
 				let type = player.weapons.GetWeapon(slot, index);
 				let weap = Weapon(FindInventory(type));
-				if (weap != null && weap.CheckAmmo(Weapon.EitherFire, false))
+				if (weap != null && weap.CheckAmmo(Weapon.EitherFire, false) &&
+					((weap.bOffhandWeapon && hand == 1) ||
+					(!weap.bOffhandWeapon && hand == 0)))
 				{
 					return weap;
 				}
 			} while ((slot != startslot || index != startindex) && slotschecked <= NUM_WEAPON_SLOTS);
 		}
-		return ReadyWeapon;
+		return weapon;
 	}
 
 	//===========================================================================
@@ -2329,20 +2351,21 @@ class PlayerPawn : Actor
 	//
 	//===========================================================================
 
-	virtual Weapon PickPrevWeapon()
+	virtual Weapon PickPrevWeapon(int hand = 0)
 	{
 		let player = self.player;
 		int startslot, startindex;
 		bool found;
 		int slotschecked = 0;
 
-		[found, startslot, startindex] = FindMostRecentWeapon();
-		if (player.ReadyWeapon == null || found)
+		[found, startslot, startindex] = FindMostRecentWeapon(hand);
+		let weapon = hand ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon == null || found)
 		{
 			int slot;
 			int index;
 
-			if (player.ReadyWeapon == null)
+			if (weapon == null)
 			{
 				startslot = 0;
 				startindex = 0;
@@ -2363,13 +2386,15 @@ class PlayerPawn : Actor
 				}
 				let type = player.weapons.GetWeapon(slot, index);
 				let weap = Weapon(FindInventory(type));
-				if (weap != null && weap.CheckAmmo(Weapon.EitherFire, false))
+				if (weap != null && weap.CheckAmmo(Weapon.EitherFire, false) &&
+					((weap.bOffhandWeapon && hand == 1) ||
+					(!weap.bOffhandWeapon && hand == 0)))
 				{
 					return weap;
 				}
 			} while ((slot != startslot || index != startindex) && slotschecked <= NUM_WEAPON_SLOTS);
 		}
-		return player.ReadyWeapon;
+		return weapon;
 	}
 
 	//============================================================================

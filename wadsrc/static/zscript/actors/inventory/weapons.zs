@@ -80,6 +80,7 @@ class Weapon : StateProvider
 	flagdef NoDeathDeselect: WeaponFlags, 16;	// Don't jump to the Deselect state when the player dies
 	flagdef NoDeathInput: WeaponFlags, 17;		// The weapon cannot be fired/reloaded/whatever when the player is dead
 	flagdef CheatNotWeapon: WeaponFlags, 18;	// Give cheat considers this not a weapon (used by Sigil)
+	flagdef OffhandWeapon: WeaponFlags, 19;		// weapon is an offhand weapon
 
 	// no-op flags
 	flagdef NoLMS: none, 0;
@@ -229,7 +230,7 @@ class Weapon : StateProvider
 		psp.Coord3 = (0,0);
 	}
 
-	action void A_Lower(int lowerspeed = 6)
+	action void A_Lower(int lowerspeed = 6, int flags  = 0)
 	{
 		let player = player;
 
@@ -237,12 +238,13 @@ class Weapon : StateProvider
 		{
 			return;
 		}
-		if (null == player.ReadyWeapon)
+		let weapon = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+		if (null == weapon)
 		{
 			player.mo.BringUpWeapon();
 			return;
 		}
-		let psp = player.GetPSprite(PSP_WEAPON);
+		let psp = player.GetPSprite((flags & LAF_ISOFFHAND) ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 		if (!psp) return;
 		if (player.morphTics || player.cheats & CF_INSTANTWEAPSWITCH)
 		{
@@ -262,7 +264,7 @@ class Weapon : StateProvider
 		{ // Player is dead, so don't bring up a pending weapon
 			// Player is dead, so keep the weapon off screen
 			player.SetPsprite(PSP_FLASH, null);
-			psp.SetState(player.ReadyWeapon.FindState('DeadLowered'));
+			psp.SetState(weapon.FindState('DeadLowered'));
 			return;
 		}
 		// [RH] Clear the flash state. Only needed for Strife.
@@ -277,7 +279,7 @@ class Weapon : StateProvider
 	//
 	//---------------------------------------------------------------------------
 
-	action void A_Raise(int raisespeed = 6)
+	action void A_Raise(int raisespeed = 6, int flags = 0)
 	{
 		let player = player;
 
@@ -287,14 +289,15 @@ class Weapon : StateProvider
 		}
 		if (player.PendingWeapon != WP_NOCHANGE)
 		{
-			player.mo.DropWeapon();
+			player.mo.DropWeapon(flags);
 			return;
 		}
-		if (player.ReadyWeapon == null)
+		let weapon = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon == null)
 		{
 			return;
 		}
-		let psp = player.GetPSprite(PSP_WEAPON);
+		let psp = player.GetPSprite((flags & LAF_ISOFFHAND) ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 		if (!psp) return;
 
 		if (psp.y <= WEAPONBOTTOM)
@@ -308,7 +311,7 @@ class Weapon : StateProvider
 		}
 		psp.y = WEAPONTOP;
 		
-		psp.SetState(player.ReadyWeapon.GetReadyState());
+		psp.SetState(weapon.GetReadyState());
 		return;
 	}
 
@@ -971,7 +974,7 @@ class Weapon : StateProvider
 			bool gotSome = CheckAmmo (PrimaryFire, false) || CheckAmmo (AltFire, false);
 			if (!gotSome && autoSwitch)
 			{
-				PlayerPawn(Owner).PickNewWeapon (null);
+				PlayerPawn(Owner).PickNewWeapon (null, bOffhandWeapon ? LAF_ISOFFHAND : 0);
 			}
 			return gotSome;
 		}
@@ -1019,7 +1022,7 @@ class Weapon : StateProvider
 		// out of ammo, pick a weapon to change to
 		if (autoSwitch)
 		{
-			PlayerPawn(Owner).PickNewWeapon (null);
+			PlayerPawn(Owner).PickNewWeapon (null, bOffhandWeapon ? LAF_ISOFFHAND : 0);
 		}
 		return false;
 	}
