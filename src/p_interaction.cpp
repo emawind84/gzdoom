@@ -606,10 +606,22 @@ void AActor::Die (AActor *source, AActor *inflictor, int dmgflags, FName MeansOf
 		flags &= ~MF_SOLID;
 		player->playerstate = PST_DEAD;
 
-		IFVM(PlayerPawn, DropWeapon)
+		// drop ready weapon
 		{
-			VMValue param = player->mo;
-			VMCall(func, &param, 1, nullptr, 0);
+			IFVM(PlayerPawn, DropWeapon)
+			{
+				VMValue param[] = { player->mo, 0 };
+				VMCall(func, param, 2, nullptr, 0);
+			}
+		}
+
+		// drop offhand weapon
+		{
+			IFVM(PlayerPawn, DropWeapon)
+			{
+				VMValue param[] = { player->mo, 1 };
+				VMCall(func, param, 2, nullptr, 0);
+			}
 		}
 
 		if (this == players[consoleplayer].camera && automapactive)

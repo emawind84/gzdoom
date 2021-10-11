@@ -289,7 +289,7 @@ class Weapon : StateProvider
 		}
 		if (player.PendingWeapon != WP_NOCHANGE)
 		{
-			player.mo.DropWeapon(flags);
+			player.mo.DropWeapon((flags & LAF_ISOFFHAND) ? 1 : 0);
 			return;
 		}
 		let weapon = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;

@@ -513,8 +513,7 @@ class PlayerPawn : Actor
 		if ((player.PendingWeapon != WP_NOCHANGE || player.health <= 0) &&
 			player.WeaponState & WF_WEAPONSWITCHOK)
 		{
-			let flags = player.PendingWeapon.bOffhandWeapon ? LAF_ISOFFHAND : 0;
-			DropWeapon(flags);
+			DropWeapon(player.PendingWeapon.bOffhandWeapon ? 1 : 0);
 		}
 	}
 	
@@ -1870,7 +1869,7 @@ class PlayerPawn : Actor
 	//
 	//---------------------------------------------------------------------------
 
-	void DropWeapon (int flags = 0)
+	void DropWeapon (int hand = 0)
 	{
 		let player = self.player;
 		if (player == null)
@@ -1879,10 +1878,10 @@ class PlayerPawn : Actor
 		}
 		// Since the weapon is dropping, stop blocking switching.
 		player.WeaponState &= ~WF_DISABLESWITCH;
-		Weapon weap = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+		Weapon weap = !!hand ? player.OffhandWeapon : player.ReadyWeapon;
 		if ((weap != null) && (player.health > 0 || !weap.bNoDeathDeselect))
 		{
-			player.SetPsprite((flags & LAF_ISOFFHAND) ? PSP_OFFHANDWEAPON : PSP_WEAPON, weap.GetDownState());
+			player.SetPsprite(!!hand ? PSP_OFFHANDWEAPON : PSP_WEAPON, weap.GetDownState());
 		}
 	}
 	
@@ -1906,7 +1905,7 @@ class PlayerPawn : Actor
 			Weapon weapon = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
 			if (weapon != NULL)
 			{
-				DropWeapon(flags);
+				DropWeapon((flags & LAF_ISOFFHAND) ? 1 : 0);
 			}
 			else if (player.PendingWeapon != WP_NOCHANGE)
 			{
@@ -2179,25 +2178,25 @@ class PlayerPawn : Actor
 	//
 	//===========================================================================
 
-	virtual Weapon PickWeapon(int slot, bool checkammo)
+	virtual Weapon PickWeapon(int slot, bool checkammo, int hand = 0)
 	{
 		int i, j;
 
 		let player = self.player;
 		int Size = player.weapons.SlotSize(slot);
+		let cur_weapon = (hand & 0) ? player.ReadyWeapon : player.OffhandWeapon;
 		// Does this slot even have any weapons?
 		if (Size == 0)
 		{
-			return player.ReadyWeapon;
+			return cur_weapon;
 		}
-		let ReadyWeapon = player.ReadyWeapon;
-		if (ReadyWeapon != null)
+		if (cur_weapon != null)
 		{
 			for (i = 0; i < Size; i++)
 			{
 				let weapontype = player.weapons.GetWeapon(slot, i);
-				if (weapontype == ReadyWeapon.GetClass() ||
-					(ReadyWeapon.bPOWERED_UP && ReadyWeapon.SisterWeapon != null && ReadyWeapon.SisterWeapon.GetClass() == weapontype))
+				if (weapontype == cur_weapon.GetClass() ||
+					(cur_weapon.bPOWERED_UP && cur_weapon.SisterWeapon != null && cur_weapon.SisterWeapon.GetClass() == weapontype))
 				{
 					for (j = (i == 0 ? Size - 1 : i - 1);
 						j != i;
@@ -2224,13 +2223,15 @@ class PlayerPawn : Actor
 
 			if (weap != null)
 			{
-				if (!checkammo || weap.CheckAmmo(Weapon.EitherFire, false))
+				if (!checkammo || weap.CheckAmmo(Weapon.EitherFire, false) &&
+					((weap.bOffhandWeapon && hand == 1) ||
+					(!weap.bOffhandWeapon && hand == 0)))
 				{
 					return weap;
 				}
 			}
 		}
-		return ReadyWeapon;
+		return cur_weapon;
 	}
 
 	//===========================================================================
