@@ -288,9 +288,9 @@ namespace s3d
         GLRenderer->mScreenViewport.height = sceneHeight;
     }
 
-    void OculusQuestMode::AdjustPlayerSprites(bool isOffhandSprite) const
+    void OculusQuestMode::AdjustPlayerSprites(int hand) const
     {
-        GetWeaponTransform(&gl_RenderState.mModelMatrix, isOffhandSprite);
+        GetWeaponTransform(&gl_RenderState.mModelMatrix, hand);
 
         float scale = 0.000625f * vr_weaponScale;
         gl_RenderState.mModelMatrix.scale(scale, -scale, scale);
@@ -357,10 +357,10 @@ namespace s3d
         return false;
     }
 
-    bool OculusQuestMode::GetWeaponTransform(VSMatrix* out, bool isOffhandWeapon) const
+    bool OculusQuestMode::GetWeaponTransform(VSMatrix* out, int hand_weapon) const
     {
         bool oculusquest_rightHanded = vr_control_scheme < 10;
-        int hand = isOffhandWeapon ? 1 - oculusquest_rightHanded : oculusquest_rightHanded;
+        int hand = hand_weapon ? 1 - oculusquest_rightHanded : oculusquest_rightHanded;
         if (GetHandTransform(hand, out))
         {
             if (!hand)
@@ -388,10 +388,10 @@ namespace s3d
 
 
     //Fishbiter's Function.. Thank-you!!
-    static DVector3 MapWeaponDir(AActor* actor, DAngle yaw, DAngle pitch, bool isOffhandWeapon = false)
+    static DVector3 MapWeaponDir(AActor* actor, DAngle yaw, DAngle pitch, int hand = 0)
     {
         LSMatrix44 mat;
-        if (!s3d::Stereo3DMode::getCurrentMode().GetWeaponTransform(&mat, isOffhandWeapon))
+        if (!s3d::Stereo3DMode::getCurrentMode().GetWeaponTransform(&mat, hand))
         {
             double pc = pitch.Cos();
 
@@ -420,12 +420,12 @@ namespace s3d
 
     static DVector3 MapAttackDir(AActor* actor, DAngle yaw, DAngle pitch)
     {
-        return MapWeaponDir(actor, yaw, pitch, false);
+        return MapWeaponDir(actor, yaw, pitch, 0);
     }
 
     static DVector3 MapOffhandDir(AActor* actor, DAngle yaw, DAngle pitch)
     {
-        return MapWeaponDir(actor, yaw, pitch, true);
+        return MapWeaponDir(actor, yaw, pitch, 1);
     }
 
     bool OculusQuestMode::GetTeleportLocation(DVector3 &out) const

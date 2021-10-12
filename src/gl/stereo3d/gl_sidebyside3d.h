@@ -82,7 +82,7 @@ class SideBySideFull : public SideBySideBase
 public:
 	static const SideBySideFull& getInstance(float ipd);
 	SideBySideFull(double ipdMeters);
-	virtual void AdjustPlayerSprites(bool isOffhandSprite) const override;
+	virtual void AdjustPlayerSprites(int hand = 0) const override;
 private:
 	SBSFLeftEyePose leftEye;
 	SBSFRightEyePose rightEye;

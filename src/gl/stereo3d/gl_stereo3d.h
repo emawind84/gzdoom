@@ -86,7 +86,7 @@ public:
 
 	virtual bool IsMono() const { return false; }
 	virtual void AdjustViewports() const {};
-	virtual void AdjustPlayerSprites(bool isOffhandSprite) const {};
+	virtual void AdjustPlayerSprites(int hand = 0) const {};
 	virtual void UnAdjustPlayerSprites() const {};
 	virtual void AdjustCrossHair() const {}
 	virtual void UnAdjustCrossHair() const {}
@@ -94,7 +94,7 @@ public:
 	virtual void Present() const = 0;
 
 	virtual bool GetHandTransform(int hand, VSMatrix* out) const { return false; }
-	virtual bool GetWeaponTransform(VSMatrix* out, bool isOffhandWeapon) const { return false; }
+	virtual bool GetWeaponTransform(VSMatrix* out, int hand = 0) const { return false; }
 	virtual bool RenderPlayerSpritesCrossed() const { return false; }
 	virtual bool RenderPlayerSpritesInScene() const { return false; }
 	virtual bool GetTeleportLocation(DVector3 &out) const { return false; }

@@ -419,18 +419,19 @@ class StateProvider : Inventory
 			&& !player.OffhandWeapon.bAltFire && !pending && player.health > 0)
 		{
 			player.refire++;
-			player.mo.FireWeapon(ResolveState(flash), true);
+			player.mo.FireWeapon(ResolveState(flash), 1);
 		}
 		else if ((player.cmd.buttons & BT_OFFHANDALTATTACK)
 			&& player.OffhandWeapon.bAltFire && !pending && player.health > 0)
 		{
 			player.refire++;
-			player.mo.FireWeaponAlt(ResolveState(flash), true);
+			player.mo.FireWeaponAlt(ResolveState(flash), 1);
 		}
 		else
 		{
 			player.refire = 0;
-			player.OffhandWeapon.CheckAmmo (player.OffhandWeapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
+			if (player.OffhandWeapon != null)
+				player.OffhandWeapon.CheckAmmo (player.OffhandWeapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
 			player.ReadyWeapon.CheckAmmo (player.ReadyWeapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
 		}
 	}

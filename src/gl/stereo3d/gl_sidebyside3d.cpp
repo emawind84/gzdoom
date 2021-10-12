@@ -99,7 +99,7 @@ SideBySideFull::SideBySideFull(double ipdMeters)
 }
 
 /* virtual */
-void SideBySideFull::AdjustPlayerSprites(bool isOffhandSprite) const /* override */ 
+void SideBySideFull::AdjustPlayerSprites(int hand) const /* override */ 
 {
 	// Show weapon at double width, so it would appear normal width after rescaling
 	int w = GLRenderer->mScreenViewport.width;

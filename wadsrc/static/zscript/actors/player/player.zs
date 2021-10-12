@@ -360,7 +360,7 @@ class PlayerPawn : Actor
 	//
 	//---------------------------------------------------------------------------
 
-	virtual void FireWeapon (State stat, bool isOffhandWeapon = false)
+	virtual void FireWeapon (State stat, int hand = 0)
 	{
 		let player = self.player;
 		
@@ -371,7 +371,7 @@ class PlayerPawn : Actor
 			return;
 		}
 
-		let weapn = isOffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		let weapn = hand ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapn == null || !weapn.CheckAmmo (Weapon.PrimaryFire, true))
 		{
 			return;
@@ -384,7 +384,7 @@ class PlayerPawn : Actor
 		{
 			stat = weapn.GetAtkState(!!player.refire);
 		}
-		player.SetPsprite(isOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, stat);
+		player.SetPsprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON, stat);
 		if (!weapn.bNoAlert)
 		{
 			SoundAlert (self, false);
@@ -397,7 +397,7 @@ class PlayerPawn : Actor
 	//
 	//---------------------------------------------------------------------------
 
-	virtual void FireWeaponAlt (State stat, bool isOffhandWeapon = false)
+	virtual void FireWeaponAlt (State stat, int hand = 0)
 	{
 		// [SO] 9/2/02: People were able to do an awful lot of damage
 		// when they were observers...
@@ -406,7 +406,7 @@ class PlayerPawn : Actor
 			return;
 		}
 
-		let weapn = isOffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		let weapn = hand ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapn == null || weapn.FindState('AltFire') == null || !weapn.CheckAmmo (Weapon.AltFire, true))
 		{
 			return;
@@ -421,7 +421,7 @@ class PlayerPawn : Actor
 			stat = weapn.GetAltAtkState(!!player.refire);
 		}
 
-		player.SetPsprite(isOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, stat);
+		player.SetPsprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON, stat);
 		if (!weapn.bNoAlert)
 		{
 			SoundAlert (self, false);
@@ -468,8 +468,7 @@ class PlayerPawn : Actor
 			if (!player.attackdown || !offhand_weapon.bNoAutofire)
 			{
 				player.attackdown = true;
-				console.printf("offhand fire");
-				FireWeapon (NULL, true);
+				FireWeapon (NULL, 1);
 				return;
 			}
 		}
@@ -478,8 +477,7 @@ class PlayerPawn : Actor
 			if (!player.attackdown || !offhand_weapon.bNoAutofire)
 			{
 				player.attackdown = true;
-				console.printf("offhand alt fire");
-				FireWeaponAlt (NULL, true);
+				FireWeaponAlt (NULL, 1);
 				return;
 			}
 		}
@@ -537,10 +535,6 @@ class PlayerPawn : Actor
 				(pspr.Caller is "Inventory" && Inventory(pspr.Caller).Owner != pspr.Owner.mo) ||
 				(pspr.Caller is "Weapon" && (pspr.Caller != pspr.Owner.ReadyWeapon && pspr.Caller != pspr.Owner.OffhandWeapon))))
 			{
-				// if (pspr.Caller is "Inventory" && Inventory(pspr.Caller).Owner != pspr.Owner.mo)
-				// {
-				// 	console.printf("###444");
-				// }
 				pspr.Destroy();
 			}
 			else
@@ -555,7 +549,7 @@ class PlayerPawn : Actor
 			(player.ReadyWeapon != null && !player.ReadyWeapon.bNoDeathInput) ||
 			(player.OffhandWeapon != null && !player.OffhandWeapon.bNoDeathInput))
 		{
-			if (player.ReadyWeapon == null || player.OffhandWeapon == null)
+			if (player.ReadyWeapon == null)
 			{
 				if (player.PendingWeapon != WP_NOCHANGE)
 					player.mo.BringUpWeapon();
@@ -1770,7 +1764,7 @@ class PlayerPawn : Actor
 		}
 
 		player.PendingWeapon = WP_NOCHANGE;
-		if (weapon.bOffhandWeapon)
+		if (weapon != null && weapon.bOffhandWeapon)
 		{
 			player.OffhandWeapon = weapon;
 		}
