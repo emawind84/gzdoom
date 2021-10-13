@@ -350,6 +350,11 @@ CCMD (slot)
 	if (argv.argc() > 1)
 	{
 		int slot = atoi (argv[1]);
+		int hand = 0;
+		if (argv.argc() > 2)
+		{
+			hand = atoi(argv[2]);
+		}
 
 		auto mo = players[consoleplayer].mo;
 		if (slot < NUM_WEAPON_SLOTS && mo)
@@ -357,15 +362,16 @@ CCMD (slot)
 			// Needs to be redone
 			IFVIRTUALPTRNAME(mo, NAME_PlayerPawn, PickWeapon)
 			{
-				VMValue param[] = { mo, slot, !(dmflags2 & DF2_DONTCHECKAMMO) };
+				VMValue param[] = { mo, slot, !(dmflags2 & DF2_DONTCHECKAMMO), hand };
 				VMReturn ret((void**)&SendItemUse);
-				VMCall(func, param, 3, &ret, 1);
+				VMCall(func, param, 4, &ret, 1);
 			}
 		}
 
 		// [Nash] Option to display the name of the weapon being switched to.
 		if ((paused || pauseext) || players[consoleplayer].playerstate != PST_LIVE) return;
-		if (SendItemUse != players[consoleplayer].ReadyWeapon && (displaynametags & 2) && StatusBar && SmallFont && SendItemUse)
+		auto weapon = hand ? players[consoleplayer].OffhandWeapon : players[consoleplayer].ReadyWeapon;
+		if (SendItemUse != weapon && (displaynametags & 2) && StatusBar && SmallFont && SendItemUse)
 		{
 			StatusBar->AttachMessage(Create<DHUDMessageFadeOut>(SmallFont, SendItemUse->GetTag(),
 				1.5f, 0.90f, 0, 0, (EColorRange)*nametagcolor, 2.f, 0.35f), MAKE_ID('W', 'E', 'P', 'N'));

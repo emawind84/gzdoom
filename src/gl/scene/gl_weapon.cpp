@@ -92,8 +92,6 @@ void GLSceneDrawer::DrawPSprite (player_t * player,DPSprite *psp, float sx, floa
 		}
 	}
 
-	s3d::Stereo3DMode::getCurrentMode().AdjustPlayerSprites(psp->GetCaller() == player->OffhandWeapon);
-
 	// decide which patch to use
 	bool mirror;
 	FTextureID lump = sprites[psp->GetSprite()].GetSpriteFrame(psp->GetFrame(), 0, 0., &mirror);
@@ -333,8 +331,6 @@ void GLSceneDrawer::DrawPSprite (player_t * player,DPSprite *psp, float sx, floa
 	}
 
 	gl_RenderState.AlphaFunc(GL_GEQUAL, 0.5f);
-
-	s3d::Stereo3DMode::getCurrentMode().UnAdjustPlayerSprites();
 }
 
 //==========================================================================
@@ -669,8 +665,16 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector, bool hudModelStep)
 				sy += wy;
 			}
 
+			FSpriteModelFrame *smf = FindModelFrame(psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetFrame(), false);
+			hudModelStep = smf != nullptr;
+			
+			if (!hudModelStep)
+				s3d::Stereo3DMode::getCurrentMode().AdjustPlayerSprites(psp->GetCaller() == player->OffhandWeapon);
 
 			DrawPSprite(player, psp, sx, sy, hudModelStep, OverrideShader, !!(RenderStyle.Flags & STYLEF_RedIsAlpha), r_viewpoint.TicFrac);
+
+			if (!hudModelStep)
+				s3d::Stereo3DMode::getCurrentMode().UnAdjustPlayerSprites();
 		}
 	}
 
@@ -680,10 +684,6 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector, bool hudModelStep)
 	gl_RenderState.EnableBrightmap(false);
 	glset.lightmode = oldlightmode;
 
-	if (!hudModelStep)
-	{
-		s3d::Stereo3DMode::getCurrentMode().UnAdjustPlayerSprites();
-	}
 }
 
 //==========================================================================
