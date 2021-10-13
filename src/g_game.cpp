@@ -567,7 +567,12 @@ CCMD (invdrop)
 
 CCMD (weapdrop)
 {
-	SendItemDrop = players[consoleplayer].ReadyWeapon;
+	int hand = 0;
+	if (argv.argc() > 1)
+	{
+		hand = atoi(argv[1]) ? 1 : 0;
+	}
+	SendItemDrop = hand ? players[consoleplayer].OffhandWeapon : players[consoleplayer].ReadyWeapon;
 	SendItemDropAmount = -1;
 }
 

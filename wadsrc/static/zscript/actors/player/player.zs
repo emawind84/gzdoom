@@ -342,14 +342,25 @@ class PlayerPawn : Actor
 	void CheckWeaponSwitch(Class<Ammo> ammotype)
 	{
 		let player = self.player;
-		if (!player.GetNeverSwitch() &&	player.PendingWeapon == WP_NOCHANGE && 
-			(player.ReadyWeapon == NULL || player.ReadyWeapon.bWimpy_Weapon))
+		if (!player.GetNeverSwitch() &&	player.PendingWeapon == WP_NOCHANGE)
 		{
-			let best = BestWeapon (ammotype);
-			if (best != NULL && (player.ReadyWeapon == NULL ||
-				best.SelectionOrder < player.ReadyWeapon.SelectionOrder))
+			if (player.ReadyWeapon == NULL || player.ReadyWeapon.bWimpy_Weapon)
 			{
-				player.PendingWeapon = best;
+				let best = BestWeapon (ammotype);
+				if (best != NULL && (player.ReadyWeapon == NULL ||
+					best.SelectionOrder < player.ReadyWeapon.SelectionOrder))
+				{
+					player.PendingWeapon = best;
+				}
+			}
+			else if (player.OffhandWeapon == NULL || player.OffhandWeapon.bWimpy_Weapon)
+			{
+				let best = BestWeapon (ammotype, 1);
+				if (best != NULL && (player.OffhandWeapon == NULL ||
+					best.SelectionOrder < player.OffhandWeapon.SelectionOrder))
+				{
+					player.PendingWeapon = best;
+				}
 			}
 		}
 	}
@@ -975,7 +986,7 @@ class PlayerPawn : Actor
 		DestroyAllInventory();
 		ObtainInventory (oldplayer);
 
-		player.ReadyWeapon = NULL;
+		player.ReadyWeapon = player.OffhandWeapon = NULL;
 		PickNewWeapon (NULL);
 	}
 
@@ -1726,7 +1737,6 @@ class PlayerPawn : Actor
 		{
 			if (player.ReadyWeapon != null)
 			{
-				console.printf("###222");
 				let psp = player.GetPSprite(PSP_WEAPON);
 				if (psp) 
 				{
@@ -1738,7 +1748,6 @@ class PlayerPawn : Actor
 
 			if (player.OffhandWeapon != null)
 			{
-				console.printf("###333");
 				let psp = player.GetPSprite(PSP_OFFHANDWEAPON);
 				if (psp) 
 				{
@@ -1798,7 +1807,7 @@ class PlayerPawn : Actor
 	//
 	//===========================================================================
 
-	Weapon BestWeapon(Class<Ammo> ammotype, int flags = 0)
+	Weapon BestWeapon(Class<Ammo> ammotype, int hand = 0)
 	{
 		Weapon bestMatch = NULL;
 		int bestOrder = int.max;
@@ -1812,8 +1821,8 @@ class PlayerPawn : Actor
 			if (weap == null)
 				continue;
 
-			if (weap.bOffhandWeapon && !(flags & LAF_ISOFFHAND) ||
-				!weap.bOffhandWeapon && (flags & LAF_ISOFFHAND))
+			if (weap.bOffhandWeapon && hand == 0 ||
+				!weap.bOffhandWeapon && hand == 1)
 			{
 				continue;
 			}
@@ -1889,17 +1898,17 @@ class PlayerPawn : Actor
 	//
 	//===========================================================================
 
-	Weapon PickNewWeapon(Class<Ammo> ammotype, int flags = 0)
+	Weapon PickNewWeapon(Class<Ammo> ammotype, int hand = 0)
 	{
-		Weapon best = BestWeapon (ammotype, flags);
+		Weapon best = BestWeapon (ammotype, hand);
 
 		if (best != NULL)
 		{
 			player.PendingWeapon = best;
-			Weapon weapon = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+			Weapon weapon = hand ? player.OffhandWeapon : player.ReadyWeapon;
 			if (weapon != NULL)
 			{
-				DropWeapon((flags & LAF_ISOFFHAND) ? 1 : 0);
+				DropWeapon(hand);
 			}
 			else if (player.PendingWeapon != WP_NOCHANGE)
 			{

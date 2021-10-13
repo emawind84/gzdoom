@@ -620,6 +620,7 @@ OptionMenu "InventoryControlsMenu" protected
 
 	StaticText ""
 	Control    "$CNTRLMNU_DROPWEAPON"   , "weapdrop"
+	Control    "$CNTRLMNU_DROPOFFHANDWEAPON"   , "weapdrop 1"
 }
 
 OptionMenu "OtherControlsMenu" protected

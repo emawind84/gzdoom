@@ -1823,6 +1823,7 @@ CNTRLMNU_PREVIOUSITEM			= "Previous item";
 CNTRLMNU_DROPITEM				= "Drop item";
 CNTRLMNU_QUERYITEM				= "Query item";
 CNTRLMNU_DROPWEAPON				= "Drop weapon";
+CNTRLMNU_DROPOFFHANDWEAPON		= "Drop offhand weapon";
 CNTRLMNU_OTHER					= "Other";
 CNTRLMNU_AUTOMAP				= "Toggle automap";
 CNTRLMNU_CHASECAM				= "Chasecam";

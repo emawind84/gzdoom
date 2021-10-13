@@ -431,7 +431,9 @@ class StateProvider : Inventory
 		{
 			player.refire = 0;
 			if (player.OffhandWeapon != null)
+			{
 				player.OffhandWeapon.CheckAmmo (player.OffhandWeapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
+			}
 			player.ReadyWeapon.CheckAmmo (player.ReadyWeapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
 		}
 	}

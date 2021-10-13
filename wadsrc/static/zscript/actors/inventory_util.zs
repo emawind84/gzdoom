@@ -68,7 +68,7 @@ extend class Actor
 		if (type == null || !(type is 'Inventory')) return false;
 
 		Weapon savedPendingWeap = player != NULL ? player.PendingWeapon : NULL;
-		bool hadweap = player != NULL ? player.ReadyWeapon != NULL : true;
+		bool hadweap = player != NULL ? (player.ReadyWeapon != NULL || player.OffhandWeapon != NULL) : true;
 
 		Inventory item;
 		if (!givecheat)

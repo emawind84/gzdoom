@@ -188,6 +188,13 @@ extend class PlayerPawn
 				player.ReadyWeapon = NULL;
 				player.refire = 0;
 			}
+			if (item == player.OffhandWeapon)
+			{
+				// If the current weapon is removed, clear the refire counter and pick a new one.
+				pickWeap = true;
+				player.OffhandWeapon = NULL;
+				player.refire = 0;
+			}
 		}
 		Super.RemoveInventory (item);
 		if (pickWeap && player.mo == self && player.PendingWeapon == WP_NOCHANGE)

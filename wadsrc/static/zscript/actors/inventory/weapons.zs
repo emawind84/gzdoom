@@ -974,7 +974,7 @@ class Weapon : StateProvider
 			bool gotSome = CheckAmmo (PrimaryFire, false) || CheckAmmo (AltFire, false);
 			if (!gotSome && autoSwitch)
 			{
-				PlayerPawn(Owner).PickNewWeapon (null, bOffhandWeapon ? LAF_ISOFFHAND : 0);
+				PlayerPawn(Owner).PickNewWeapon (null, bOffhandWeapon);
 			}
 			return gotSome;
 		}
@@ -1022,7 +1022,7 @@ class Weapon : StateProvider
 		// out of ammo, pick a weapon to change to
 		if (autoSwitch)
 		{
-			PlayerPawn(Owner).PickNewWeapon (null, bOffhandWeapon ? LAF_ISOFFHAND : 0);
+			PlayerPawn(Owner).PickNewWeapon (null, bOffhandWeapon);
 		}
 		return false;
 	}
