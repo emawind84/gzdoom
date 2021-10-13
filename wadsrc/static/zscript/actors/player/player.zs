@@ -560,12 +560,12 @@ class PlayerPawn : Actor
 			(player.ReadyWeapon != null && !player.ReadyWeapon.bNoDeathInput) ||
 			(player.OffhandWeapon != null && !player.OffhandWeapon.bNoDeathInput))
 		{
-			if (player.ReadyWeapon == null)
+			if (player.ReadyWeapon == null || player.OffhandWeapon == null)
 			{
 				if (player.PendingWeapon != WP_NOCHANGE)
 					player.mo.BringUpWeapon();
 			}
-			else
+			
 			{
 				CheckWeaponChange();
 				if (player.WeaponState & (WF_WEAPONREADY | WF_WEAPONREADYALT | WF_OFFHANDREADY | WF_OFFHANDREADYALT))
