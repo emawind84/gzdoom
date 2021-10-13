@@ -396,6 +396,7 @@ class Inventory : Actor
 
 	virtual bool HandlePickup (Inventory item)
 	{
+		console.printf("HandlePickup %s", item.GetClassName());
 		if (item.GetClass() == GetClass())
 		{
 			if (Amount < MaxAmount || (sv_unlimited_pickup && !item.ShouldStay()))
@@ -447,6 +448,7 @@ class Inventory : Actor
 
 	virtual protected bool TryPickup (in out Actor toucher)
 	{
+		console.printf("TryPickup %s", toucher.GetClassName());
 		Actor newtoucher = toucher; // in case changed by the powerup
 
 		// If HandlePickup() returns true, it will set the IF_PICKUPGOOD flag
@@ -558,6 +560,7 @@ class Inventory : Actor
 	
 	virtual bool CanPickup(Actor toucher)
 	{
+		console.printf("CanPickup %s", toucher.GetClassName());
 		if (toucher == null) return false;
 
 		int rsize = RestrictedToPlayerClass.Size();
@@ -591,6 +594,7 @@ class Inventory : Actor
 
 	bool, Actor CallTryPickup(Actor toucher)
 	{
+		console.printf("CallTryPickup %s", toucher.GetClassName());
 		let saved_toucher = toucher;
 		let Invstack = Inv; // A pointer of the inventories item stack.
 
@@ -651,6 +655,7 @@ class Inventory : Actor
 
 	virtual bool ShouldStay ()
 	{
+		console.printf("ShouldStay");
 		return false;
 	}
 
@@ -673,6 +678,7 @@ class Inventory : Actor
 
 	virtual void AttachToOwner (Actor other)
 	{
+		console.printf("AttachToOwner %s", other.GetClassName());
 		BecomeItem ();
 		other.AddInventory (self);
 	}

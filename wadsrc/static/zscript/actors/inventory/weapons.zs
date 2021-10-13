@@ -509,6 +509,7 @@ class Weapon : StateProvider
 
 	override bool TryPickup (in out Actor toucher)
 	{
+		console.printf("weapon.TryPickup %s", toucher.GetClassName());
 		State ReadyState = FindState('Ready');
 		if (ReadyState != NULL && ReadyState.ValidateSpriteFrame())
 		{
@@ -527,6 +528,7 @@ class Weapon : StateProvider
 
 	override bool Use (bool pickup)
 	{
+		console.printf("weapon.Use %s", pickup ? "pickup" : "");
 		Weapon useweap = self;
 
 		// Powered up weapons cannot be used directly.
@@ -581,6 +583,7 @@ class Weapon : StateProvider
 
 	override bool HandlePickup (Inventory item)
 	{
+		console.printf("weapon.HandlePickup %s", item.GetClassName());
 		if (item.GetClass() == GetClass())
 		{
 			if (Weapon(item).PickupForAmmo (self))
@@ -606,6 +609,7 @@ class Weapon : StateProvider
 
 	protected bool PickupForAmmo (Weapon ownedWeapon)
 	{
+		console.printf("weapon.PickupForAmmo %s", ownedWeapon.GetClassName());
 		bool gotstuff = false;
 
 		// Don't take ammo if the weapon sticks around.
@@ -643,6 +647,7 @@ class Weapon : StateProvider
 
 	override Inventory CreateCopy (Actor other)
 	{
+		console.printf("weapon.CreateCopy %s", other.GetClassName());
 		let copy = Weapon(Super.CreateCopy (other));
 		if (copy != self && copy != null)
 		{
@@ -663,6 +668,7 @@ class Weapon : StateProvider
 
 	override Inventory CreateTossable (int amt)
 	{
+		console.printf("weapon.CreateTossable amt=%d", amt);
 		// Only drop the weapon that is meant to be placed in a level. That is,
 		// only drop the weapon that normally gives you ammo.
 		if (SisterWeapon != NULL && 
@@ -696,6 +702,7 @@ class Weapon : StateProvider
 
 	override void AttachToOwner (Actor other)
 	{
+		console.printf("weapon.AttachToOwner %s", other.GetClassName());
 		Super.AttachToOwner (other);
 
 		Ammo1 = AddAmmo (Owner, AmmoType1, AmmoGive1);
@@ -705,6 +712,7 @@ class Weapon : StateProvider
 		{
 			if (!Owner.player.GetNeverSwitch() && !bNo_Auto_Switch)
 			{
+				console.printf("Owner.player.PendingWeapon = self");
 				Owner.player.PendingWeapon = self;
 			}
 			if (Owner.player.mo == players[consoleplayer].camera)

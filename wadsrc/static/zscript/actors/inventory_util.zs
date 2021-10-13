@@ -30,6 +30,7 @@ extend class Actor
 
 	virtual void AddInventory (Inventory item)
 	{
+		console.printf("AddInventory %s", item.GetClassName());
 		// Check if it's already attached to an actor
 		if (item.Owner != NULL)
 		{
@@ -61,6 +62,7 @@ extend class Actor
 
 	bool GiveInventory(Class<Inventory> type, int amount, bool givecheat = false)
 	{
+		console.printf("GiveInventory %s", type.GetClassName());
 		bool result = true;
 		let player = self.player;
 
@@ -256,6 +258,7 @@ extend class Actor
 
 	virtual bool UseInventory (Inventory item)
 	{
+		console.printf("UseInventory %s", item.GetClassName());
 		// No using items if you're dead or you don't have them.
 		if (health <= 0 || item.Amount <= 0 || item.bDestroyed)
 		{

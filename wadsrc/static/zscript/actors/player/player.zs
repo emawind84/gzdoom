@@ -1724,6 +1724,7 @@ class PlayerPawn : Actor
 
 		if (weapon != null)
 		{
+			console.printf("### bringupweap %s", weapon.GetClassName());
 			weapon.PlayUpSound(self);
 			player.refire = 0;
 
@@ -1832,6 +1833,7 @@ class PlayerPawn : Actor
 
 	Weapon PickNewWeapon(Class<Ammo> ammotype)
 	{
+		console.printf("PickNewWeapon");
 		Weapon best = BestWeapon (ammotype);
 
 		if (best != NULL)
@@ -1839,10 +1841,12 @@ class PlayerPawn : Actor
 			player.PendingWeapon = best;
 			if (player.ReadyWeapon != NULL)
 			{
+				console.printf("# DropWeapon");
 				DropWeapon();
 			}
 			else if (player.PendingWeapon != WP_NOCHANGE)
 			{
+				console.printf("# BringUpWeapon");
 				BringUpWeapon ();
 			}
 		}
