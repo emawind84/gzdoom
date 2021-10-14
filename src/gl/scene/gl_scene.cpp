@@ -511,7 +511,7 @@ void GLSceneDrawer::DrawScene(int drawmode, sector_t * viewsector)
 
 	if (s3d::Stereo3DMode::getCurrentMode().RenderPlayerSpritesInScene())
 	{
-		DrawPlayerSprites(viewsector, IsHUDModelForPlayerAvailable(players[consoleplayer].camera->player));
+		DrawPlayerSprites(viewsector);
 	}
 
 	if (applySSAO && gl_RenderState.GetPassType() == GBUFFER_PASS)
@@ -676,17 +676,17 @@ void GLSceneDrawer::EndDrawScene(sector_t * viewsector)
 {
 	gl_RenderState.EnableFog(false);
 
-	const bool renderHUDModel = IsHUDModelForPlayerAvailable(players[consoleplayer].camera->player);
 	if (!s3d::Stereo3DMode::getCurrentMode().RenderPlayerSpritesInScene())
 	{
 		// [BB] HUD models need to be rendered here. Make sure that
 		// DrawPlayerSprites is only called once. Either to draw
 		// HUD models or to draw the weapon sprites.
-		if (renderHUDModel)
+		const bool renderHUDModel = IsHUDModelForPlayerAvailable(players[consoleplayer].camera->player);
+		if ( renderHUDModel )
 		{
 			// [BB] The HUD model should be drawn over everything else already drawn.
 			glClear(GL_DEPTH_BUFFER_BIT);
-			DrawPlayerSprites(viewsector, true);
+			DrawPlayerSprites(viewsector);
 		}
 	}
 
@@ -713,14 +713,15 @@ void GLSceneDrawer::EndDrawScene(sector_t * viewsector)
 
 void GLSceneDrawer::DrawEndScene2D(sector_t * viewsector)
 {
-	const bool renderHUDModel = IsHUDModelForPlayerAvailable(players[consoleplayer].camera->player);
 
 	if (!s3d::Stereo3DMode::getCurrentMode().RenderPlayerSpritesInScene())
 	{
+		const bool renderHUDModel = IsHUDModelForPlayerAvailable(players[consoleplayer].camera->player);
+
 		// [BB] Only draw the sprites if we didn't render a HUD model before.
 		if (renderHUDModel == false)
 		{
-			DrawPlayerSprites(viewsector, false);
+			DrawPlayerSprites(viewsector);
 		}
 	}
 	

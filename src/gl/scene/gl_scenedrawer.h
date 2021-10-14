@@ -69,7 +69,7 @@ public:
 	void WriteSavePic(player_t *player, FileWriter *file, int width, int height);
 
 	void DrawPSprite(player_t * player, DPSprite *psp, float sx, float sy, bool hudModelStep, int OverrideShader, bool alphatexture, double ticfrac);
-	void DrawPlayerSprites(sector_t * viewsector, bool hudModelStep);
+	void DrawPlayerSprites(sector_t * viewsector);
 	void DrawTargeterSprites();
 
 	void InitClipper(angle_t a1, angle_t a2)

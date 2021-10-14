@@ -82,14 +82,11 @@ void GLSceneDrawer::DrawPSprite (player_t * player,DPSprite *psp, float sx, floa
 	float			scalex;
 	float			ftexturemid;
 	
-	if (psp->GetCaller() != nullptr)
+	// [BB] In the HUD model step we just render the model and break out. 
+	if ( hudModelStep )
 	{
-		FSpriteModelFrame *smf = FindModelFrame(psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetFrame(), false);
-		if (smf != nullptr)
-		{
-			gl_RenderHUDModel(psp, sx, sy);
-			return;
-		}
+		gl_RenderHUDModel(psp, sx, sy);
+		return;
 	}
 
 	// decide which patch to use
@@ -395,7 +392,7 @@ void GLSceneDrawer::SetupWeaponLight()
 //
 //==========================================================================
 
-void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector, bool hudModelStep)
+void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector)
 {
 	bool brightflash = false;
 	unsigned int i;
@@ -665,25 +662,19 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector, bool hudModelStep)
 				sy += wy;
 			}
 
+
 			FSpriteModelFrame *smf = FindModelFrame(psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetFrame(), false);
-			hudModelStep = smf != nullptr;
-			
-			if (!hudModelStep)
-				s3d::Stereo3DMode::getCurrentMode().AdjustPlayerSprites(psp->GetCaller() == player->OffhandWeapon);
-
+			bool hudModelStep = smf != nullptr;
+			if (!hudModelStep) s3d::Stereo3DMode::getCurrentMode().AdjustPlayerSprites(psp->GetCaller() == player->OffhandWeapon);
 			DrawPSprite(player, psp, sx, sy, hudModelStep, OverrideShader, !!(RenderStyle.Flags & STYLEF_RedIsAlpha), r_viewpoint.TicFrac);
-
-			if (!hudModelStep)
-				s3d::Stereo3DMode::getCurrentMode().UnAdjustPlayerSprites();
+			if (!hudModelStep) s3d::Stereo3DMode::getCurrentMode().UnAdjustPlayerSprites();
 		}
 	}
-
 	gl_RenderState.SetObjectColor(0xffffffff);
 	gl_RenderState.SetAddColor(0);
 	gl_RenderState.SetDynLight(0, 0, 0);
 	gl_RenderState.EnableBrightmap(false);
 	glset.lightmode = oldlightmode;
-
 }
 
 //==========================================================================
