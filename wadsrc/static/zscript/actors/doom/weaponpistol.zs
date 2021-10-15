@@ -57,7 +57,7 @@ extend class StateProvider
 	// This is also used by the shotgun and chaingun
 	//===========================================================================
 	
-	protected action void GunShot(bool accurate, Class<Actor> pufftype, double pitch, int laflags = 0)
+	protected action void GunShot(bool accurate, Class<Actor> pufftype, double pitch)
 	{
 		int damage = 5 * random[GunShot](1, 3);
 		double ang = angle;
@@ -66,18 +66,18 @@ extend class StateProvider
 		{
 			ang += Random2[GunShot]() * (5.625 / 256);
 		}
-
+		int laflags = invoker == player.OffhandWeapon ? LAF_ISOFFHAND : 0;
 		LineAttack(ang, PLAYERMISSILERANGE, pitch, damage, 'Hitscan', pufftype, laflags);
 	}
 	
 	//===========================================================================
-	action void A_FirePistol(int flags = 0)
+	action void A_FirePistol()
 	{
 		bool accurate;
 
 		if (player != null)
 		{
-			Weapon weap = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+			Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 			if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 			{
 				if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
@@ -95,6 +95,6 @@ extend class StateProvider
 		}
 
 		A_StartSound ("weapons/pistol", CHAN_WEAPON);
-		GunShot (accurate, "BulletPuff", BulletSlope (), flags);
+		GunShot (accurate, "BulletPuff", BulletSlope ());
 	}
 }

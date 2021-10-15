@@ -50,14 +50,14 @@ class Chaingun : DoomWeapon
 
 extend class StateProvider
 {
-	action void A_FireCGun(int flags = 0)
+	action void A_FireCGun()
 	{
 		if (player == null)
 		{
 			return;
 		}
 
-		Weapon weap = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
@@ -70,7 +70,7 @@ extend class StateProvider
 			{
 				// Removed most of the mess that was here in the C++ code because SetSafeFlash already does some thorough validation.
 				State atk = weap.FindState('Fire');
-				let psp = player.GetPSprite((flags & LAF_ISOFFHAND) ? PSP_OFFHANDWEAPON : PSP_WEAPON);
+				let psp = player.GetPSprite(weap.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 				if (psp) 
 				{
 					State cur = psp.CurState;
@@ -81,6 +81,6 @@ extend class StateProvider
 		}
 		player.mo.PlayAttacking2 ();
 
-		GunShot (!player.refire, "BulletPuff", BulletSlope (), flags);
+		GunShot (!player.refire, "BulletPuff", BulletSlope ());
 	}
 }

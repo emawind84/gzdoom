@@ -195,7 +195,11 @@ class StateProvider : Inventory
 		let player = self.player;
 		if (!player) return null;
 
-		let weapon = (flags & FPF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon && weapon.bOffhandWeapon)
+		{
+			flags |= FPF_ISOFFHAND;
+		}
 
 		FTranslatedLineTarget t;
 
@@ -348,7 +352,11 @@ class StateProvider : Inventory
 		let player = self.player;
 		if (!player) return;
 
-		let weapon = (flags & RGF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon != null && weapon.bOffhandWeapon)
+		{
+			flags |= RGF_ISOFFHAND;
+		}
 
 		if (useammo && weapon != NULL && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{

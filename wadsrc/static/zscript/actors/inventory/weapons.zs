@@ -230,7 +230,7 @@ class Weapon : StateProvider
 		psp.Coord3 = (0,0);
 	}
 
-	action void A_Lower(int lowerspeed = 6, int flags  = 0)
+	action void A_Lower(int lowerspeed = 6)
 	{
 		let player = player;
 
@@ -238,13 +238,13 @@ class Weapon : StateProvider
 		{
 			return;
 		}
-		let weapon = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (null == weapon)
 		{
 			player.mo.BringUpWeapon();
 			return;
 		}
-		let psp = player.GetPSprite((flags & LAF_ISOFFHAND) ? PSP_OFFHANDWEAPON : PSP_WEAPON);
+		let psp = player.GetPSprite(weapon.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 		if (!psp) return;
 		if (player.morphTics || player.cheats & CF_INSTANTWEAPSWITCH)
 		{
@@ -279,7 +279,7 @@ class Weapon : StateProvider
 	//
 	//---------------------------------------------------------------------------
 
-	action void A_Raise(int raisespeed = 6, int flags = 0)
+	action void A_Raise(int raisespeed = 6)
 	{
 		let player = player;
 
@@ -287,17 +287,17 @@ class Weapon : StateProvider
 		{
 			return;
 		}
-		if (player.PendingWeapon != WP_NOCHANGE)
-		{
-			player.mo.DropWeapon((flags & LAF_ISOFFHAND) ? 1 : 0);
-			return;
-		}
-		let weapon = (flags & LAF_ISOFFHAND) ? player.OffhandWeapon : player.ReadyWeapon;
+		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon == null)
 		{
 			return;
 		}
-		let psp = player.GetPSprite((flags & LAF_ISOFFHAND) ? PSP_OFFHANDWEAPON : PSP_WEAPON);
+		if (player.PendingWeapon != WP_NOCHANGE)
+		{
+			player.mo.DropWeapon(weapon.bOffhandWeapon);
+			return;
+		}
+		let psp = player.GetPSprite(weapon.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 		if (!psp) return;
 
 		if (psp.y <= WEAPONBOTTOM)
@@ -353,10 +353,10 @@ class Weapon : StateProvider
 		}
 	}
 
-	static void DoReadyWeaponToFire (PlayerPawn pawn, bool prim, bool alt)
+	static void DoReadyWeaponToFire (PlayerPawn pawn, bool prim, bool alt, int hand = 0)
 	{
 		let player = pawn.player;
-		let weapon = player.ReadyWeapon;
+		let weapon = hand ? player.OffhandWeapon : player.ReadyWeapon;
 		if (!weapon)
 		{
 			return;
@@ -370,7 +370,7 @@ class Weapon : StateProvider
 		}
 
 		// Play ready sound, if any.
-		let psp = player.GetPSprite(PSP_WEAPON);
+		let psp = player.GetPSprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 		if (weapon.ReadySound && psp && psp.curState == weapon.FindState('Ready'))
 		{
 			if (!weapon.bReadySndHalf || random[WpnReadySnd]() < 128)
@@ -380,48 +380,20 @@ class Weapon : StateProvider
 		}
 
 		// Prepare for firing action.
-		player.WeaponState |= ((prim ? WF_WEAPONREADY : 0) | (alt ? WF_WEAPONREADYALT : 0));
+		int prim_state = hand ? WF_OFFHANDREADY : WF_WEAPONREADY;
+		int alt_state = hand ? WF_OFFHANDREADYALT : WF_WEAPONREADYALT;
+		player.WeaponState |= ((prim ? prim_state : 0) | (alt ? alt_state : 0));
 		return;
 	}
 
-	static void DoOffhandWeaponToFire (PlayerPawn pawn, bool prim, bool alt)
+	static void DoReadyWeaponToBob (PlayerInfo player, int hand = 0)
 	{
-		let player = pawn.player;
-		let weapon = player.OffhandWeapon;
-		if (!weapon)
-		{
-			return;
-		}
-
-		// Change player from attack state
-		if (pawn.InStateSequence(pawn.curstate, pawn.MissileState) ||
-			pawn.InStateSequence(pawn.curstate, pawn.MeleeState))
-		{
-			pawn.PlayIdle ();
-		}
-
-		// Play ready sound, if any.
-		let psp = player.GetPSprite(PSP_OFFHANDWEAPON);
-		if (weapon.ReadySound && psp && psp.curState == weapon.FindState('Ready'))
-		{
-			if (!weapon.bReadySndHalf || random[WpnReadySnd]() < 128)
-			{
-				pawn.A_StartSound(weapon.ReadySound, CHAN_WEAPON);
-			}
-		}
-
-		// Prepare for firing action.
-		player.WeaponState |= ((prim ? WF_OFFHANDREADY : 0) | (alt ? WF_OFFHANDREADYALT : 0));
-		return;
-	}
-
-	static void DoReadyWeaponToBob (PlayerInfo player)
-	{
-		if (player.ReadyWeapon)
+		let weap = hand ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weap)
 		{
 			// Prepare for bobbing action.
 			player.WeaponState |= WF_WEAPONBOBBING;
-			let pspr = player.GetPSprite(PSP_WEAPON);
+			let pspr = player.GetPSprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 			if (pspr)
 			{
 				pspr.x = 0;
@@ -446,18 +418,12 @@ class Weapon : StateProvider
 	action void A_WeaponReady(int flags = 0)
 	{
 		if (!player) return;
-		if (flags & WRF_IsOffhand)
-		{
-			if ((flags & WRF_NoFire) != WRF_NoFire) DoOffhandWeaponToFire(player.mo, !(flags & WRF_NoPrimary), !(flags & WRF_NoSecondary));
-		}
-		else
-		{
-			DoReadyWeaponToSwitch(player, !(flags & WRF_NoSwitch));
-			if ((flags & WRF_NoFire) != WRF_NoFire) DoReadyWeaponToFire(player.mo, !(flags & WRF_NoPrimary), !(flags & WRF_NoSecondary));
-			if (!(flags & WRF_NoBob)) DoReadyWeaponToBob(player);
-		}
+		int hand = invoker == player.OffhandWeapon ? 1 : 0;
+														DoReadyWeaponToSwitch(player, !(flags & WRF_NoSwitch));
+		if ((flags & WRF_NoFire) != WRF_NoFire)			DoReadyWeaponToFire(player.mo, !(flags & WRF_NoPrimary), !(flags & WRF_NoSecondary), hand);
+		if (!(flags & WRF_NoBob))						DoReadyWeaponToBob(player, hand);
 
-		player.WeaponState |= GetButtonStateFlags(flags);
+		player.WeaponState |= GetButtonStateFlags(flags);														
 		DoReadyWeaponDisableSwitch(player, flags & WRF_DisableSwitch);
 	}
 
