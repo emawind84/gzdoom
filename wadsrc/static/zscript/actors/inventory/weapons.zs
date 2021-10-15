@@ -438,9 +438,11 @@ class Weapon : StateProvider
 	action void A_CheckReload()
 	{
 		let player = self.player;
-		if (player != NULL)
+		if (!player) return;
+		let weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weap != NULL)
 		{
-			player.ReadyWeapon.CheckAmmo (player.ReadyWeapon.bAltFire ? Weapon.AltFire : Weapon.PrimaryFire, true);
+			weap.CheckAmmo (weap.bAltFire ? Weapon.AltFire : Weapon.PrimaryFire, true);
 		}
 	}
 		

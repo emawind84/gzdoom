@@ -580,6 +580,8 @@ OptionMenu "WeaponsControlMenu" protected
 	Control    "$CNTRLMNU_PREVIOUSWEAPON" , "weapprev"
 	Control    "$CNTRLMNU_OFFHAND_NEXTWEAPON"     , "weapnext 1"
 	Control    "$CNTRLMNU_OFFHAND_PREVIOUSWEAPON" , "weapprev 1"
+	Control    "$CNTRLMNU_SWITCH_TO_OFFHAND", "switchhand 1"
+	Control    "$CNTRLMNU_SWITCH_TO_MAINHAND", "switchhand 0"
 
 	StaticText ""
 	Control    "$CNTRLMNU_SLOT1"          , "slot 1"

@@ -442,7 +442,10 @@ class StateProvider : Inventory
 			{
 				player.OffhandWeapon.CheckAmmo (player.OffhandWeapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
 			}
-			player.ReadyWeapon.CheckAmmo (player.ReadyWeapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
+			if (player.ReadyWeapon != null)
+			{
+				player.ReadyWeapon.CheckAmmo (player.ReadyWeapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
+			}
 		}
 	}
 	
