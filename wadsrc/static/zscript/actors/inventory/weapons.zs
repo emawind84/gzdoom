@@ -458,7 +458,8 @@ class Weapon : StateProvider
         if (recoil.GetBool())
         {
         	let player = self.player;
-            if (player != NULL && player.ReadyWeapon != NULL)
+			let weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+            if (player != NULL && weap != NULL)
             {
                 zoom = 1 / clamp(zoom, 0.1, 50.0);
                 if (flags & 1)
@@ -469,7 +470,7 @@ class Weapon : StateProvider
                 { // Disable pitch/yaw scaling.
                     zoom = -zoom;
                 }
-                player.ReadyWeapon.FOVScale = zoom;
+                weap.FOVScale = zoom;
             }
         }
 	}
@@ -553,9 +554,13 @@ class Weapon : StateProvider
 		{
 			useweap = SisterWeapon;
 		}
-		if (Owner.player != NULL && Owner.player.ReadyWeapon != useweap)
+		if (Owner.player != NULL)
 		{
-			Owner.player.PendingWeapon = useweap;
+			if ((useweap.bOffhandWeapon && Owner.player.OffhandWeapon != useweap) ||
+				(!useweap.bOffhandWeapon && Owner.player.ReadyWeapon != useweap))
+			{
+				Owner.player.PendingWeapon = useweap;
+			}
 		}
 		// Return false so that the weapon is not removed from the inventory.
 		return false;

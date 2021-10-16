@@ -147,6 +147,10 @@ class PlayerPawn : Actor
 			{
 				player.ReadyWeapon.EndPowerup ();
 			}
+			if (player.OffhandWeapon != NULL && player.OffhandWeapon.bPowered_Up)
+			{
+				player.OffhandWeapon.EndPowerup ();
+			}
 			if (player.PendingWeapon != NULL && player.PendingWeapon != WP_NOCHANGE &&
 				player.PendingWeapon.bPowered_Up &&
 				player.PendingWeapon.SisterWeapon != NULL)

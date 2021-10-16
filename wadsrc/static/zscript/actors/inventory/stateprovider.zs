@@ -83,9 +83,10 @@ class StateProvider : Inventory
 		if (!player) return;
 
 		let pawn = PlayerPawn(self);
-		let weapon = player.ReadyWeapon;
+		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 
 		int i;
+		int hand = 0;
 		double bangle;
 		double bslope = 0.;
 		int laflags = (flags & FBF_NORANDOMPUFFZ)? LAF_NORANDOMPUFFZ : 0;
@@ -107,6 +108,8 @@ class StateProvider : Inventory
 
 		if (weapon != NULL)
 		{
+			hand = weapon.bOffhandWeapon ? 1 : 0;
+			laflags |= hand ? LAF_ISOFFHAND : 0;
 			A_StartSound(weapon.AttackSound, CHAN_WEAPON);
 		}
 
@@ -124,7 +127,7 @@ class StateProvider : Inventory
 				bool temp = false;
 				double ang = Angle - 90;
 				Vector2 ofs = AngleToVector(ang, Spawnofs_xy);
-				Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight);
+				Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight, null, false, false, hand ? ALF_ISOFFHAND : 0);
 				if (proj)
 				{
 					if (!puff)
@@ -168,7 +171,7 @@ class StateProvider : Inventory
 					bool temp = false;
 					double ang = Angle - 90;
 					Vector2 ofs = AngleToVector(ang, Spawnofs_xy);
-					Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight);
+					Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight, null, false, false, hand ? ALF_ISOFFHAND : 0);
 					if (proj)
 					{
 						if (!puff)

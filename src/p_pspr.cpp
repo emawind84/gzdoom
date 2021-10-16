@@ -1231,9 +1231,18 @@ void P_SetupPsprites(player_t *player, bool startweaponup)
 	player->DestroyPSprites();
 
 	// Spawn the ready weapon
-	// TODO add offhand weapon here
-	player->PendingWeapon = !startweaponup ? player->ReadyWeapon : WP_NOCHANGE;
-	P_BringUpWeapon (player);
+	if (player->ReadyWeapon != nullptr)
+	{
+		player->PendingWeapon = !startweaponup ? player->ReadyWeapon : WP_NOCHANGE;
+		P_BringUpWeapon (player);
+	}
+
+	// Spawn the offhand weapon
+	if (player->OffhandWeapon != nullptr)
+	{
+		player->PendingWeapon = !startweaponup ? player->OffhandWeapon : WP_NOCHANGE;
+		P_BringUpWeapon (player);
+	}
 }
 
 //------------------------------------------------------------------------

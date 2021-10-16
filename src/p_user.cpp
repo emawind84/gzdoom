@@ -754,6 +754,11 @@ bool player_t::Resurrect()
 		PendingWeapon = ReadyWeapon;
 		P_BringUpWeapon(this);
 	}
+	if (OffhandWeapon != nullptr)
+	{
+		PendingWeapon = OffhandWeapon;
+		P_BringUpWeapon(this);
+	}
 
 	if (morphTics)
 	{

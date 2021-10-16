@@ -69,15 +69,17 @@ extend class StateProvider
 		{
 			return;
 		}
+		int hand = 0;
 
 		A_StartSound ("weapons/sshotf", CHAN_WEAPON);
-		Weapon weap = player.ReadyWeapon;
+		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
+			hand = weap.bOffhandWeapon ? 1 : 0;
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 2))
 				return;
 			
-			player.SetPsprite(PSP_FLASH, weap.FindState('Flash'), true);
+			player.SetPsprite(PSP_FLASH, weap.FindState('Flash'), true, weap);
 		}
 		player.mo.PlayAttacking2 ();
 
@@ -94,7 +96,7 @@ extend class StateProvider
 			// some simple trigonometry, that means the vertical angle of the shot
 			// can deviate by as many as ~7.097 degrees.
 
-			LineAttack (ang, PLAYERMISSILERANGE, pitch + Random2[FireSG2]() * (7.097 / 256), damage, 'Hitscan', "BulletPuff");
+			LineAttack (ang, PLAYERMISSILERANGE, pitch + Random2[FireSG2]() * (7.097 / 256), damage, 'Hitscan', "BulletPuff", hand ? LAF_ISOFFHAND : 0);
 		}
 	}
 

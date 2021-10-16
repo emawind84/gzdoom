@@ -794,7 +794,8 @@ extend class Actor
 
 		if (weaponitem != NULL)
 		{
-			if (player.ReadyWeapon != weaponitem)
+			if ((!weaponitem.bOffhandWeapon && player.ReadyWeapon != weaponitem) ||
+				(weaponitem.bOffhandWeapon && player.OffhandWeapon != weaponitem))
 			{
 				player.PendingWeapon = weaponitem;
 			}
