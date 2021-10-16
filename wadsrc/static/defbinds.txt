@@ -41,8 +41,10 @@ t messagemode
 f12 spynext
 mwheeldown weapnext
 mwheelup weapprev
-axis5plus "weapnext 1"
-axis5minus "weapprev 1"
+axis8plus "weapprev 1"
+axis8minus "weapnext 1"
+joy6 "switchhand 0"
+joy8 "switchhand 1"
 
 // Originally just for Heretic, Hexen, and Strife.
 // I can't see why they shouldn't be for Doom or Chex either.

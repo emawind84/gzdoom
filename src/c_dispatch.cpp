@@ -223,7 +223,6 @@ bool ParsingKeyConf, UnsafeExecutionContext;
 
 FActionMap ActionMaps[] =
 {
-	{ &Button_OH_AltAttack,	0x00ce2870, "oh_altatk" },
 	{ &Button_AM_PanLeft,	0x0d52d67b, "am_panleft"},
 	{ &Button_User2,		0x125f5226, "user2" },
 	{ &Button_Jump,			0x1eefa611, "jump" },
@@ -249,6 +248,7 @@ FActionMap ActionMaps[] =
 	{ &Button_Mlook,		0xa2b62d8b, "mlook" },
 	{ &Button_Crouch,		0xab2c3e71, "crouch" },
 	{ &Button_Left,			0xb000b483, "left" },
+	{ &Button_OH_AltAttack,	0xb418e099, "oh_altatk" },
 	{ &Button_LookUp,		0xb62b1e49, "lookup" },
 	{ &Button_User3,		0xb6f8fe92, "user3" },
 	{ &Button_Strafe,		0xb7e6a54b, "strafe" },
