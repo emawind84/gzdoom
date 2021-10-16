@@ -544,7 +544,9 @@ class PlayerPawn : Actor
 			// or if it's from an inventory item that the player no longer owns. 
 			if ((pspr.Caller == null ||
 				(pspr.Caller is "Inventory" && Inventory(pspr.Caller).Owner != pspr.Owner.mo) ||
-				(pspr.Caller is "Weapon" && (pspr.Caller != pspr.Owner.ReadyWeapon && pspr.Caller != pspr.Owner.OffhandWeapon))))
+				(pspr.Caller is "Weapon" && (pspr.Caller != pspr.Owner.ReadyWeapon && pspr.Caller != pspr.Owner.OffhandWeapon))) ||
+				(pspr.ID == PSP_WEAPON && pspr.Caller != pspr.Owner.ReadyWeapon) ||
+				(pspr.ID == PSP_OFFHANDWEAPON && pspr.Caller != pspr.Owner.OffhandWeapon))
 			{
 				pspr.Destroy();
 			}
@@ -2098,11 +2100,17 @@ class PlayerPawn : Actor
 			}
 			item = next;
 		}
-		let ReadyWeapon = p.ReadyWeapon;
-		if (ReadyWeapon != NULL && ReadyWeapon.bPOWERED_UP && p.PendingWeapon == ReadyWeapon.SisterWeapon)
+		let weap = p.ReadyWeapon;
+		if (weap != NULL && weap.bPOWERED_UP && p.PendingWeapon == weap.SisterWeapon)
 		{
 			// Unselect powered up weapons if the unpowered counterpart is pending
 			p.ReadyWeapon = p.PendingWeapon;
+		}
+		weap = p.OffhandWeapon;
+		if (weap != NULL && weap.bPOWERED_UP && p.PendingWeapon == weap.SisterWeapon)
+		{
+			// Unselect powered up weapons if the unpowered counterpart is pending
+			p.OffhandWeapon = p.PendingWeapon;
 		}
 		// reset invisibility to default
 		me.RestoreRenderStyle();
