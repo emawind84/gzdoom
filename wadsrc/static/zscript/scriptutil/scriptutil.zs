@@ -124,7 +124,7 @@ class ScriptUtil play
 
 			if(item != NULL)
 			{
-				if(activator.player.ReadyWeapon == item)
+				if(activator.player.ReadyWeapon == item || activator.player.OffhandWeapon == item)
 				{
 					// The weapon is already selected, so setweapon succeeds by default,
 					// but make sure the player isn't switching away from it.

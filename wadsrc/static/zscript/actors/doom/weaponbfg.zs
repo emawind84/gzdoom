@@ -70,18 +70,20 @@ extend class StateProvider
 
 	action void A_FireBFG()
 	{
+		int hand = 0;
 		if (player == null)
 		{
 			return;
 		}
-		Weapon weap = player.ReadyWeapon;
+		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
+			hand = weap.bOffhandWeapon ? 1 : 0;
 			if (!weap.DepleteAmmo (weap.bAltFire, true, deh.BFGCells))
 				return;
 		}
 
-		SpawnPlayerMissile("BFGBall", angle, nofreeaim:sv_nobfgaim);
+		SpawnPlayerMissile("BFGBall", angle, nofreeaim:sv_nobfgaim, aimflags:hand ? ALF_ISOFFHAND : 0);
 	}
 
 
@@ -97,16 +99,17 @@ extend class StateProvider
 	action void A_FireOldBFG()
 	{
 		bool doesautoaim = false;
-
+		int hand = 0;
 		if (player == null)
 		{
 			return;
 		}
-		Weapon weap = player.ReadyWeapon;
+		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 
 		if (invoker != weap || stateinfo == null || stateinfo.mStateType != STATE_Psprite) weap = null;
 		if (weap != null)
 		{
+			hand = weap.bOffhandWeapon ? 1 : 0;
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
 				return;
 
@@ -122,7 +125,7 @@ extend class StateProvider
 		{
 			angle += random[OldBFG](-64, 63) * (90./768);
 			pitch += random[OldBFG](-64, 63) * (90./640);
-			SpawnPlayerMissile (i == 0? (class<Actor>)("PlasmaBall1") : (class<Actor>)("PlasmaBall2"));
+			SpawnPlayerMissile (i == 0? (class<Actor>)("PlasmaBall1") : (class<Actor>)("PlasmaBall2"), aimflags:hand ? ALF_ISOFFHAND : 0);
 			// Restore saved values
 			angle = SavedPlayerAngle;
 			pitch = SavedPlayerPitch;

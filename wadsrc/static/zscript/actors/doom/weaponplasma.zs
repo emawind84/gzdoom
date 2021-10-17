@@ -146,6 +146,6 @@ extend class StateProvider
 			
 		}
 		
-		SpawnPlayerMissile ("PlasmaBall", 1e37, 0, 0, 0, null, false, false, hand ? ALF_ISOFFHAND : 0);
+		SpawnPlayerMissile ("PlasmaBall", aimflags:hand ? ALF_ISOFFHAND : 0);
 	}
 }

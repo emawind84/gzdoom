@@ -127,7 +127,7 @@ class StateProvider : Inventory
 				bool temp = false;
 				double ang = Angle - 90;
 				Vector2 ofs = AngleToVector(ang, Spawnofs_xy);
-				Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight, null, false, false, hand ? ALF_ISOFFHAND : 0);
+				Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight, aimflags:hand ? ALF_ISOFFHAND : 0);
 				if (proj)
 				{
 					if (!puff)
@@ -171,7 +171,7 @@ class StateProvider : Inventory
 					bool temp = false;
 					double ang = Angle - 90;
 					Vector2 ofs = AngleToVector(ang, Spawnofs_xy);
-					Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight, null, false, false, hand ? ALF_ISOFFHAND : 0);
+					Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight, aimflags:hand ? ALF_ISOFFHAND : 0);
 					if (proj)
 					{
 						if (!puff)

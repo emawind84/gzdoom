@@ -351,7 +351,7 @@ CCMD (switchhand)
 	{
 		int hand = atoi (argv[1]);
 		auto mo = players[consoleplayer].mo;
-		IFVIRTUALPTRNAME(mo, NAME_PlayerPawn, SwitchHand)
+		IFVIRTUALPTRNAME(mo, NAME_PlayerPawn, SwitchWeaponHand)
 		{
 			VMValue param[] = { mo, hand };
 			VMCall(func, param, 2, nullptr, 0);

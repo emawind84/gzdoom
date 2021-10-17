@@ -57,7 +57,7 @@ class StrifeGrenadeLauncher : StrifeWeapon
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
 			if (!weapon.DepleteAmmo (weapon.bAltFire))

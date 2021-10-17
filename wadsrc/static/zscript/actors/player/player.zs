@@ -2258,7 +2258,7 @@ class PlayerPawn : Actor
 	//
 	//===========================================================================
 
-	virtual void SwitchHand(int hand = 0)
+	virtual void SwitchWeaponHand(int hand = 0)
 	{
 		let weap = hand == 0 ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap)

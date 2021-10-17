@@ -109,7 +109,7 @@ CVAR(Int, sv_smartaim, 0, CVAR_ARCHIVE | CVAR_SERVERINFO)
 CVAR(Bool, cl_doautoaim, false, CVAR_ARCHIVE)
 
 static void CheckForPushSpecial(line_t *line, int side, AActor *mobj, DVector2 * posforwindowcheck = NULL);
-static void SpawnShootDecal(AActor *t1, AActor *defaults, const FTraceResults &trace);
+static void SpawnShootDecal(AActor *t1, AActor *defaults, const FTraceResults &trace, int hand = 0);
 static void SpawnDeepSplash(AActor *t1, const FTraceResults &trace, AActor *puff);
 
 static FRandom pr_tracebleed("TraceBleed");
@@ -4679,26 +4679,27 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 			// [RH] Spawn a decal
 			if (trace.HitType == TRACE_HitWall && trace.Line->special != Line_Horizon && !trace.Line->isVisualPortal() && !(flags & LAF_NOIMPACTDECAL) && !(puffDefaults->flags7 & MF7_NODECAL))
 			{
+				int hand = flags & LAF_ISOFFHAND;
 				// [TN] If the actor or weapon has a decal defined, use that one.
 				if (t1->DecalGenerator != NULL ||
 					(t1->player != NULL && t1->player->ReadyWeapon != NULL && t1->player->ReadyWeapon->DecalGenerator != NULL))
 				{
 					// [ZK] If puff has FORCEDECAL set, do not use the weapon's decal
 					if (puffDefaults->flags7 & MF7_FORCEDECAL && puff != NULL && puff->DecalGenerator)
-						SpawnShootDecal(puff,  puff, trace);
+						SpawnShootDecal(puff,  puff, trace, hand);
 					else
-						SpawnShootDecal(t1, t1, trace);
+						SpawnShootDecal(t1, t1, trace, hand);
 				}
 
 				// Else, look if the bulletpuff has a decal defined.
 				else if (puff != NULL && puff->DecalGenerator)
 				{
-					SpawnShootDecal(puff, puff, trace);
+					SpawnShootDecal(puff, puff, trace, hand);
 				}
 
 				else
 				{
-					SpawnShootDecal(t1, t1, trace);
+					SpawnShootDecal(t1, t1, trace, hand);
 				}
 			}
 			else if (puff != NULL &&
@@ -6912,15 +6913,19 @@ bool P_ChangeSector(sector_t *sector, int crunch, double amt, int floorOrCeil, b
 //
 //==========================================================================
 
-void SpawnShootDecal(AActor *t1, AActor *defaults, const FTraceResults &trace)
+void SpawnShootDecal(AActor *t1, AActor *defaults, const FTraceResults &trace, int hand)
 {
 	FDecalBase *decalbase = nullptr;
 
-	if (defaults->player != nullptr && defaults->player->ReadyWeapon != nullptr)
+	if (defaults->player != nullptr)
 	{
-		decalbase = defaults->player->ReadyWeapon->DecalGenerator;
+		AActor *weapon = hand ? defaults->player->OffhandWeapon : defaults->player->ReadyWeapon;
+		if (weapon != nullptr)
+		{
+			decalbase = weapon->DecalGenerator;
+		}
 	}
-	else
+	if (decalbase == nullptr)
 	{
 		decalbase = defaults->DecalGenerator;
 	}

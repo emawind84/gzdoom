@@ -178,7 +178,7 @@ class Weapon : StateProvider
 	{
 		let player = player;
 
-		if (null == player || player.ReadyWeapon == null)
+		if (null == player)
 		{
 			return;
 		}
@@ -187,7 +187,11 @@ class Weapon : StateProvider
 			player.mo.PlayAttacking2 ();
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon == null)
+		{
+			return;
+		}
 		state flashstate = null;
 
 		if (flashlabel == null)
@@ -205,7 +209,7 @@ class Weapon : StateProvider
 		{
 			flashstate = weapon.FindState(flashlabel);
 		}
-		player.SetPsprite(PSP_FLASH, flashstate);
+		player.SetPsprite(PSP_FLASH, flashstate, false, weapon);
 	}
 	
 	//---------------------------------------------------------------------------

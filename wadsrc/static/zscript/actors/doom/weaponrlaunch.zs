@@ -145,18 +145,20 @@ extend class StateProvider
 
 	action void A_FireMissile()
 	{
+		int hand = 0;
 		if (player == null)
 		{
 			return;
 		}
-		Weapon weap = player.ReadyWeapon;
+		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
+			hand = weap.bOffhandWeapon ? 1 : 0;
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
 				return;
 		}
 		
-		SpawnPlayerMissile ("Rocket");
+		SpawnPlayerMissile ("Rocket", aimflags:hand ? ALF_ISOFFHAND : 0);
 	}
 
 	//===========================================================================
@@ -167,6 +169,7 @@ extend class StateProvider
 
 	action void A_FireSTGrenade(class<Actor> grenadetype = "Grenade")
 	{
+		int hand = 0;
 		if (grenadetype == null)
 			return;
 
@@ -174,9 +177,10 @@ extend class StateProvider
 		{
 			return;
 		}
-		Weapon weap = player.ReadyWeapon;
+		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
+			hand = weap.bOffhandWeapon ? 1 : 0;
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
 				return;
 		}
@@ -184,7 +188,7 @@ extend class StateProvider
 		// Temporarily raise the pitch to send the grenadetype slightly upwards
 		double savedpitch = pitch;
 		pitch -= 6.328125;
-		SpawnPlayerMissile(grenadetype);
+		SpawnPlayerMissile(grenadetype, aimflags:hand ? ALF_ISOFFHAND : 0);
 		pitch = SavedPitch;
 	}
 }
