@@ -18,8 +18,7 @@ mwheelright invnext
 enter invuse
 - sizedown
 = sizeup
-alt +strafe
-shift +speed
+rthumb +speed
 space +use
 capslock "toggle cl_run"
 f1 menu_help
@@ -43,8 +42,10 @@ mwheeldown weapnext
 mwheelup weapprev
 axis8plus "weapprev 1"
 axis8minus "weapnext 1"
-joy6 "switchhand 0"
-joy8 "switchhand 1"
+axis7plus "switchhand 0"
+axis7minus "switchhand 1"
+alt +oh_altatk
+shift +oh_attack
 
 // Originally just for Heretic, Hexen, and Strife.
 // I can't see why they shouldn't be for Doom or Chex either.
