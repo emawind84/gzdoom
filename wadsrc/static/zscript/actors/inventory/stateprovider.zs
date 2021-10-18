@@ -408,6 +408,8 @@ class StateProvider : Inventory
 	action void A_ReFire(statelabel flash = null)
 	{
 		let player = player;
+		int attackbt = BT_ATTACK | BT_OFFHANDATTACK;
+		int altattackbt = BT_ALTATTACK | BT_OFFHANDALTATTACK;
 		bool pending;
 
 		if (NULL == player)
@@ -415,41 +417,27 @@ class StateProvider : Inventory
 			return;
 		}
 		pending = player.PendingWeapon != WP_NOCHANGE && (player.WeaponState & WF_REFIRESWITCHOK);
-		if ((player.cmd.buttons & BT_ATTACK)
-			&& !player.ReadyWeapon.bAltFire && !pending && player.health > 0)
+		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon == NULL)
 		{
-			player.refire++;
-			player.mo.FireWeapon(ResolveState(flash));
+			return;
 		}
-		else if ((player.cmd.buttons & BT_ALTATTACK)
-			&& player.ReadyWeapon.bAltFire && !pending && player.health > 0)
+		if ((player.cmd.buttons & attackbt)
+			&& !weapon.bAltFire && !pending && player.health > 0)
 		{
 			player.refire++;
-			player.mo.FireWeaponAlt(ResolveState(flash));
+			player.mo.FireWeapon(ResolveState(flash), weapon.bOffhandWeapon ? 1 : 0);
 		}
-		else if ((player.cmd.buttons & BT_OFFHANDATTACK)
-			&& !player.OffhandWeapon.bAltFire && !pending && player.health > 0)
+		else if ((player.cmd.buttons & altattackbt)
+			&& weapon.bAltFire && !pending && player.health > 0)
 		{
 			player.refire++;
-			player.mo.FireWeapon(ResolveState(flash), 1);
-		}
-		else if ((player.cmd.buttons & BT_OFFHANDALTATTACK)
-			&& player.OffhandWeapon.bAltFire && !pending && player.health > 0)
-		{
-			player.refire++;
-			player.mo.FireWeaponAlt(ResolveState(flash), 1);
+			player.mo.FireWeaponAlt(ResolveState(flash), weapon.bOffhandWeapon ? 1 : 0);
 		}
 		else
 		{
 			player.refire = 0;
-			if (player.OffhandWeapon != null)
-			{
-				player.OffhandWeapon.CheckAmmo (player.OffhandWeapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
-			}
-			if (player.ReadyWeapon != null)
-			{
-				player.ReadyWeapon.CheckAmmo (player.ReadyWeapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
-			}
+			weapon.CheckAmmo (weapon.bAltFire? Weapon.AltFire : Weapon.PrimaryFire, true);
 		}
 	}
 	

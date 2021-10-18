@@ -458,48 +458,43 @@ class PlayerPawn : Actor
 		let player = self.player;
 		let ready_weapon = player.ReadyWeapon;
 		let offhand_weapon = player.OffhandWeapon;
+		bool attackdown = false;
 
 		// Check for fire. Some weapons do not auto fire.
 		if (ready_weapon != NULL && (player.WeaponState & WF_WEAPONREADY) && (player.cmd.buttons & BT_ATTACK))
 		{
 			if (!player.attackdown || !ready_weapon.bNoAutofire)
 			{
-				player.attackdown = true;
+				attackdown = true;
 				FireWeapon (NULL);
-				return;
 			}
 		}
 		else if (ready_weapon != NULL && (player.WeaponState & WF_WEAPONREADYALT) && (player.cmd.buttons & BT_ALTATTACK))
 		{
 			if (!player.attackdown || !ready_weapon.bNoAutofire)
 			{
-				player.attackdown = true;
+				attackdown = true;
 				FireWeaponAlt (NULL);
-				return;
 			}
 		}
-		else if (offhand_weapon != NULL && (player.WeaponState & WF_OFFHANDREADY) && (player.cmd.buttons & BT_OFFHANDATTACK))
+
+		if (offhand_weapon != NULL && (player.WeaponState & WF_OFFHANDREADY) && (player.cmd.buttons & BT_OFFHANDATTACK))
 		{
 			if (!player.attackdown || !offhand_weapon.bNoAutofire)
 			{
-				player.attackdown = true;
+				attackdown = true;
 				FireWeapon (NULL, 1);
-				return;
 			}
 		}
 		else if (offhand_weapon != NULL && (player.WeaponState & WF_OFFHANDREADYALT) && (player.cmd.buttons & BT_OFFHANDALTATTACK))
 		{
 			if (!player.attackdown || !offhand_weapon.bNoAutofire)
 			{
-				player.attackdown = true;
+				attackdown = true;
 				FireWeaponAlt (NULL, 1);
-				return;
 			}
 		}
-		else
-		{
-			player.attackdown = false;
-		}
+		player.attackdown = attackdown;
 	}
 
 	//---------------------------------------------------------------------------
