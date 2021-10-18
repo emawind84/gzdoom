@@ -56,13 +56,19 @@ class Beak : Weapon
 		{
 			return;
 		}
-		let psp = player.GetPSprite(PSP_WEAPON);
+		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon == null)
+		{
+			return;
+		}
+		let psplayer = weapon.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON;
+		let psp = player.GetPSprite(psplayer);
 		if (psp)
 		{
 			psp.y = WEAPONTOP;
 			ResetPSprite(psp);
 		}
-		player.SetPsprite(PSP_WEAPON, player.ReadyWeapon.GetReadyState());
+		player.SetPsprite(psplayer, weapon.GetReadyState());
 	}
 
 	//----------------------------------------------------------------------------

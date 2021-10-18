@@ -51,10 +51,11 @@ class Blaster : HereticWeapon
 		{
 			return;
 		}
-
-		Weapon weapon = player.ReadyWeapon;
+		int laflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			laflags |= weapon.bOffhandWeapon ? LAF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
@@ -66,7 +67,7 @@ class Blaster : HereticWeapon
 		{
 			ang += Random2[FireBlaster]() * (5.625 / 256);
 		}
-		LineAttack (ang, PLAYERMISSILERANGE, pitch, damage, 'Hitscan', "BlasterPuff");
+		LineAttack (ang, PLAYERMISSILERANGE, pitch, damage, 'Hitscan', "BlasterPuff", laflags);
 		A_StartSound ("weapons/blastershoot", CHAN_WEAPON);
 	}
 }

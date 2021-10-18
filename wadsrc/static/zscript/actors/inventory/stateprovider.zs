@@ -9,8 +9,9 @@ class StateProvider : Inventory
 
 	action state A_JumpIfNoAmmo(statelabel label)
 	{
-		if (stateinfo == null || stateinfo.mStateType != STATE_Psprite || player == null || player.ReadyWeapon == null ||
-			player.ReadyWeapon.CheckAmmo(player.ReadyWeapon.bAltFire, false, true))
+		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (stateinfo == null || stateinfo.mStateType != STATE_Psprite || player == null || weapon == null ||
+			weapon.CheckAmmo(weapon.bAltFire, false, true))
 		{
 			return null;
 		}
@@ -25,14 +26,13 @@ class StateProvider : Inventory
 
 	action state A_CheckForReload(int count, statelabel jump, bool dontincrement = false)
 	{
-		if (stateinfo == null || stateinfo.mStateType != STATE_Psprite || player == null || player.ReadyWeapon == null)
+		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (stateinfo == null || stateinfo.mStateType != STATE_Psprite || player == null || weapon == null)
 		{
 			return null;
 		}
 
 		state ret = null;
-
-		let weapon = player.ReadyWeapon;
 
 		int ReloadCounter = weapon.ReloadCounter;
 		if (!dontincrement || ReloadCounter != 0)
@@ -66,8 +66,9 @@ class StateProvider : Inventory
 
 	action void A_ResetReloadCounter()
 	{
-		if (stateinfo != null && stateinfo.mStateType == STATE_Psprite && player != null && player.ReadyWeapon != null)
-			player.ReadyWeapon.ReloadCounter = 0;
+		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (stateinfo != null && stateinfo.mStateType == STATE_Psprite && player != null && weapon != null)
+			weapon.ReloadCounter = 0;
 	}
 
 	

@@ -349,6 +349,7 @@ extend class Actor
 		if (player != null)
 		{
 			player.ReadyWeapon = null;
+			player.OffhandWeapon = null;
 			player.PendingWeapon = WP_NOCHANGE;
 		}
 	}

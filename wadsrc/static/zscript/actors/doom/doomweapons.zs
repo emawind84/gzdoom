@@ -28,7 +28,7 @@ extend class StateProvider
 			return;
 		}
 
-		Weapon weap = player.ReadyWeapon;
+		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
