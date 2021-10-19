@@ -2681,8 +2681,8 @@ class PSprite : Object native play
 	{
 		STRIFEHANDS = -1,
 		WEAPON = 1,
-		OFFHANDWEAPON = 2,
 		FLASH = 1000,
+		OFFHANDWEAPON = 1000000,
 		TARGETCENTER = 0x7fffffff - 2,
 		TARGETLEFT,
 		TARGETRIGHT,
