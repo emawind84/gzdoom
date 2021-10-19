@@ -458,25 +458,26 @@ class Weapon : StateProvider
 
 	action void A_ZoomFactor(double zoom = 1, int flags = 0)
 	{
-	    CVar recoil = CVar.FindCVar('vr_recoil');
-        if (recoil.GetBool())
-        {
-        	let player = self.player;
-			let weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-            if (player != NULL && weap != NULL)
-            {
-                zoom = 1 / clamp(zoom, 0.1, 50.0);
-                if (flags & 1)
-                { // Make the zoom instant.
-                    player.FOV = player.DesiredFOV * zoom;
-                }
-                if (flags & 2)
-                { // Disable pitch/yaw scaling.
-                    zoom = -zoom;
-                }
-                weap.FOVScale = zoom;
-            }
-        }
+		CVar recoil = CVar.FindCVar('vr_recoil');
+		if (!recoil.GetBool())
+		{
+			return;
+		}
+		let player = self.player;
+		let weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (player != NULL && weap != NULL)
+		{
+			zoom = 1 / clamp(zoom, 0.1, 50.0);
+			if (flags & 1)
+			{ // Make the zoom instant.
+				player.FOV = player.DesiredFOV * zoom;
+			}
+			if (flags & 2)
+			{ // Disable pitch/yaw scaling.
+				zoom = -zoom;
+			}
+			weap.FOVScale = zoom;
+		}
 	}
 
 	//===========================================================================
