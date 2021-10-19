@@ -464,8 +464,9 @@ class Weapon : StateProvider
 			return;
 		}
 		let player = self.player;
+		if (!player) return;
 		let weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-		if (player != NULL && weap != NULL)
+		if (weap != NULL)
 		{
 			zoom = 1 / clamp(zoom, 0.1, 50.0);
 			if (flags & 1)
@@ -489,9 +490,11 @@ class Weapon : StateProvider
 	action void A_SetCrosshair(int xhair)
 	{
 		let player = self.player;
-		if (player != NULL && player.ReadyWeapon != NULL)
+		if (!player) return;
+		let weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weap != NULL)
 		{
-			player.ReadyWeapon.Crosshair = xhair;
+			weap.Crosshair = xhair;
 		}
 	}
 	
