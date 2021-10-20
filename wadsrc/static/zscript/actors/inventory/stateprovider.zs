@@ -413,8 +413,6 @@ class StateProvider : Inventory
 	action void A_ReFire(statelabel flash = null)
 	{
 		let player = player;
-		int attackbt = BT_ATTACK | BT_OFFHANDATTACK;
-		int altattackbt = BT_ALTATTACK | BT_OFFHANDALTATTACK;
 		bool pending;
 
 		if (NULL == player)
@@ -427,6 +425,8 @@ class StateProvider : Inventory
 		{
 			return;
 		}
+		int attackbt = weapon == player.ReadyWeapon ? BT_ATTACK : BT_OFFHANDATTACK;
+		int altattackbt = weapon == player.ReadyWeapon ? BT_ALTATTACK : BT_OFFHANDALTATTACK;
 		if ((player.cmd.buttons & attackbt)
 			&& !weapon.bAltFire && !pending && player.health > 0)
 		{
