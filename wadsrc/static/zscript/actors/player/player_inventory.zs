@@ -153,6 +153,7 @@ extend class PlayerPawn
 	override void RemoveInventory (Inventory item)
 	{
 		bool pickWeap = false;
+		int hand = 0;
 
 		// Since voodoo dolls aren't supposed to have an inventory, there should be
 		// no need to redirect them to the real player here as there is with AddInventory.
@@ -187,6 +188,7 @@ extend class PlayerPawn
 				pickWeap = true;
 				player.ReadyWeapon = NULL;
 				player.refire = 0;
+				hand = 0;
 			}
 			if (item == player.OffhandWeapon)
 			{
@@ -194,12 +196,13 @@ extend class PlayerPawn
 				pickWeap = true;
 				player.OffhandWeapon = NULL;
 				player.refire = 0;
+				hand = 1;
 			}
 		}
 		Super.RemoveInventory (item);
 		if (pickWeap && player.mo == self && player.PendingWeapon == WP_NOCHANGE)
 		{
-			PickNewWeapon (NULL);
+			PickNewWeapon (NULL, hand);
 		}
 	}
 

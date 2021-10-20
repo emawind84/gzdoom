@@ -204,7 +204,6 @@ enum EWeaponReadyFlags
 	WRF_ALLOWUSER2 = 256,
 	WRF_ALLOWUSER3 = 512,
 	WRF_ALLOWUSER4 = 1024,
-	WRF_ISOFFHAND = 2048,
 };
 
 // Flags for A_SelectWeapon

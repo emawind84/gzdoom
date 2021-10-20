@@ -76,7 +76,6 @@ enum EWRF_Options
 	WRF_AllowUser2		= 1 << 8,
 	WRF_AllowUser3		= 1 << 9,
 	WRF_AllowUser4		= 1 << 10,
-	WRF_IsOffhand		= 1 << 11,
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
