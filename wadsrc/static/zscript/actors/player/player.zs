@@ -574,7 +574,8 @@ class PlayerPawn : Actor
 					CheckWeaponFire();
 				}
 				// Check custom buttons
-				CheckWeaponButtons();
+				CheckWeaponButtons(0);  // check mainhand
+				CheckWeaponButtons(1);  // check offhand
 			}
 		}
 	}
@@ -2604,7 +2605,7 @@ class PlayerPawn : Actor
 	native void CheckMusicChange();
 	native void CheckEnvironment();
 	native void CheckUse();
-	native void CheckWeaponButtons();
+	native void CheckWeaponButtons(int hand = 0);
 	native void MarkPlayerSounds();
 	private native int SetupCrouchSprite(int c);
 	private native clearscope Color GetPainFlashForType(Name type);

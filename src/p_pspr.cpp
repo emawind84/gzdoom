@@ -514,7 +514,7 @@ void DPSprite::SetState(FState *newstate, bool pending)
 
 		if (Flags & PSPF_CVARFAST)
 		{
-			if (sv_fastweapons == 2 && ID == PSP_WEAPON)
+			if (sv_fastweapons == 2 && (ID == PSP_WEAPON || ID == PSP_OFFHANDWEAPON))
 				Tics = newstate->ActionFunc == nullptr ? 0 : 1;
 			else if (sv_fastweapons == 3)
 				Tics = (newstate->GetTics() != 0);
@@ -636,13 +636,13 @@ void P_BobWeapon (player_t *player, float *x, float *y, double ticfrac)
 //
 //---------------------------------------------------------------------------
 
-static void P_CheckWeaponButtons (player_t *player)
+static void P_CheckWeaponButtons (player_t *player, int hand = 0)
 {
 	if (player->Bot == nullptr && bot_observer)
 	{
 		return;
 	}
-	auto weapon = player->ReadyWeapon;
+	auto weapon = hand ? player->OffhandWeapon : player->ReadyWeapon;
 	if (weapon == nullptr)
 	{
 		return;
@@ -660,7 +660,7 @@ static void P_CheckWeaponButtons (player_t *player)
 			// state, the weapon won't disappear. ;)
 			if (state != nullptr)
 			{
-				P_SetPsprite(player, PSP_WEAPON, state);
+				P_SetPsprite(player, hand ? PSP_OFFHANDWEAPON : PSP_WEAPON, state);
 				return;
 			}
 		}
@@ -670,7 +670,8 @@ static void P_CheckWeaponButtons (player_t *player)
 DEFINE_ACTION_FUNCTION(APlayerPawn, CheckWeaponButtons)
 {
 	PARAM_SELF_PROLOGUE(AActor);
-	P_CheckWeaponButtons(self->player);
+	PARAM_INT(hand)
+	P_CheckWeaponButtons(self->player, hand);
 	return 0;
 }
 
