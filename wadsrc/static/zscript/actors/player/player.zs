@@ -506,24 +506,40 @@ class PlayerPawn : Actor
 	//
 	//---------------------------------------------------------------------------
 
-	virtual void CheckWeaponChange (int hand = 0)
+	virtual void CheckWeaponChange ()
 	{
 		let player = self.player;
 		if (!player) return;
-		int switchok = hand ? WF_OFFHANDSWITCHOK : WF_WEAPONSWITCHOK;
-		int disableswitch = hand ? WF_OFFHANDDISABLESWITCH : WF_DISABLESWITCH;
-		if ((player.WeaponState & disableswitch) || // Weapon changing has been disabled.
-			player.morphTics != 0)					// Morphed classes cannot change weapons.
-		{ // ...so throw away any pending weapon requests.
-			player.PendingWeapon = WP_NOCHANGE;
+		int hand = 0;
+		
+		if (player.PendingWeapon != WP_NOCHANGE)
+		{
+			hand = player.PendingWeapon.bOffhandWeapon ? 1 : 0;
+			if ((player.ReadyWeapon == null && !hand) ||
+				(player.OffhandWeapon == null && hand))
+			{
+				player.mo.BringUpWeapon();
+				return;
+			}
 		}
-
+		
 		// Put the weapon away if the player has a pending weapon or has died, and
 		// we're at a place in the state sequence where dropping the weapon is okay.
-		if ((player.PendingWeapon != WP_NOCHANGE || player.health <= 0) &&
-			player.WeaponState & switchok)
+		if ((player.PendingWeapon != WP_NOCHANGE || player.health <= 0))
 		{
-			DropWeapon(player.PendingWeapon.bOffhandWeapon ? 1 : 0);
+			int disableswitch = hand ? WF_OFFHANDDISABLESWITCH : WF_DISABLESWITCH;
+			int switchok = hand ? WF_OFFHANDSWITCHOK : WF_WEAPONSWITCHOK;
+			if ((player.WeaponState & disableswitch) || // Weapon changing has been disabled.
+			player.morphTics != 0)					// Morphed classes cannot change weapons.
+			{ // ...so throw away any pending weapon requests.
+				player.PendingWeapon = WP_NOCHANGE;
+				return;
+			}
+			if (!(player.WeaponState & switchok))
+			{
+				return;
+			}
+			DropWeapon(hand);
 		}
 	}
 	
