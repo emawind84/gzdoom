@@ -2270,13 +2270,17 @@ class PlayerPawn : Actor
 	virtual void SwitchWeaponHand(int hand = 0)
 	{
 		let weap = hand == 0 ? player.OffhandWeapon : player.ReadyWeapon;
-		if (weap != null && !weap.bMeleeWeapon)
+		if (weap != null)
 		{
+			let nextweap = player.mo.PickNextWeapon(1 - hand);
+			player.OffhandWeapon = player.ReadyWeapon = null;
+			if (nextweap != weap) {
+				player.PendingWeapon = nextweap;
+				player.mo.BringUpWeapon();
+			}
 			weap.bOffhandWeapon = hand == 1;
 			player.PendingWeapon = weap;
-			player.OffhandWeapon = player.ReadyWeapon = null;
 			player.mo.BringUpWeapon();
-			player.mo.PickNewWeapon(NULL, 1 - hand);
 		}
 	}
 
