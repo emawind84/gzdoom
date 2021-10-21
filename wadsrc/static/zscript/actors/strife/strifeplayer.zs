@@ -106,6 +106,7 @@ class StrifePlayer : PlayerPawn
 			player.SetPsprite(PSP_STRIFEHANDS, FindState("FireHands"));
 
 			player.ReadyWeapon = null;
+			player.OffhandWeapon = null;
 			player.PendingWeapon = WP_NOCHANGE;
 			player.playerstate = PST_LIVE;
 			player.extralight = 3;
