@@ -465,7 +465,8 @@ void DPSprite::SetState(FState *newstate, bool pending)
 	}
 	if (ID == PSP_OFFHANDWEAPON)
 	{
-		Owner->WeaponState &= ~(WF_OFFHANDREADY | WF_OFFHANDREADYALT);
+		Owner->WeaponState &= ~(WF_OFFHANDREADY | WF_OFFHANDREADYALT | WF_OFFHANDBOBBING | WF_OFFHANDSWITCHOK | WF_WEAPONRELOADOK | WF_WEAPONZOOMOK |
+								WF_USER1OK | WF_USER2OK | WF_USER3OK | WF_USER4OK);
 	}
 
 	processPending = pending;

@@ -419,14 +419,16 @@ class StateProvider : Inventory
 		{
 			return;
 		}
-		pending = player.PendingWeapon != WP_NOCHANGE && (player.WeaponState & WF_REFIRESWITCHOK);
+
 		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon == NULL)
 		{
 			return;
 		}
+		int refireok = weapon == player.ReadyWeapon ? WF_REFIRESWITCHOK : WF_OFFHANDREFIRESWITCHOK;
 		int attackbt = weapon == player.ReadyWeapon ? BT_ATTACK : BT_OFFHANDATTACK;
 		int altattackbt = weapon == player.ReadyWeapon ? BT_ALTATTACK : BT_OFFHANDALTATTACK;
+		pending = player.PendingWeapon != WP_NOCHANGE && (player.WeaponState & refireok);
 		if ((player.cmd.buttons & attackbt)
 			&& !weapon.bAltFire && !pending && player.health > 0)
 		{

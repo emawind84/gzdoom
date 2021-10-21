@@ -392,7 +392,7 @@ class PlayerPawn : Actor
 			return;
 		}
 
-		player.WeaponState &= ~WF_WEAPONBOBBING;
+		player.WeaponState &= ~(hand ? WF_OFFHANDBOBBING : WF_WEAPONBOBBING);
 		PlayAttacking ();
 		weapn.bAltFire = false;
 		if (stat == null)
@@ -427,7 +427,7 @@ class PlayerPawn : Actor
 			return;
 		}
 
-		player.WeaponState &= ~WF_WEAPONBOBBING;
+		player.WeaponState &= ~(hand ? WF_OFFHANDBOBBING : WF_WEAPONBOBBING);
 		PlayAttacking ();
 		weapn.bAltFire = true;
 
@@ -506,11 +506,13 @@ class PlayerPawn : Actor
 	//
 	//---------------------------------------------------------------------------
 
-	virtual void CheckWeaponChange ()
+	virtual void CheckWeaponChange (int hand = 0)
 	{
 		let player = self.player;
-		if (!player) return;	
-		if ((player.WeaponState & WF_DISABLESWITCH) || // Weapon changing has been disabled.
+		if (!player) return;
+		int switchok = hand ? WF_OFFHANDSWITCHOK : WF_WEAPONSWITCHOK;
+		int disableswitch = hand ? WF_OFFHANDDISABLESWITCH : WF_DISABLESWITCH;
+		if ((player.WeaponState & disableswitch) || // Weapon changing has been disabled.
 			player.morphTics != 0)					// Morphed classes cannot change weapons.
 		{ // ...so throw away any pending weapon requests.
 			player.PendingWeapon = WP_NOCHANGE;
@@ -519,7 +521,7 @@ class PlayerPawn : Actor
 		// Put the weapon away if the player has a pending weapon or has died, and
 		// we're at a place in the state sequence where dropping the weapon is okay.
 		if ((player.PendingWeapon != WP_NOCHANGE || player.health <= 0) &&
-			player.WeaponState & WF_WEAPONSWITCHOK)
+			player.WeaponState & switchok)
 		{
 			DropWeapon(player.PendingWeapon.bOffhandWeapon ? 1 : 0);
 		}
@@ -1875,8 +1877,9 @@ class PlayerPawn : Actor
 		{
 			return;
 		}
+		int disableswitch = hand ? WF_OFFHANDDISABLESWITCH : WF_DISABLESWITCH;
 		// Since the weapon is dropping, stop blocking switching.
-		player.WeaponState &= ~WF_DISABLESWITCH;
+		player.WeaponState &= ~disableswitch;
 		Weapon weap = !!hand ? player.OffhandWeapon : player.ReadyWeapon;
 		if ((weap != null) && (player.health > 0 || !weap.bNoDeathDeselect))
 		{

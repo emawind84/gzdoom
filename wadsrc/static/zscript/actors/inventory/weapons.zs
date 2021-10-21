@@ -329,31 +329,35 @@ class Weapon : StateProvider
 	//
 	//============================================================================
 
-	static void DoReadyWeaponToSwitch (PlayerInfo player, bool switchable)
+	static void DoReadyWeaponToSwitch (PlayerInfo player, bool switchable, int hand)
 	{
+		int switchok = hand ? WF_OFFHANDSWITCHOK : WF_WEAPONSWITCHOK;
+		int refireok = hand ? WF_OFFHANDREFIRESWITCHOK : WF_REFIRESWITCHOK;
 		// Prepare for switching action.
 		if (switchable)
 		{
-			player.WeaponState |= WF_WEAPONSWITCHOK | WF_REFIRESWITCHOK;
+			player.WeaponState |= switchok | refireok;
 		}
 		else
 		{
 			// WF_WEAPONSWITCHOK is automatically cleared every tic by P_SetPsprite().
-			player.WeaponState &= ~WF_REFIRESWITCHOK;
+			player.WeaponState &= ~refireok;
 		}
 	}
 
-	static void DoReadyWeaponDisableSwitch (PlayerInfo player, int disable)
+	static void DoReadyWeaponDisableSwitch (PlayerInfo player, int disable, int hand = 0)
 	{
+		int disableswitch = hand ? WF_OFFHANDDISABLESWITCH : WF_DISABLESWITCH;
+		int refireok = hand ? WF_OFFHANDREFIRESWITCHOK : WF_REFIRESWITCHOK;
 		// Discard all switch attempts?
 		if (disable)
 		{
-			player.WeaponState |= WF_DISABLESWITCH;
-			player.WeaponState &= ~WF_REFIRESWITCHOK;
+			player.WeaponState |= disableswitch;
+			player.WeaponState &= ~refireok;
 		}
 		else
 		{
-			player.WeaponState &= ~WF_DISABLESWITCH;
+			player.WeaponState &= ~disableswitch;
 		}
 	}
 
@@ -396,7 +400,7 @@ class Weapon : StateProvider
 		if (weap)
 		{
 			// Prepare for bobbing action.
-			player.WeaponState |= WF_WEAPONBOBBING;
+			player.WeaponState |= hand ? WF_OFFHANDBOBBING : WF_WEAPONBOBBING;
 			let pspr = player.GetPSprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 			if (pspr)
 			{
@@ -423,12 +427,12 @@ class Weapon : StateProvider
 	{
 		if (!player) return;
 		int hand = invoker == player.OffhandWeapon ? 1 : 0;
-														DoReadyWeaponToSwitch(player, !(flags & WRF_NoSwitch));
+														DoReadyWeaponToSwitch(player, !(flags & WRF_NoSwitch), hand);
 		if ((flags & WRF_NoFire) != WRF_NoFire)			DoReadyWeaponToFire(player.mo, !(flags & WRF_NoPrimary), !(flags & WRF_NoSecondary), hand);
 		if (!(flags & WRF_NoBob))						DoReadyWeaponToBob(player, hand);
 
 		player.WeaponState |= GetButtonStateFlags(flags);														
-		DoReadyWeaponDisableSwitch(player, flags & WRF_DisableSwitch);
+		DoReadyWeaponDisableSwitch(player, flags & WRF_DisableSwitch, hand);
 	}
 
 	//---------------------------------------------------------------------------

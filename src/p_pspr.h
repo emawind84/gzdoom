@@ -158,7 +158,7 @@ AActor *P_AimTarget(AActor *mo);
 
 void DoReadyWeaponToBob(AActor *self, int hand = 0);
 void DoReadyWeaponToFire(AActor *self, bool primary = true, bool secondary = true, int hand = 0);
-void DoReadyWeaponToSwitch(AActor *self, bool switchable = true);
+void DoReadyWeaponToSwitch(AActor *self, bool switchable = true, int hand = 0);
 
 void A_ReFire(AActor *self, FState *state = NULL);
 
