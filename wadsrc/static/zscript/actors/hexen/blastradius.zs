@@ -104,9 +104,9 @@ extend class Actor
 	action void A_Blast(int blastflags = 0, double strength = 255, double radius = 255, double speed = 20, class<Actor> blasteffect = "BlastEffect", sound blastsound = "BlastRadius")
 	{
 
-		if (player && (blastflags & BF_USEAMMO) && invoker == player.ReadyWeapon && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
+		if (player && (blastflags & BF_USEAMMO) && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
-			Weapon weapon = player.ReadyWeapon;
+			Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 			if (weapon != null && !weapon.DepleteAmmo(weapon.bAltFire))
 			{
 				return;

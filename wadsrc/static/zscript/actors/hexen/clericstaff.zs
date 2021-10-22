@@ -65,7 +65,14 @@ class CWeapStaff : ClericWeapon
 		{
 			return;
 		}
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		int laflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon != null)
+		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
+			laflags |= weapon.bOffhandWeapon ? LAF_ISOFFHAND : 0;
+		}
 
 		int damage = random[StaffCheck](20, 35);
 		int max = player.mo.GetMaxHealth();
@@ -74,10 +81,10 @@ class CWeapStaff : ClericWeapon
 			for (int j = 1; j >= -1; j -= 2)
 			{
 				double ang = angle + j*i*(45. / 16);
-				double slope = AimLineAttack(ang, 1.5 * DEFMELEERANGE, t, 0., ALF_CHECK3D);
+				double slope = AimLineAttack(ang, 1.5 * DEFMELEERANGE, t, 0., ALF_CHECK3D | alflags);
 				if (t.linetarget)
 				{
-					LineAttack(ang, 1.5 * DEFMELEERANGE, slope, damage, 'Melee', "CStaffPuff", false, t);
+					LineAttack(ang, 1.5 * DEFMELEERANGE, slope, damage, 'Melee', "CStaffPuff", laflags, t);
 					if (t.linetarget != null)
 					{
 						angle = t.angleFromSource;

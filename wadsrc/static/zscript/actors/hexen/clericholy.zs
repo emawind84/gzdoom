@@ -156,13 +156,15 @@ class CWeapWraithverge : ClericWeapon
 		{
 			return;
 		}
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
-		Actor missile = SpawnPlayerMissile ("HolyMissile", angle, pLineTarget:t);
+		Actor missile = SpawnPlayerMissile ("HolyMissile", angle, pLineTarget:t, aimflags: alflags);
 		if (missile != null && !t.unlinked)
 		{
 			missile.tracer = t.linetarget;

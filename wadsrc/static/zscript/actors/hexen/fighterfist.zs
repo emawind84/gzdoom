@@ -126,7 +126,7 @@ class FWeapFist : FighterWeapon
 				if (weaponspecial >= 3)
 				{
 					weaponspecial = 0;
-					player.SetPsprite(PSP_WEAPON, player.ReadyWeapon.FindState("Fire2"));
+					player.SetPsprite(PSP_WEAPON, weapon.FindState("Fire2"));
 					A_StartSound ("*fistgrunt", CHAN_VOICE);
 				}
 				return;

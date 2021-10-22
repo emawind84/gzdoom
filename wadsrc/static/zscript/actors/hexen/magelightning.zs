@@ -71,8 +71,18 @@ class MWeapLightning : MageWeapon
 
 	action void A_MLightningAttack(class<Actor> floor = "LightningFloor", class<Actor> ceiling = "LightningCeiling")
 	{
-		LightningFloor fmo = LightningFloor(SpawnPlayerMissile (floor));
-		LightningCeiling cmo = LightningCeiling(SpawnPlayerMissile (ceiling));
+		int alflags = 0;
+		if (player != NULL)
+		{
+			Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+			if (weapon != NULL)
+			{
+				alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
+				weapon.DepleteAmmo (weapon.bAltFire);
+			}
+		}
+		LightningFloor fmo = LightningFloor(SpawnPlayerMissile (floor, aimflags: alflags));
+		LightningCeiling cmo = LightningCeiling(SpawnPlayerMissile (ceiling, aimflags: alflags));
 		if (fmo)
 		{
 			fmo.special1 = 0;
@@ -87,14 +97,6 @@ class MWeapLightning : MageWeapon
 		}
 		A_StartSound ("MageLightningFire", CHAN_BODY);
 
-		if (player != NULL)
-		{
-			Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-			if (weapon != NULL)
-			{
-				weapon.DepleteAmmo (weapon.bAltFire);
-			}
-		}
 	}
 
 	

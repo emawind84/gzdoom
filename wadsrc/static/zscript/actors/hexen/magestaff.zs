@@ -154,11 +154,11 @@ class MWeapBloodscourge : MageWeapon
 	//
 	//============================================================================
 
-	private action void MStaffSpawn (double angle, Actor alttarget)
+	private action void MStaffSpawn (double angle, Actor alttarget, int alflags = 0)
 	{
 		FTranslatedLineTarget t;
 
-		Actor mo = SpawnPlayerMissile ("MageStaffFX2", angle, pLineTarget:t);
+		Actor mo = SpawnPlayerMissile ("MageStaffFX2", angle, pLineTarget:t, aimflags: alflags);
 		if (mo)
 		{
 			mo.target = self;
@@ -199,9 +199,9 @@ class MWeapBloodscourge : MageWeapon
 		{
 			t.linetarget = RoughMonsterSearch(10, true, true);
 		}
-		MStaffSpawn (angle, t.linetarget);
-		MStaffSpawn (angle-5, t.linetarget);
-		MStaffSpawn (angle+5, t.linetarget);
+		MStaffSpawn (angle, t.linetarget, alflags);
+		MStaffSpawn (angle-5, t.linetarget, alflags);
+		MStaffSpawn (angle+5, t.linetarget, alflags);
 		A_StartSound ("MageStaffFire", CHAN_WEAPON);
 		invoker.MStaffCount = 3;
 	}
