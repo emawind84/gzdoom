@@ -70,7 +70,8 @@ class StrifeCrossbow : StrifeWeapon
 	{
 		if (player != null)
 		{
-			player.SetPsprite (PSP_FLASH, player.ReadyWeapon.FindState('Flash'));
+			Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+			player.SetPsprite (PSP_FLASH, weapon.FindState('Flash'));
 		}
 	}
 
@@ -82,13 +83,12 @@ class StrifeCrossbow : StrifeWeapon
 
 	action void A_FireArrow (class<Actor> proj)
 	{
-		int hand = 0;
-		int alflags = 0;
 		if (player == null)
 		{
 			return;
 		}
-
+		int hand = 0;
+		int alflags = 0;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{

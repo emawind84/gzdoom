@@ -924,10 +924,17 @@ class Weapon : StateProvider
 		}
 		let p = owner.player;
 		p.PendingWeapon = WP_NOCHANGE;
-		p.ReadyWeapon = self;
+		if (self.bOffhandWeapon)
+		{
+			p.OffhandWeapon = self;
+		}
+		else
+		{
+			p.ReadyWeapon = self;
+		}
 		p.refire = 0;
 
-		let pspr = p.GetPSprite(PSP_WEAPON);
+		let pspr = p.GetPSprite(self.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 		if (pspr)
 		{
 			pspr.y = WEAPONBOTTOM;

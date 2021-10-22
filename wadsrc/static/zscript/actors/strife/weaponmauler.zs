@@ -53,14 +53,13 @@ class Mauler : StrifeWeapon
 
 	action void A_FireMauler1()
 	{
-		int hand = 0;
-		int laflags = 0;
-		int alflags = 0;
 		if (player == null)
 		{
 			return;
 		}
-
+		int hand = 0;
+		int laflags = 0;
+		int alflags = 0;
 		A_StartSound ("weapons/mauler1", CHAN_WEAPON);
 		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null)

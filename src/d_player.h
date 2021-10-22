@@ -359,6 +359,7 @@ public:
 	int			MorphStyle = 0;				// which effects to apply for this player instance when morphed
 	PClassActor *MorphExitFlash = nullptr;		// flash to apply when demorphing (cache of value given to MorphPlayer)
 	TObjPtr<AActor*>	PremorphWeapon = nullptr;		// ready weapon before morphing
+	TObjPtr<AActor*>	PremorphWeaponOffhand = nullptr;	// offhand weapon before morphing
 	int			chickenPeck = 0;			// chicken peck countdown
 	int			jumpTics = 0;				// delay the next jump for a moment
 	bool		onground = 0;				// Identifies if this player is on the ground or other object

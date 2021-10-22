@@ -169,6 +169,7 @@ extend class PlayerPawn
 		morphed.DesignatedTeam = DesignatedTeam;
 		morphed.Score = Score;
 		player.PremorphWeapon = player.ReadyWeapon;
+		player.PremorphWeaponOffhand = player.OffhandWeapon;
 		
 		morphed.special2 = bSolid * 2 + bShootable * 4 + bInvisible * 0x40;	// The factors are for savegame compatibility
 		morphed.player = player;
@@ -378,13 +379,14 @@ extend class PlayerPawn
 		}
 		WeaponSlots.SetupWeaponSlots(altmo);		// Use original class's weapon slots.
 		let beastweap = player.ReadyWeapon;
+		player.ReadyWeapon = player.OffhandWeapon = player.PendingWeapon = null;
 		if (player.PremorphWeapon != null)
 		{
 			player.PremorphWeapon.PostMorphWeapon ();
 		}
-		else
+		if (player.PremorphWeaponOffhand != null)
 		{
-			player.ReadyWeapon = player.PendingWeapon = null;
+			player.PremorphWeaponOffhand.PostMorphWeapon ();
 		}
 		if (correctweapon)
 		{ // Better "lose morphed weapon" semantics

@@ -52,13 +52,12 @@ extend class StateProvider
 {
 	action void A_FireCGun()
 	{
-		int hand = 0;
-		int alflags = 0;
 		if (player == null)
 		{
 			return;
 		}
-
+		int hand = 0;
+		int alflags = 0;
 		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{

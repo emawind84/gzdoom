@@ -45,13 +45,12 @@ class FlameThrower : StrifeWeapon
 
 	action void A_FireFlamer ()
 	{
-		int hand = 0;
-		int alflags = 0;
 		if (player == null)
 		{
 			return;
 		}
-
+		int hand = 0;
+		int alflags = 0;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{

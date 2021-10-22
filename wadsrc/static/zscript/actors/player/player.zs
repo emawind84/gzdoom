@@ -2852,6 +2852,7 @@ struct PlayerInfo native play	// self is what internally is known as player_t
 	native int MorphStyle;
 	native Class<Actor> MorphExitFlash;
 	native Weapon PremorphWeapon;
+	native Weapon PremorphWeaponOffhand;
 	native int chickenPeck;
 	native int jumpTics;
 	native bool onground;

@@ -398,6 +398,7 @@ void player_t::CopyFrom(player_t &p, bool copyPSP)
 	MorphStyle = p.MorphStyle;
 	MorphExitFlash = p.MorphExitFlash;
 	PremorphWeapon = p.PremorphWeapon;
+	PremorphWeaponOffhand = p.PremorphWeaponOffhand;
 	chickenPeck = p.chickenPeck;
 	jumpTics = p.jumpTics;
 	onground = p.onground;
@@ -443,10 +444,12 @@ size_t player_t::PropagateMark()
 	GC::Mark(camera);
 	GC::Mark(Bot);
 	GC::Mark(ReadyWeapon);
+	GC::Mark(OffhandWeapon);
 	GC::Mark(ConversationNPC);
 	GC::Mark(ConversationPC);
 	GC::Mark(MUSINFOactor);
 	GC::Mark(PremorphWeapon);
+	GC::Mark(PremorphWeaponOffhand);
 	GC::Mark(psprites);
 	if (PendingWeapon != WP_NOCHANGE)
 	{
@@ -1743,6 +1746,7 @@ void player_t::Serialize(FSerializer &arc)
 		("morphstyle", MorphStyle)
 		("morphexitflash", MorphExitFlash)
 		("premorphweapon", PremorphWeapon)
+		("premorphweaponoffhand", PremorphWeaponOffhand)
 		("chickenpeck", chickenPeck)
 		("jumptics", jumpTics)
 		("respawntime", respawn_time)
@@ -1865,6 +1869,7 @@ DEFINE_FIELD_X(PlayerInfo, player_t, MorphedPlayerClass)
 DEFINE_FIELD_X(PlayerInfo, player_t, MorphStyle)
 DEFINE_FIELD_X(PlayerInfo, player_t, MorphExitFlash)
 DEFINE_FIELD_X(PlayerInfo, player_t, PremorphWeapon)
+DEFINE_FIELD_X(PlayerInfo, player_t, PremorphWeaponOffhand)
 DEFINE_FIELD_X(PlayerInfo, player_t, chickenPeck)
 DEFINE_FIELD_X(PlayerInfo, player_t, jumpTics)
 DEFINE_FIELD_X(PlayerInfo, player_t, onground)

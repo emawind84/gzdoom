@@ -61,11 +61,12 @@ extend class StateProvider
 		{
 			return;
 		}
-
+		int alflags = 0;
 		A_StartSound ("weapons/shotgf", CHAN_WEAPON);
 		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
+			alflags |= weap.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
 				return;
 			
@@ -73,7 +74,7 @@ extend class StateProvider
 		}
 		player.mo.PlayAttacking2 ();
 
-		double pitch = BulletSlope ();
+		double pitch = BulletSlope (aimflags: alflags);
 
 		for (int i = 0; i < 7; i++)
 		{

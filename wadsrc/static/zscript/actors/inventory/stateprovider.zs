@@ -96,28 +96,30 @@ class StateProvider : Inventory
 		double bangle;
 		double bslope = 0.;
 		int laflags = (flags & FBF_NORANDOMPUFFZ)? LAF_NORANDOMPUFFZ : 0;
+		int alflags = 0;
 
 		if ((flags & FBF_USEAMMO) && weapon &&  stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
 			if (!weapon.DepleteAmmo(weapon.bAltFire, true))
 				return;	// out of ammo
 		}
-		
-		if (range == 0)	range = PLAYERMISSILERANGE;
-
-		if (!(flags & FBF_NOFLASH)) pawn.PlayAttacking2 ();
-
-		if (!(flags & FBF_NOPITCH)) bslope = BulletSlope();
-		bangle = Angle;
-
-		if (pufftype == NULL) pufftype = 'BulletPuff';
 
 		if (weapon != NULL)
 		{
 			hand = weapon.bOffhandWeapon ? 1 : 0;
 			laflags |= hand ? LAF_ISOFFHAND : 0;
+			alflags |= hand ? ALF_ISOFFHAND : 0;
 			A_StartSound(weapon.AttackSound, CHAN_WEAPON);
 		}
+		
+		if (range == 0)	range = PLAYERMISSILERANGE;
+
+		if (!(flags & FBF_NOFLASH)) pawn.PlayAttacking2 ();
+
+		if (!(flags & FBF_NOPITCH)) bslope = BulletSlope(aimflags: alflags);
+		bangle = Angle;
+
+		if (pufftype == NULL) pufftype = 'BulletPuff';
 
 		if ((numbullets == 1 && !player.refire) || numbullets == 0)
 		{
@@ -133,7 +135,7 @@ class StateProvider : Inventory
 				bool temp = false;
 				double ang = Angle - 90;
 				Vector2 ofs = AngleToVector(ang, Spawnofs_xy);
-				Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight, aimflags:hand ? ALF_ISOFFHAND : 0);
+				Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight, aimflags: alflags);
 				if (proj)
 				{
 					if (!puff)
@@ -177,7 +179,7 @@ class StateProvider : Inventory
 					bool temp = false;
 					double ang = Angle - 90;
 					Vector2 ofs = AngleToVector(ang, Spawnofs_xy);
-					Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight, aimflags:hand ? ALF_ISOFFHAND : 0);
+					Actor proj = SpawnPlayerMissile(missile, bangle, ofs.X, ofs.Y, Spawnheight, aimflags: alflags);
 					if (proj)
 					{
 						if (!puff)
@@ -203,11 +205,11 @@ class StateProvider : Inventory
 	{
 		let player = self.player;
 		if (!player) return null;
-
+		int alflags = 0;
 		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon && weapon.bOffhandWeapon)
 		{
-			flags |= FPF_ISOFFHAND;
+			alflags |= ALF_ISOFFHAND;
 		}
 
 		FTranslatedLineTarget t;
@@ -230,7 +232,7 @@ class StateProvider : Inventory
 			// Temporarily adjusts the pitch
 			double saved_player_pitch = self.Pitch;
 			self.Pitch += pitch;
-			let misl = SpawnPlayerMissile (missiletype, shootangle, ofs.X, ofs.Y, spawnheight, t, false, (flags & FPF_NOAUTOAIM) != 0, (flags & FPF_ISOFFHAND) ? ALF_ISOFFHAND : 0);
+			let misl = SpawnPlayerMissile (missiletype, shootangle, ofs.X, ofs.Y, spawnheight, t, false, (flags & FPF_NOAUTOAIM) != 0, alflags);
 			self.Pitch = saved_player_pitch;
 
 			// automatic handling of seeker missiles
