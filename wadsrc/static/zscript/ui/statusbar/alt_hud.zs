@@ -470,6 +470,7 @@ class AltHud ui
 		Inventory inv;
 
 		let wi = CPlayer.ReadyWeapon;
+		let wi2 = CPlayer.OffhandWeapon;
 
 		orderedammos.Clear();
 
@@ -477,6 +478,7 @@ class AltHud ui
 		{
 			// Show ammo for current weapon if any
 			if (wi) AddAmmoToList(wi.default);
+			if (wi2) AddAmmoToList(wi2.default);
 		}
 		else
 		{
@@ -550,6 +552,7 @@ class AltHud ui
 			if (!icon.isValid()) continue;
 
 			double trans= (wi && (type == wi.AmmoType1 || type == wi.AmmoType2)) ? 0.75 : 0.375;
+			trans = (wi2 && (type == wi2.AmmoType1 || type == wi2.AmmoType2)) ? 0.75 : trans;
 
 			int ammo = ammoitem? ammoitem.Amount : 0;
 
@@ -585,11 +588,8 @@ class AltHud ui
 		if (SisterWeapon && (weapon is SisterWeapon.GetClass())) return;
 
 		trans=0.4;
-		let ReadyWeapon = CPlayer.ReadyWeapon;
-		if (ReadyWeapon)
-		{
-			if (weapon == CPlayer.ReadyWeapon || SisterWeapon == CPlayer.ReadyWeapon) trans = 0.85;
-		}
+		if (weapon == CPlayer.ReadyWeapon || SisterWeapon == CPlayer.ReadyWeapon) trans = 0.85;
+		else if (weapon == CPlayer.OffhandWeapon || SisterWeapon == CPlayer.OffhandWeapon) trans = 0.85;
 
 		TextureID picnum = StatusBar.GetInventoryIcon(weapon, StatusBar.DI_ALTICONFIRST);
 
