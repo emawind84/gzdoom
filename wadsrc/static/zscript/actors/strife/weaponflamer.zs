@@ -45,14 +45,18 @@ class FlameThrower : StrifeWeapon
 
 	action void A_FireFlamer ()
 	{
+		int hand = 0;
+		int alflags = 0;
 		if (player == null)
 		{
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			hand = weapon.bOffhandWeapon ? 1 : 0;
+			alflags |= hand ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
@@ -60,7 +64,7 @@ class FlameThrower : StrifeWeapon
 		player.mo.PlayAttacking2 ();
 
 		Angle += Random2[Flamethrower]() * (5.625/256.);
-		Actor mo = SpawnPlayerMissile ("FlameMissile");
+		Actor mo = SpawnPlayerMissile ("FlameMissile", aimflags: alflags);
 		if (mo != NULL)
 		{
 			mo.Vel.Z += 5;

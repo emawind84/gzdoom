@@ -100,18 +100,24 @@ class GoldWandPowered : GoldWand
 
 	action void A_FireGoldWandPL2 ()
 	{
+		int hand = 0;
+		int laflags = 0;
+		int alflags = 0;
 		if (player == null)
 		{
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			hand = weapon.bOffhandWeapon ? 1 : 0;
+			laflags |= hand ? LAF_ISOFFHAND : 0;
+			alflags |= hand ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
-		double pitch = BulletSlope();
+		double pitch = BulletSlope(aimflags: alflags);
 
 		double vz = -GetDefaultByType("GoldWandFX2").Speed * clamp(tan(pitch), -5, 5);
 		SpawnMissileAngle("GoldWandFX2", angle - (45. / 8), vz);
@@ -120,7 +126,7 @@ class GoldWandPowered : GoldWand
 		for(int i = 0; i < 5; i++)
 		{
 			int damage = random[FireGoldWand](1, 8);
-			LineAttack (ang, PLAYERMISSILERANGE, pitch, damage, 'Hitscan', "GoldWandPuff2");
+			LineAttack (ang, PLAYERMISSILERANGE, pitch, damage, 'Hitscan', "GoldWandPuff2", laflags);
 			ang += ((45. / 8) * 2) / 4;
 		}
 		A_StartSound("weapons/wandhit", CHAN_WEAPON);

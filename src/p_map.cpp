@@ -4352,7 +4352,7 @@ DAngle P_AimLineAttack(AActor *t1, DAngle angle, double distance, FTranslatedLin
 		else
 		{
 			// [BB] Disable autoaim on weapons with WIF_NOAUTOAIM.
-			auto weapon = t1->player->ReadyWeapon;
+			auto weapon = !!(flags & ALF_ISOFFHAND) ? t1->player->OffhandWeapon : t1->player->ReadyWeapon;
 			if ((weapon && (weapon->IntVar(NAME_WeaponFlags) & WIF_NOAUTOAIM)) && !(flags & ALF_NOWEAPONCHECK))
 			{
 				vrange = 0.5;

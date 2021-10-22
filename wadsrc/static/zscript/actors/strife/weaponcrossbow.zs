@@ -82,14 +82,18 @@ class StrifeCrossbow : StrifeWeapon
 
 	action void A_FireArrow (class<Actor> proj)
 	{
+		int hand = 0;
+		int alflags = 0;
 		if (player == null)
 		{
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			hand = weapon.bOffhandWeapon ? 1 : 0;
+			alflags |= hand ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
@@ -98,7 +102,7 @@ class StrifeCrossbow : StrifeWeapon
 			double savedangle = angle;
 			angle += Random2[Electric]() * (5.625/256) * AccuracyFactor();
 			player.mo.PlayAttacking2 ();
-			SpawnPlayerMissile (proj);
+			SpawnPlayerMissile (proj, aimflags: alflags);
 			angle = savedangle;
 			A_StartSound ("weapons/xbowshoot", CHAN_WEAPON);
 		}
