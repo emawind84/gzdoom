@@ -880,8 +880,16 @@ class Weapon : StateProvider
 				if (player.PendingWeapon == NULL ||	player.PendingWeapon == WP_NOCHANGE)
 				{
 					player.refire = 0;
-					player.ReadyWeapon = SisterWeapon;
-					player.SetPsprite(PSP_WEAPON, SisterWeapon.GetReadyState());
+					if (SisterWeapon.bOffhandWeapon)
+					{
+						player.OffhandWeapon = SisterWeapon;
+						player.SetPsprite(PSP_OFFHANDWEAPON, SisterWeapon.GetReadyState());
+					}
+					else
+					{
+						player.ReadyWeapon = SisterWeapon;
+						player.SetPsprite(PSP_WEAPON, SisterWeapon.GetReadyState());
+					}
 				}
 			}
 			else
