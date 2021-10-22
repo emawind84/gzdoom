@@ -2117,12 +2117,14 @@ class PlayerPawn : Actor
 		if (weap != NULL && weap.bPOWERED_UP && p.PendingWeapon == weap.SisterWeapon)
 		{
 			// Unselect powered up weapons if the unpowered counterpart is pending
+			p.PendingWeapon.bOffhandWeapon = false;  // remove offhand flag to avoid issues
 			p.ReadyWeapon = p.PendingWeapon;
 		}
 		weap = p.OffhandWeapon;
 		if (weap != NULL && weap.bPOWERED_UP && p.PendingWeapon == weap.SisterWeapon)
 		{
 			// Unselect powered up weapons if the unpowered counterpart is pending
+			p.PendingWeapon.bOffhandWeapon = true;  // we force offhand here to avoid issues
 			p.OffhandWeapon = p.PendingWeapon;
 		}
 		// reset invisibility to default

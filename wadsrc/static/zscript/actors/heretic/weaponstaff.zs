@@ -48,15 +48,17 @@ class Staff : HereticWeapon
 		}
 
 		int laflags = LAF_ISMELEEATTACK;
+		int alflags = 0;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
 			laflags |= weapon.bOffhandWeapon ? LAF_ISOFFHAND : 0;
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
 		double ang = angle + Random2[StaffAtk]() * (5.625 / 256);
-		double slope = AimLineAttack (ang, DEFMELEERANGE);
+		double slope = AimLineAttack (ang, DEFMELEERANGE, flags: alflags);
 		LineAttack (ang, DEFMELEERANGE, slope, damage, 'Melee', puff, laflags, t);
 		if (t.linetarget)
 		{

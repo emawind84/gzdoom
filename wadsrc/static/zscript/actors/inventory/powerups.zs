@@ -1092,11 +1092,13 @@ class PowerWeaponLevel2 : Powerup
 
 	private void ApplyEffect(Weapon weap)
 	{
+		let player = Owner.player;
+		if (player == null)
+			return;
+
 		if (weap == null)
 			return;
 
-		int hand = weap.bOffhandWeapon ? 1 : 0;
-		int psplayer = hand ? PSP_OFFHANDWEAPON : PSP_WEAPON;
 		let sister = weap.SisterWeapon;
 
 		if (sister == null)
@@ -1105,6 +1107,9 @@ class PowerWeaponLevel2 : Powerup
 		if (!sister.bPowered_Up)
 			return;
 
+		sister.bOffhandWeapon = weap.bOffhandWeapon;
+		int hand = sister.bOffhandWeapon ? 1 : 0;
+		int psplayer = hand ? PSP_OFFHANDWEAPON : PSP_WEAPON;
 		let ready = sister.GetReadyState();
 		if (weap.GetReadyState() != ready)
 		{

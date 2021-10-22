@@ -98,6 +98,7 @@ class PhoenixRodPowered : PhoenixRod
 		DepleteAmmo (bAltFire);
 		Owner.player.refire = 0;
 		Owner.A_StopSound (CHAN_WEAPON);
+		SisterWeapon.bOffhandWeapon = self.bOffhandWeapon;
 		if (SisterWeapon.bOffhandWeapon)
 		{
 			Owner.player.OffhandWeapon = SisterWeapon;
@@ -120,7 +121,12 @@ class PhoenixRodPowered : PhoenixRod
 	{
 		if (player != null)
 		{
-			PhoenixRodPowered flamethrower = PhoenixRodPowered(player.ReadyWeapon);
+			Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+			if (weapon == null)
+			{
+				return;
+			}
+			PhoenixRodPowered flamethrower = PhoenixRodPowered(weapon);
 			if (flamethrower != null)
 			{
 				flamethrower.FlameCount = FLAME_THROWER_TICS;
@@ -143,11 +149,17 @@ class PhoenixRodPowered : PhoenixRod
 			return;
 		}
 
-		PhoenixRodPowered flamethrower = PhoenixRodPowered(player.ReadyWeapon);
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon == null)
+		{
+			return;
+		}
+
+		PhoenixRodPowered flamethrower = PhoenixRodPowered(weapon);
 		
 		if (flamethrower == null || --flamethrower.FlameCount == 0)
 		{ // Out of flame
-			player.SetPsprite(PSP_WEAPON, flamethrower.FindState("Powerdown"));
+			player.SetPsprite(weapon.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, flamethrower.FindState("Powerdown"));
 			player.refire = 0;
 			A_StopSound (CHAN_WEAPON);
 			return;

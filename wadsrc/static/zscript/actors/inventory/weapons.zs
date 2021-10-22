@@ -874,41 +874,36 @@ class Weapon : StateProvider
 		let player = Owner.player;
 		if (SisterWeapon != NULL && bPowered_Up)
 		{
+			SisterWeapon.bOffhandWeapon = self.bOffhandWeapon;
+			int hand = SisterWeapon.bOffhandWeapon ? 1 : 0;
 			let ready = GetReadyState();
 			if (ready != SisterWeapon.GetReadyState())
 			{
 				if (player.PendingWeapon == NULL ||	player.PendingWeapon == WP_NOCHANGE)
 				{
 					player.refire = 0;
-					if (SisterWeapon.bOffhandWeapon)
-					{
-						player.OffhandWeapon = SisterWeapon;
-						player.SetPsprite(PSP_OFFHANDWEAPON, SisterWeapon.GetReadyState());
-					}
-					else
-					{
-						player.ReadyWeapon = SisterWeapon;
-						player.SetPsprite(PSP_WEAPON, SisterWeapon.GetReadyState());
-					}
+					if (hand == 0) player.ReadyWeapon = SisterWeapon;
+					if (hand == 1) player.OffhandWeapon = SisterWeapon;
+					player.SetPsprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON, SisterWeapon.GetReadyState());
 				}
 			}
 			else
 			{
-				let psp = player.FindPSprite(PSP_WEAPON);
-				if (psp != null && psp.Caller == player.ReadyWeapon && psp.CurState.InStateSequence(ready))
+				let psp = player.FindPSprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON);
+				let weap = hand ? player.OffhandWeapon : player.ReadyWeapon;
+				if (psp != null && psp.Caller == weap && psp.CurState.InStateSequence(ready))
 				{
 					// If the weapon changes but the state does not, we have to manually change the PSprite's caller here.
 					psp.Caller = SisterWeapon;
-					player.ReadyWeapon = SisterWeapon;
+					if (hand == 0) player.ReadyWeapon = SisterWeapon;
+					if (hand == 1) player.OffhandWeapon = SisterWeapon;
 				}
 				else 
 				{
 					if (player.PendingWeapon == NULL || player.PendingWeapon == WP_NOCHANGE)
 					{
 						// Something went wrong. Initiate a regular weapon change.
-						player.refire = 0;
-						player.ReadyWeapon = SisterWeapon;
-						player.SetPsprite(PSP_WEAPON, SisterWeapon.GetReadyState());
+						player.PendingWeapon = SisterWeapon;
 					}
 				}
 			}
