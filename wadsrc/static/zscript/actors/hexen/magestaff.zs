@@ -184,15 +184,17 @@ class MWeapBloodscourge : MageWeapon
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != NULL)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
 		
 		// [RH] Let's try and actually track what the player aimed at
-		AimLineAttack (angle, PLAYERMISSILERANGE, t, 32.);
+		AimLineAttack (angle, PLAYERMISSILERANGE, t, 32., alflags);
 		if (t.linetarget == NULL)
 		{
 			t.linetarget = RoughMonsterSearch(10, true, true);

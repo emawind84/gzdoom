@@ -60,9 +60,11 @@ class MWeapFrost : MageWeapon
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
@@ -72,7 +74,7 @@ class MWeapFrost : MageWeapon
 		for (int i = 0; i < 16; i++)
 		{
 			double ang = angle + i*(45./16);
-			double slope = AimLineAttack (ang, DEFMELEERANGE, t, 0., ALF_CHECK3D);
+			double slope = AimLineAttack (ang, DEFMELEERANGE, t, 0., ALF_CHECK3D | alflags);
 			if (t.linetarget)
 			{
 				t.linetarget.DamageMobj (self, self, damage, 'Ice', DMG_USEANGLE, t.angleFromSource);
@@ -84,7 +86,7 @@ class MWeapFrost : MageWeapon
 		// didn't find any creatures, so fire projectiles
 		if (!conedone)
 		{
-			Actor mo = SpawnPlayerMissile ("FrostMissile");
+			Actor mo = SpawnPlayerMissile ("FrostMissile", aimflags: alflags);
 			if (mo)
 			{
 				mo.special1 = FrostMissile.SHARDSPAWN_LEFT|FrostMissile.SHARDSPAWN_DOWN|FrostMissile.SHARDSPAWN_UP|FrostMissile.SHARDSPAWN_RIGHT;

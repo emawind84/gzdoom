@@ -89,7 +89,7 @@ class MWeapLightning : MageWeapon
 
 		if (player != NULL)
 		{
-			Weapon weapon = player.ReadyWeapon;
+			Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 			if (weapon != NULL)
 			{
 				weapon.DepleteAmmo (weapon.bAltFire);

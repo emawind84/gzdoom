@@ -56,7 +56,16 @@ class FWeapFist : FighterWeapon
 		Class<Actor> pufftype;
 		FTranslatedLineTarget t;
 
-		double slope = AimLineAttack (angle, 2*DEFMELEERANGE, t, 0., ALF_CHECK3D);
+		int alflags = 0;
+		int laflags = LAF_ISMELEEATTACK;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon != null && weapon.bOffhandWeapon)
+		{
+			alflags |= ALF_ISOFFHAND;
+			laflags |= LAF_ISOFFHAND;
+		}
+
+		double slope = AimLineAttack (angle, 2*DEFMELEERANGE, t, 0., ALF_CHECK3D | alflags);
 		if (t.linetarget != null)
 		{
 			if (++weaponspecial >= 3)
@@ -69,7 +78,7 @@ class FWeapFist : FighterWeapon
 			{
 				pufftype = "PunchPuff";
 			}
-			LineAttack (angle, 2*DEFMELEERANGE, slope, damage, 'Melee', pufftype, true, t);
+			LineAttack (angle, 2*DEFMELEERANGE, slope, damage, 'Melee', pufftype, laflags, t);
 			if (t.linetarget != null)
 			{
 				// The mass threshold has been changed to CommanderKeen's value which has been used most often for 'unmovable' stuff.
@@ -99,6 +108,15 @@ class FWeapFist : FighterWeapon
 			return;
 		}
 
+		int alflags = 0;
+		int laflags = LAF_ISMELEEATTACK;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon != null && weapon.bOffhandWeapon)
+		{
+			alflags |= ALF_ISOFFHAND;
+			laflags |= LAF_ISOFFHAND;
+		}
+
 		int damage = random[FighterAtk](40, 55);
 		for (int i = 0; i < 16; i++)
 		{
@@ -117,8 +135,8 @@ class FWeapFist : FighterWeapon
 		// didn't find any creatures, so try to strike any walls
 		weaponspecial = 0;
 
-		double slope = AimLineAttack (angle, DEFMELEERANGE, null, 0., ALF_CHECK3D);
-		LineAttack (angle, DEFMELEERANGE, slope, damage, 'Melee', "PunchPuff", true);
+		double slope = AimLineAttack (angle, DEFMELEERANGE, null, 0., ALF_CHECK3D | alflags);
+		LineAttack (angle, DEFMELEERANGE, slope, damage, 'Melee', "PunchPuff", laflags);
 	}
 	
 }

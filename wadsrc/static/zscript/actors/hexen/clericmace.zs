@@ -60,16 +60,25 @@ class CWeapMace : ClericWeapon
 			return;
 		}
 
+		int alflags = 0;
+		int laflags = LAF_ISMELEEATTACK;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon != null && weapon.bOffhandWeapon)
+		{
+			alflags |= ALF_ISOFFHAND;
+			laflags |= LAF_ISOFFHAND;
+		}
+
 		int damage = random[MaceAtk](25, 40);
 		for (int i = 0; i < 16; i++)
 		{
 			for (int j = 1; j >= -1; j -= 2)
 			{
 				double ang = angle + j*i*(45. / 16);
-				double slope = AimLineAttack(ang, 2 * DEFMELEERANGE, t, 0., ALF_CHECK3D);
+				double slope = AimLineAttack(ang, 2 * DEFMELEERANGE, t, 0., ALF_CHECK3D | alflags);
 				if (t.linetarget)
 				{
-					LineAttack(ang, 2 * DEFMELEERANGE, slope, damage, 'Melee', "HammerPuff", true, t);
+					LineAttack(ang, 2 * DEFMELEERANGE, slope, damage, 'Melee', "HammerPuff", laflags, t);
 					if (t.linetarget != null)
 					{
 						AdjustPlayerAngle(t);
@@ -81,7 +90,7 @@ class CWeapMace : ClericWeapon
 		// didn't find any creatures, so try to strike any walls
 		weaponspecial = 0;
 
-		double slope = AimLineAttack (angle, DEFMELEERANGE, null, 0., ALF_CHECK3D);
-		LineAttack (angle, DEFMELEERANGE, slope, damage, 'Melee', "HammerPuff");
+		double slope = AimLineAttack (angle, DEFMELEERANGE, null, 0., ALF_CHECK3D | alflags);
+		LineAttack (angle, DEFMELEERANGE, slope, damage, 'Melee', "HammerPuff", laflags);
 	}
 }

@@ -110,10 +110,10 @@ class FWeapAxe : FighterWeapon
 		{
 			return;
 		}
-		Weapon w = player.ReadyWeapon;
+		Weapon w = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (w.Ammo1 && w.Ammo1.Amount > 0)
 		{
-			player.SetPsprite(PSP_WEAPON, w.FindState("ReadyGlow"));
+			player.SetPsprite(w.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, w.FindState("ReadyGlow"));
 		}
 		else
 		{
@@ -133,10 +133,10 @@ class FWeapAxe : FighterWeapon
 		{
 			return;
 		}
-		Weapon w = player.ReadyWeapon;
+		Weapon w = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (!w.Ammo1 || w.Ammo1.Amount <= 0)
 		{
-			player.SetPsprite(PSP_WEAPON, w.FindState("Ready"));
+			player.SetPsprite(w.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, w.FindState("Ready"));
 		}
 		else
 		{
@@ -156,10 +156,10 @@ class FWeapAxe : FighterWeapon
 		{
 			return;
 		}
-		Weapon w = player.ReadyWeapon;
+		Weapon w = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (w.Ammo1 && w.Ammo1.Amount > 0)
 		{
-			player.SetPsprite(PSP_WEAPON, w.FindState("SelectGlow"));
+			player.SetPsprite(w.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, w.FindState("SelectGlow"));
 		}
 		else
 		{
@@ -179,10 +179,10 @@ class FWeapAxe : FighterWeapon
 		{
 			return;
 		}
-		Weapon w = player.ReadyWeapon;
+		Weapon w = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (!w.Ammo1 || w.Ammo1.Amount <= 0)
 		{
-			player.SetPsprite(PSP_WEAPON, w.FindState("Select"));
+			player.SetPsprite(w.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, w.FindState("Select"));
 		}
 		else
 		{
@@ -202,10 +202,10 @@ class FWeapAxe : FighterWeapon
 		{
 			return;
 		}
-		Weapon w = player.ReadyWeapon;
+		Weapon w = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (w.Ammo1 && w.Ammo1.Amount > 0)
 		{
-			player.SetPsprite(PSP_WEAPON, w.FindState("FireGlow"));
+			player.SetPsprite(w.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, w.FindState("FireGlow"));
 		}
 	}
 
@@ -232,7 +232,8 @@ class FWeapAxe : FighterWeapon
 		{
 			return;
 		}
-		int laflags = LAF_ISMELEEATTACK | (weapon.bOffhandWeapon) ? LAF_ISOFFHAND : 0;
+		int laflags = LAF_ISMELEEATTACK | (weapon.bOffhandWeapon ? LAF_ISOFFHAND : 0);
+		int alflags = weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 		int psplayer = weapon.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON;
 		class<Actor> pufftype;
 		int usemana;
@@ -251,7 +252,7 @@ class FWeapAxe : FighterWeapon
 			for (int j = 1; j >= -1; j -= 2)
 			{
 				double ang = angle + j*i*(45. / 16);
-				double slope = AimLineAttack(ang, AXERANGE, t, 0., ALF_CHECK3D);
+				double slope = AimLineAttack(ang, AXERANGE, t, 0., ALF_CHECK3D | alflags);
 				if (t.linetarget)
 				{
 					LineAttack(ang, AXERANGE, slope, damage, 'Melee', pufftype, laflags, t);

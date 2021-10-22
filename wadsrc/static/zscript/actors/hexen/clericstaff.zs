@@ -119,19 +119,20 @@ class CWeapStaff : ClericWeapon
 		{
 			return;
 		}
-
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
-		Actor mo = SpawnPlayerMissile ("CStaffMissile", angle - 3.0);
+		Actor mo = SpawnPlayerMissile ("CStaffMissile", angle - 3.0, aimflags: alflags);
 		if (mo)
 		{
 			mo.WeaveIndexXY = 32;
 		}
-		mo = SpawnPlayerMissile ("CStaffMissile", angle + 3.0);
+		mo = SpawnPlayerMissile ("CStaffMissile", angle + 3.0, aimflags: alflags);
 		if (mo)
 		{
 			mo.WeaveIndexXY = 0;
@@ -158,11 +159,16 @@ class CWeapStaff : ClericWeapon
 
 	action void A_CStaffCheckBlink()
 	{
-		if (player && player.ReadyWeapon)
+		if (player)
 		{
+			Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+			if (weapon == null)
+			{
+				return;
+			}
 			if (!--weaponspecial)
 			{
-				player.SetPsprite(PSP_WEAPON, player.ReadyWeapon.FindState ("Blink"));
+				player.SetPsprite(PSP_WEAPON, weapon.FindState ("Blink"));
 				weaponspecial = (random[CStaffBlink]() + 50) >> 2;
 			}
 			else 

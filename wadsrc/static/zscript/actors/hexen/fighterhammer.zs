@@ -65,16 +65,25 @@ class FWeapHammer : FighterWeapon
 			return;
 		}
 
+		int laflags = LAF_ISMELEEATTACK;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+		if (weapon != null && weapon.bOffhandWeapon)
+		{
+			laflags |= LAF_ISOFFHAND;
+			alflags |= ALF_ISOFFHAND;
+		}
+		
 		int damage = random[HammerAtk](60, 123);
 		for (int i = 0; i < 16; i++)
 		{
 			for (int j = 1; j >= -1; j -= 2)
 			{
 				double ang = angle + j*i*(45. / 32);
-				double slope = AimLineAttack(ang, HAMMER_RANGE, t, 0., ALF_CHECK3D);
+				double slope = AimLineAttack(ang, HAMMER_RANGE, t, 0., ALF_CHECK3D | alflags);
 				if (t.linetarget != null)
 				{
-					LineAttack(ang, HAMMER_RANGE, slope, damage, 'Melee', "HammerPuff", true, t);
+					LineAttack(ang, HAMMER_RANGE, slope, damage, 'Melee', "HammerPuff", laflags, t);
 					if (t.linetarget != null)
 					{
 						AdjustPlayerAngle(t);
@@ -89,12 +98,12 @@ class FWeapHammer : FighterWeapon
 			}
 		}
 		// didn't find any targets in meleerange, so set to throw out a hammer
-		double slope = AimLineAttack (angle, HAMMER_RANGE, null, 0., ALF_CHECK3D);
-		weaponspecial = (LineAttack (angle, HAMMER_RANGE, slope, damage, 'Melee', "HammerPuff", true) == null);
+		double slope = AimLineAttack (angle, HAMMER_RANGE, null, 0., ALF_CHECK3D | alflags);
+		weaponspecial = (LineAttack (angle, HAMMER_RANGE, slope, damage, 'Melee', "HammerPuff", laflags) == null);
 
 		// Don't spawn a hammer if the player doesn't have enough mana
-		if (player.ReadyWeapon == null ||
-			!player.ReadyWeapon.CheckAmmo (player.ReadyWeapon.bAltFire ?
+		if (weapon == null ||
+			!weapon.CheckAmmo (weapon.bAltFire ?
 				Weapon.AltFire : Weapon.PrimaryFire, false, true))
 		{ 
 			weaponspecial = false;
@@ -118,13 +127,15 @@ class FWeapHammer : FighterWeapon
 		{
 			return;
 		}
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire, false))
 				return;
 		}
-		Actor mo = SpawnPlayerMissile ("HammerMissile"); 
+		Actor mo = SpawnPlayerMissile ("HammerMissile", aimflags: alflags); 
 		if (mo)
 		{
 			mo.special1 = 0;
