@@ -47,13 +47,15 @@ class SkullRod : HereticWeapon
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
-		Actor mo = SpawnPlayerMissile ("HornRodFX1");
+		Actor mo = SpawnPlayerMissile ("HornRodFX1", aimflags: alflags);
 		// Randomize the first frame
 		if (mo && random[FireSkullRod]() > 128)
 		{
@@ -108,16 +110,18 @@ class SkullRodPowered : SkullRod
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
 		// Use MissileActor instead of the first return value from P_SpawnPlayerMissile 
 		// because we need to give info to it, even if it exploded immediately.
 		Actor mo, MissileActor;
-		[mo, MissileActor] = SpawnPlayerMissile ("HornRodFX2", angle, pLineTarget: t);
+		[mo, MissileActor] = SpawnPlayerMissile ("HornRodFX2", angle, pLineTarget: t, aimflags: alflags);
 		if (MissileActor != null)
 		{
 			if (t.linetarget && !t.unlinked)

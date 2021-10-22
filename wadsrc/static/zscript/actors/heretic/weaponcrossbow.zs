@@ -48,16 +48,17 @@ class Crossbow : HereticWeapon
 		{
 			return;
 		}
-
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
-		SpawnPlayerMissile ("CrossbowFX1");
-		SpawnPlayerMissile ("CrossbowFX3", angle - 4.5);
-		SpawnPlayerMissile ("CrossbowFX3", angle + 4.5);
+		SpawnPlayerMissile ("CrossbowFX1", aimflags: alflags);
+		SpawnPlayerMissile ("CrossbowFX3", angle - 4.5, aimflags: alflags);
+		SpawnPlayerMissile ("CrossbowFX3", angle + 4.5, aimflags: alflags);
 	}
 }
 
@@ -99,17 +100,19 @@ class CrossbowPowered : Crossbow
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
-		SpawnPlayerMissile ("CrossbowFX2");
-		SpawnPlayerMissile ("CrossbowFX2", angle - 4.5);
-		SpawnPlayerMissile ("CrossbowFX2", angle + 4.5);
-		SpawnPlayerMissile ("CrossbowFX3", angle - 9.);
-		SpawnPlayerMissile ("CrossbowFX3", angle + 9.);
+		SpawnPlayerMissile ("CrossbowFX2", aimflags: alflags);
+		SpawnPlayerMissile ("CrossbowFX2", angle - 4.5, aimflags: alflags);
+		SpawnPlayerMissile ("CrossbowFX2", angle + 4.5, aimflags: alflags);
+		SpawnPlayerMissile ("CrossbowFX3", angle - 9., aimflags: alflags);
+		SpawnPlayerMissile ("CrossbowFX3", angle + 9., aimflags: alflags);
 	}
 }
 

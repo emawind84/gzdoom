@@ -49,10 +49,13 @@ class Mace : HereticWeapon
 		{
 			return;
 		}
-
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		int hand = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			hand = weapon.bOffhandWeapon ? 1 : 0;
+			alflags |= hand ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
@@ -74,13 +77,13 @@ class Mace : HereticWeapon
 		}
 		else
 		{
-			let psp = player.GetPSprite(PSP_WEAPON);
+			let psp = player.GetPSprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 			if (psp)
 			{
 				psp.x = random[MaceAtk](-2, 1);
 				psp.y = WEAPONTOP + random[MaceAtk](0, 3);
 			}
-			Actor ball = SpawnPlayerMissile("MaceFX1", angle + (random[MaceAtk](-4, 3) * (360. / 256)));
+			Actor ball = SpawnPlayerMissile("MaceFX1", angle + (random[MaceAtk](-4, 3) * (360. / 256)), aimflags: alflags);
 			if (ball)
 			{
 				ball.special1 = 16; // tics till dropoff
@@ -126,13 +129,15 @@ class MacePowered : Mace
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
-		Actor mo = SpawnPlayerMissile ("MaceFX4", angle, pLineTarget:t);
+		Actor mo = SpawnPlayerMissile ("MaceFX4", angle, pLineTarget:t, aimflags: alflags);
 		if (mo)
 		{
 			mo.Vel.xy += Vel.xy;

@@ -61,13 +61,19 @@ class Gauntlets : Weapon
 			return;
 		}
 
-		Weapon weapon = player.ReadyWeapon;
+		int hand = 0;
+		int laflags = 0;
+		int alflags = 0;
+		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			hand = weapon.bOffhandWeapon ? 1 : 0;
+			laflags |= hand ? LAF_ISOFFHAND : 0;
+			alflags |= hand ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 			
-			let psp = player.GetPSprite(PSP_WEAPON);
+			let psp = player.GetPSprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 			if (psp)
 			{
 				psp.x = ((random[GauntletAtk](0, 3)) - 2);
@@ -89,8 +95,8 @@ class Gauntlets : Weapon
 			ang += random2[GauntletAtk]() * (5.625 / 256);
 			pufftype = "GauntletPuff1";
 		}
-		double slope = AimLineAttack (ang, dist);
-		[puff, actualdamage] = LineAttack (ang, dist, slope, damage, 'Melee', pufftype, false, t);
+		double slope = AimLineAttack (ang, dist, flags: alflags);
+		[puff, actualdamage] = LineAttack (ang, dist, slope, damage, 'Melee', pufftype, laflags, t);
 		if (!t.linetarget)
 		{
 			if (random[GauntletAtk]() > 64)
