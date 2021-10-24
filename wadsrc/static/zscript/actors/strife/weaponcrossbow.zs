@@ -71,7 +71,7 @@ class StrifeCrossbow : StrifeWeapon
 		if (player != null)
 		{
 			Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-			player.SetPsprite (PSP_FLASH, weapon.FindState('Flash'));
+			player.SetPsprite (PSP_FLASH, weapon.FindState('Flash'), false, weapon);
 		}
 	}
 

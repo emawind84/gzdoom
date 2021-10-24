@@ -65,7 +65,7 @@ class StrifeGrenadeLauncher : StrifeWeapon
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 
-			player.SetPsprite (PSP_FLASH, weapon.FindState(flash), true);
+			player.SetPsprite (PSP_FLASH, weapon.FindState(flash), true, weapon);
 		}
 
 		if (grenadetype != null)
