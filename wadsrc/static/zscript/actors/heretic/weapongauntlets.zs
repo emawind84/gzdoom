@@ -8,6 +8,7 @@ class Gauntlets : Weapon
 		Weapon.SelectionOrder 2300;
 		+WEAPON.WIMPY_WEAPON
 		+WEAPON.MELEEWEAPON
+		+WEAPON.TWOHANDED
 		Weapon.Kickback 0;
 		Weapon.YAdjust 15;
 		Weapon.UpSound "weapons/gauntletsactivate";

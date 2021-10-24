@@ -8,6 +8,7 @@ class FWeapFist : FighterWeapon
 		+BLOODSPLATTER
 		Weapon.SelectionOrder 3400;
 		+WEAPON.MELEEWEAPON
+		+WEAPON.TWOHANDED
 		Weapon.KickBack 150;
 		Obituary "$OB_MPFWEAPFIST";
 		Tag "$TAG_FWEAPFIST";

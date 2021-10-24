@@ -512,7 +512,7 @@ class PlayerPawn : Actor
 		if (!player) return;
 		int hand = 0;
 		
-		if (player.PendingWeapon != WP_NOCHANGE)
+		if (player.PendingWeapon != NULL && player.PendingWeapon != WP_NOCHANGE)
 		{
 			hand = player.PendingWeapon.bOffhandWeapon ? 1 : 0;
 			if ((player.ReadyWeapon == null && !hand) ||
@@ -1787,18 +1787,29 @@ class PlayerPawn : Actor
 		}
 
 		player.PendingWeapon = WP_NOCHANGE;
-		if (weapon != null && weapon.bOffhandWeapon)
-		{
-			player.OffhandWeapon = weapon;
-		}
-		else
-		{
-			player.ReadyWeapon = weapon;
-		}
 		player.mo.weaponspecial = 0;
 
 		if (weapon != null)
 		{
+			player.SetPsprite(PSP_FLASH, null);
+			if (weapon.bOffhandWeapon)
+			{
+				player.OffhandWeapon = weapon;
+				if (weapon.bTwoHanded || (player.ReadyWeapon && player.ReadyWeapon.bTwoHanded))
+				{
+					player.SetPsprite(PSP_WEAPON, null);
+					player.ReadyWeapon = NULL;
+				}
+			}
+			else
+			{
+				player.ReadyWeapon = weapon;
+				if (weapon.bTwoHanded || (player.OffhandWeapon && player.OffhandWeapon.bTwoHanded))
+				{
+					player.SetPsprite(PSP_OFFHANDWEAPON, null);
+					player.OffhandWeapon = NULL;
+				}
+			}
 			weapon.PlayUpSound(self);
 			player.refire = 0;
 
@@ -2276,13 +2287,13 @@ class PlayerPawn : Actor
 		{
 			let nextweap = player.mo.PickNextWeapon(1 - hand);
 			player.OffhandWeapon = player.ReadyWeapon = null;
-			if (nextweap != weap) {
-				player.PendingWeapon = nextweap;
-				player.mo.BringUpWeapon();
-			}
 			weap.bOffhandWeapon = hand == 1;
 			player.PendingWeapon = weap;
 			player.mo.BringUpWeapon();
+			if (nextweap != weap && !weap.bTwoHanded) {
+				player.PendingWeapon = nextweap;
+				player.mo.BringUpWeapon();
+			}
 		}
 	}
 

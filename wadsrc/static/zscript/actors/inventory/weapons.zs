@@ -82,6 +82,7 @@ class Weapon : StateProvider
 	flagdef CheatNotWeapon: WeaponFlags, 18;	// Give cheat considers this not a weapon (used by Sigil)
 	flagdef OffhandWeapon: WeaponFlags, 19;		// weapon is an offhand weapon
 	flagdef NoHandSwitch: WeaponFlags, 20;		// weapon cannot be moved from one hand to another
+	flagdef TwoHanded: WeaponFlags, 21;			// two handed weapon
 
 	// no-op flags
 	flagdef NoLMS: none, 0;
