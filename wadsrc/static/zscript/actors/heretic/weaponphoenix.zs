@@ -155,11 +155,12 @@ class PhoenixRodPowered : PhoenixRod
 			return;
 		}
 
+		int hand = weapon.bOffhandWeapon ? 1 : 0;
 		PhoenixRodPowered flamethrower = PhoenixRodPowered(weapon);
 		
 		if (flamethrower == null || --flamethrower.FlameCount == 0)
 		{ // Out of flame
-			player.SetPsprite(weapon.bOffhandWeapon ? PSP_OFFHANDWEAPON : PSP_WEAPON, flamethrower.FindState("Powerdown"));
+			player.SetPsprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON, flamethrower.FindState("Powerdown"));
 			player.refire = 0;
 			A_StopSound (CHAN_WEAPON);
 			return;
@@ -174,10 +175,20 @@ class PhoenixRodPowered : PhoenixRod
 		let directionPitch = pitch;
 		if (player.mo.OverrideAttackPosDir)
 		{
-			spawnpos = player.mo.AttackPos;
-			let dir = player.mo.AttackDir(self, angle, pitch);
-			directionAngle = dir.x;
-			directionPitch = dir.y;
+			if (hand == 1)
+			{
+				spawnpos = player.mo.OffhandPos;
+				let dir = player.mo.OffhandDir(self, angle, pitch);
+				directionAngle = dir.x;
+				directionPitch = dir.y;
+			}
+			else
+			{
+				spawnpos = player.mo.AttackPos;
+				let dir = player.mo.AttackDir(self, angle, pitch);
+				directionAngle = dir.x;
+				directionPitch = dir.y;
+			}
 			spawnpos.X += xo;
 			spawnpos.Y += yo;
 			slope = -clamp(tan(directionPitch), -5, 5);
