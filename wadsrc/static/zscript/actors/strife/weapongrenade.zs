@@ -57,9 +57,11 @@ class StrifeGrenadeLauncher : StrifeWeapon
 			return;
 		}
 
+		int alflags = 0;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 
@@ -69,7 +71,7 @@ class StrifeGrenadeLauncher : StrifeWeapon
 		if (grenadetype != null)
 		{
 			AddZ(32);
-			Actor grenade = SpawnSubMissile (grenadetype, self);
+			Actor grenade = SpawnSubMissile (grenadetype, self, alflags);
 			AddZ(-32);
 			if (grenade == null)
 				return;

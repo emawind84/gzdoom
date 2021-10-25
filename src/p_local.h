@@ -135,7 +135,7 @@ AActor *P_SpawnPlayerMissile (AActor *source, double x, double y, double z, PCla
 
 void P_CheckFakeFloorTriggers(AActor *mo, double oldz, bool oldz_has_viewheight = false);
 
-AActor *P_SpawnSubMissile (AActor *source, PClassActor *type, AActor *target);	// Strife uses it
+AActor *P_SpawnSubMissile (AActor *source, PClassActor *type, AActor *target, int aimflags = 0);	// Strife uses it
 
 
 //
