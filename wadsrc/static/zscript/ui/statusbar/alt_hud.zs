@@ -588,8 +588,14 @@ class AltHud ui
 		if (SisterWeapon && (weapon is SisterWeapon.GetClass())) return;
 
 		trans=0.4;
-		if (weapon == CPlayer.ReadyWeapon || SisterWeapon == CPlayer.ReadyWeapon) trans = 0.85;
-		else if (weapon == CPlayer.OffhandWeapon || SisterWeapon == CPlayer.OffhandWeapon) trans = 0.85;
+		if ( weapon && (weapon == CPlayer.ReadyWeapon || weapon == CPlayer.OffhandWeapon))
+		{
+			trans = 0.85;
+		}
+		else if ( SisterWeapon && (SisterWeapon == CPlayer.ReadyWeapon || SisterWeapon == CPlayer.OffhandWeapon))
+		{
+			trans = 0.85;
+		}
 
 		TextureID picnum = StatusBar.GetInventoryIcon(weapon, StatusBar.DI_ALTICONFIRST);
 
