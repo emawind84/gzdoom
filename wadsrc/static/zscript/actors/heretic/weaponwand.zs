@@ -122,8 +122,8 @@ class GoldWandPowered : GoldWand
 		double pitch = BulletSlope(aimflags: alflags);
 
 		double vz = -GetDefaultByType("GoldWandFX2").Speed * clamp(tan(pitch), -5, 5);
-		SpawnMissileAngle("GoldWandFX2", angle - (45. / 8), vz);
-		SpawnMissileAngle("GoldWandFX2", angle + (45. / 8), vz);
+		SpawnMissileAngle("GoldWandFX2", angle - (45. / 8), vz, aimflags: alflags);
+		SpawnMissileAngle("GoldWandFX2", angle + (45. / 8), vz, aimflags: alflags);
 		double ang = angle - (45. / 8);
 		for(int i = 0; i < 5; i++)
 		{
