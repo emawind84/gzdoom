@@ -196,8 +196,8 @@ void FGLRenderer::Initialize(int width, int height)
 	// needed for the core profile, because someone decided it was a good idea to remove the default VAO.
 	if (!gl.legacyMode)
 	{
-		glGenVertexArrays(1, &mVAOID);
-		glBindVertexArray(mVAOID);
+		GL(glGenVertexArrays(1, &mVAOID));
+		GL(glBindVertexArray(mVAOID));
 		FGLDebug::LabelObject(GL_VERTEX_ARRAY, mVAOID, "FGLRenderer.mVAOID");
 	}
 	else mVAOID = 0;
@@ -256,11 +256,14 @@ FGLRenderer::~FGLRenderer()
 
 	if (syncBuff) delete []syncBuff;
 
-	if (mFBID != 0) glDeleteFramebuffers(1, &mFBID);
+	if (mFBID != 0) 
+	{
+		GL(glDeleteFramebuffers(1, &mFBID));
+	}
 	if (mVAOID != 0)
 	{
-		glBindVertexArray(0);
-		glDeleteVertexArrays(1, &mVAOID);
+		GL(glBindVertexArray(0));
+		GL(glDeleteVertexArrays(1, &mVAOID));
 	}
 	if (mBuffers) delete mBuffers;
 	if (mPresentShader) delete mPresentShader;
@@ -439,8 +442,8 @@ void FGLRenderer::Begin2D()
 		else
 			mBuffers->BindCurrentFB();
 	}
-	glViewport(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height);
-	glScissor(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height);
+	GL(glViewport(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height));
+	GL(glScissor(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height));
 
 	gl_RenderState.EnableFog(false);
 }
@@ -466,9 +469,11 @@ bool FGLRenderer::StartOffscreen()
 {
 	bool firstBind = (mFBID == 0);
 	if (mFBID == 0)
-		glGenFramebuffers(1, &mFBID);
-	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &mOldFBID);
-	glBindFramebuffer(GL_FRAMEBUFFER, mFBID);
+	{
+		GL(glGenFramebuffers(1, &mFBID));
+	}
+	GL(glGetIntegerv(GL_FRAMEBUFFER_BINDING, &mOldFBID));
+	GL(glBindFramebuffer(GL_FRAMEBUFFER, mFBID));
 	if (firstBind)
 		FGLDebug::LabelObject(GL_FRAMEBUFFER, mFBID, "OffscreenFB");
 	return true;
@@ -482,7 +487,7 @@ bool FGLRenderer::StartOffscreen()
 
 void FGLRenderer::EndOffscreen()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, mOldFBID); 
+	GL(glBindFramebuffer(GL_FRAMEBUFFER, mOldFBID)); 
 }
 
 //===========================================================================
@@ -507,10 +512,10 @@ void FGLRenderer::GPUDropSync()
     {
         if (syncBuff[VtxBuff] != NULL)
         {
-            glDeleteSync(syncBuff[VtxBuff]);
+            GL(glDeleteSync(syncBuff[VtxBuff]));
         }
 
-        syncBuff[VtxBuff] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+        GL(syncBuff[VtxBuff] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0));
     }
 }
 
@@ -520,9 +525,9 @@ void FGLRenderer::GPUWaitSync()
     {
         if( syncBuff[VtxBuff] )
         {
-			GLenum status = glClientWaitSync(syncBuff[VtxBuff], GL_SYNC_FLUSH_COMMANDS_BIT,
+			GL(GLenum status = glClientWaitSync(syncBuff[VtxBuff], GL_SYNC_FLUSH_COMMANDS_BIT,
 											 1000 * 1000 *
-											 gl_client_wait_timeout_ms);
+											 gl_client_wait_timeout_ms));
 
 			if (status != GL_ALREADY_SIGNALED && status != GL_CONDITION_SATISFIED) {
 				if (status == GL_TIMEOUT_EXPIRED) {
@@ -533,7 +538,7 @@ void FGLRenderer::GPUWaitSync()
 				}
 			}
 
-            glDeleteSync(syncBuff[VtxBuff]);
+            GL(glDeleteSync(syncBuff[VtxBuff]));
             syncBuff[VtxBuff] = NULL;
         }
 	}

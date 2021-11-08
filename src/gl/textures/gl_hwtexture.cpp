@@ -228,9 +228,9 @@ unsigned int FHardwareTexture::CreateTexture(unsigned char * buffer, int w, int 
 		texformat = GL_RGBA8;
 	}
 	TranslatedTexture * glTex=GetTexID(translation);
-	if (glTex->glTexID==0) glGenTextures(1,&glTex->glTexID);
-	if (texunit != 0) glActiveTexture(GL_TEXTURE0+texunit);
-	glBindTexture(GL_TEXTURE_2D, glTex->glTexID);
+	if (glTex->glTexID==0) GL(glGenTextures(1,&glTex->glTexID));
+	if (texunit != 0) GL(glActiveTexture(GL_TEXTURE0+texunit));
+	GL(glBindTexture(GL_TEXTURE_2D, glTex->glTexID));
 	FGLDebug::LabelObject(GL_TEXTURE, glTex->glTexID, name);
 	lastbound[texunit] = glTex->glTexID;
 
@@ -289,17 +289,17 @@ unsigned int FHardwareTexture::CreateTexture(unsigned char * buffer, int w, int 
 	}
 
 	BGRAtoRGBA( buffer, rw * rh );
-	glTexImage2D(GL_TEXTURE_2D, 0, texformat, rw, rh, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+	GL(glTexImage2D(GL_TEXTURE_2D, 0, texformat, rw, rh, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer));
 
 	if (deletebuffer) free(buffer);
 
 	if (mipmap && TexFilter[gl_texture_filter].mipmapping)
 	{
-		glGenerateMipmap(GL_TEXTURE_2D);
+		GL(glGenerateMipmap(GL_TEXTURE_2D));
 		glTex->mipmapped = true;
 	}
 
-	if (texunit != 0) glActiveTexture(GL_TEXTURE0);
+	if (texunit != 0) GL(glActiveTexture(GL_TEXTURE0));
 	return glTex->glTexID;
 }
 
@@ -338,7 +338,7 @@ void FHardwareTexture::TranslatedTexture::Delete()
 				lastbound[i] = 0;
 			}
 		}
-		glDeleteTextures(1, &glTexID);
+		GL(glDeleteTextures(1, &glTexID));
 		glTexID = 0;
 		mipmapped = false;
 	}
@@ -362,7 +362,7 @@ void FHardwareTexture::Clean(bool all)
 		glTex_Translated[i].Delete();
 	}
 	glTex_Translated.Clear();
-	if (glDepthID != 0) glDeleteRenderbuffers(1, &glDepthID);
+	if (glDepthID != 0) GL(glDeleteRenderbuffers(1, &glDepthID));
 	glDepthID = 0;
 }
 
@@ -443,15 +443,15 @@ unsigned int FHardwareTexture::Bind(int texunit, int translation, bool needmipma
 	{
 		if (lastbound[texunit] == pTex->glTexID) return pTex->glTexID;
 		lastbound[texunit] = pTex->glTexID;
-		if (texunit != 0) glActiveTexture(GL_TEXTURE0 + texunit);
-		glBindTexture(GL_TEXTURE_2D, pTex->glTexID);
+		if (texunit != 0) GL(glActiveTexture(GL_TEXTURE0 + texunit));
+		GL(glBindTexture(GL_TEXTURE_2D, pTex->glTexID));
 		// Check if we need mipmaps on a texture that was creted without them.
 		if (needmipmap && !pTex->mipmapped && TexFilter[gl_texture_filter].mipmapping)
 		{
-			glGenerateMipmap(GL_TEXTURE_2D);
+			GL(glGenerateMipmap(GL_TEXTURE_2D));
 			pTex->mipmapped = true;
 		}
-		if (texunit != 0) glActiveTexture(GL_TEXTURE0);
+		if (texunit != 0) GL(glActiveTexture(GL_TEXTURE0));
 		return pTex->glTexID;
 	}
 	return 0;
@@ -467,9 +467,9 @@ void FHardwareTexture::Unbind(int texunit)
 {
 	if (lastbound[texunit] != 0)
 	{
-		if (texunit != 0) glActiveTexture(GL_TEXTURE0+texunit);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		if (texunit != 0) glActiveTexture(GL_TEXTURE0);
+		if (texunit != 0) GL(glActiveTexture(GL_TEXTURE0+texunit));
+		GL(glBindTexture(GL_TEXTURE_2D, 0));
+		if (texunit != 0) GL(glActiveTexture(GL_TEXTURE0));
 		lastbound[texunit] = 0;
 	}
 }
@@ -493,11 +493,11 @@ int FHardwareTexture::GetDepthBuffer()
 {
 	if (glDepthID == 0)
 	{
-		glGenRenderbuffers(1, &glDepthID);
-		glBindRenderbuffer(GL_RENDERBUFFER, glDepthID);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 
-			GetTexDimension(texwidth), GetTexDimension(texheight));
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		GL(glGenRenderbuffers(1, &glDepthID));
+		GL(glBindRenderbuffer(GL_RENDERBUFFER, glDepthID));
+		GL(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 
+			GetTexDimension(texwidth), GetTexDimension(texheight)));
+		GL(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 	}
 	return glDepthID;
 }
@@ -511,8 +511,8 @@ int FHardwareTexture::GetDepthBuffer()
 
 void FHardwareTexture::BindToFrameBuffer()
 {
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, glDefTex.glTexID, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, GetDepthBuffer());
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, GetDepthBuffer());
+	GL(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, glDefTex.glTexID, 0));
+	GL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, GetDepthBuffer()));
+	GL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, GetDepthBuffer()));
 }
 

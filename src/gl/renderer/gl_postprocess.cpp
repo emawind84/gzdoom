@@ -219,15 +219,15 @@ void FGLRenderer::AmbientOccludeScene()
 	int randomTexture = clamp(gl_ssao - 1, 0, FGLRenderBuffers::NumAmbientRandomTextures - 1);
 
 	// Calculate linear depth values
-	glBindFramebuffer(GL_FRAMEBUFFER, mBuffers->LinearDepthFB);
-	glViewport(0, 0, mBuffers->AmbientWidth, mBuffers->AmbientHeight);
+	GL(glBindFramebuffer(GL_FRAMEBUFFER, mBuffers->LinearDepthFB));
+	GL(glViewport(0, 0, mBuffers->AmbientWidth, mBuffers->AmbientHeight));
 	mBuffers->BindSceneDepthTexture(0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 	mBuffers->BindSceneColorTexture(1);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glActiveTexture(GL_TEXTURE0);
+	GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+	GL(glActiveTexture(GL_TEXTURE0));
 	mLinearDepthShader->Bind();
 	mLinearDepthShader->DepthTexture.Set(0);
 	mLinearDepthShader->ColorTexture.Set(1);
@@ -241,12 +241,12 @@ void FGLRenderer::AmbientOccludeScene()
 	RenderScreenQuad();
 
 	// Apply ambient occlusion
-	glBindFramebuffer(GL_FRAMEBUFFER, mBuffers->AmbientFB1);
-	glBindTexture(GL_TEXTURE_2D, mBuffers->LinearDepthTexture);
+	GL(glBindFramebuffer(GL_FRAMEBUFFER, mBuffers->AmbientFB1));
+	GL(glBindTexture(GL_TEXTURE_2D, mBuffers->LinearDepthTexture));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, mBuffers->AmbientRandomTexture[randomTexture]);
+	GL(glBindTexture(GL_TEXTURE_2D, mBuffers->AmbientRandomTexture[randomTexture]));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -278,8 +278,8 @@ void FGLRenderer::AmbientOccludeScene()
 	// Blur SSAO texture
 	if (gl_ssao_debug < 2)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, mBuffers->AmbientFB0);
-		glBindTexture(GL_TEXTURE_2D, mBuffers->AmbientTexture1);
+		GL(glBindFramebuffer(GL_FRAMEBUFFER, mBuffers->AmbientFB0));
+		GL(glBindTexture(GL_TEXTURE_2D, mBuffers->AmbientTexture1));
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		mDepthBlurShader->Bind(false);
@@ -287,8 +287,8 @@ void FGLRenderer::AmbientOccludeScene()
 		mDepthBlurShader->InvFullResolution[false].Set(1.0f / mBuffers->AmbientWidth, 1.0f / mBuffers->AmbientHeight);
 		RenderScreenQuad();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, mBuffers->AmbientFB1);
-		glBindTexture(GL_TEXTURE_2D, mBuffers->AmbientTexture0);
+		GL(glBindFramebuffer(GL_FRAMEBUFFER, mBuffers->AmbientFB1));
+		GL(glBindTexture(GL_TEXTURE_2D, mBuffers->AmbientTexture0));
 		mDepthBlurShader->Bind(true);
 		mDepthBlurShader->BlurSharpness[true].Set(blurSharpness);
 		mDepthBlurShader->InvFullResolution[true].Set(1.0f / mBuffers->AmbientWidth, 1.0f / mBuffers->AmbientHeight);
@@ -298,17 +298,17 @@ void FGLRenderer::AmbientOccludeScene()
 
 	// Add SSAO back to scene texture:
 	mBuffers->BindSceneFB(false);
-	glViewport(mSceneViewport.left, mSceneViewport.top, mSceneViewport.width, mSceneViewport.height);
-	glEnable(GL_BLEND);
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL(glViewport(mSceneViewport.left, mSceneViewport.top, mSceneViewport.width, mSceneViewport.height));
+	GL(glEnable(GL_BLEND));
+	GL(glBlendEquation(GL_FUNC_ADD));
+	GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	if (gl_ssao_debug != 0)
 	{
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mBuffers->AmbientTexture1);
+	GL(glBindTexture(GL_TEXTURE_2D, mBuffers->AmbientTexture1));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	mBuffers->BindSceneFogTexture(1);
@@ -341,7 +341,7 @@ void FGLRenderer::UpdateCameraExposure()
 
 	// Extract light level from scene texture:
 	const auto &level0 = mBuffers->ExposureLevels[0];
-	glBindFramebuffer(GL_FRAMEBUFFER, level0.Framebuffer);
+	GL(glBindFramebuffer(GL_FRAMEBUFFER, level0.Framebuffer));
 	glViewport(0, 0, level0.Width, level0.Height);
 	mBuffers->BindCurrentTexture(0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -360,16 +360,16 @@ void FGLRenderer::UpdateCameraExposure()
 		const auto &level = mBuffers->ExposureLevels[i];
 		const auto &next = mBuffers->ExposureLevels[i + 1];
 
-		glBindFramebuffer(GL_FRAMEBUFFER, next.Framebuffer);
-		glViewport(0, 0, next.Width, next.Height);
-		glBindTexture(GL_TEXTURE_2D, level.Texture);
+		GL(glBindFramebuffer(GL_FRAMEBUFFER, next.Framebuffer));
+		GL(glViewport(0, 0, next.Width, next.Height));
+		GL(glBindTexture(GL_TEXTURE_2D, level.Texture));
 		mExposureAverageShader->Bind();
 		mExposureAverageShader->ExposureTexture.Set(0);
 		RenderScreenQuad();
 	}
 
 	// Combine average value with current camera exposure:
-	glBindFramebuffer(GL_FRAMEBUFFER, mBuffers->ExposureFB);
+	GL(glBindFramebuffer(GL_FRAMEBUFFER, mBuffers->ExposureFB));
 	glViewport(0, 0, 1, 1);
 	if (!mBuffers->FirstExposureFrame)
 	{
@@ -382,7 +382,7 @@ void FGLRenderer::UpdateCameraExposure()
 		mBuffers->FirstExposureFrame = false;
 	}
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mBuffers->ExposureLevels.Last().Texture);
+	GL(glBindTexture(GL_TEXTURE_2D, mBuffers->ExposureLevels.Last().Texture));
 	mExposureCombineShader->Bind();
 	mExposureCombineShader->ExposureTexture.Set(0);
 	mExposureCombineShader->ExposureBase.Set(gl_exposure_base);
@@ -418,13 +418,13 @@ void FGLRenderer::BloomScene(int fixedcm)
 	const auto &level0 = mBuffers->BloomLevels[0];
 
 	// Extract blooming pixels from scene texture:
-	glBindFramebuffer(GL_FRAMEBUFFER, level0.VFramebuffer);
+	GL(glBindFramebuffer(GL_FRAMEBUFFER, level0.VFramebuffer));
 	glViewport(0, 0, level0.Width, level0.Height);
 	mBuffers->BindCurrentTexture(0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, mBuffers->ExposureTexture);
+	GL(glBindTexture(GL_TEXTURE_2D, mBuffers->ExposureTexture));
 	glActiveTexture(GL_TEXTURE0);
 	mBloomExtractShader->Bind();
 	mBloomExtractShader->SceneTexture.Set(0);
@@ -454,10 +454,10 @@ void FGLRenderer::BloomScene(int fixedcm)
 		mBlurShader->BlurVertical(this, blurAmount, sampleCount, level.HTexture, level.VFramebuffer, level.Width, level.Height);
 
 		// Linear upscale:
-		glBindFramebuffer(GL_FRAMEBUFFER, next.VFramebuffer);
+		GL(glBindFramebuffer(GL_FRAMEBUFFER, next.VFramebuffer));
 		glViewport(0, 0, next.Width, next.Height);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, level.VTexture);
+		GL(glActiveTexture(GL_TEXTURE0));
+		GL(glBindTexture(GL_TEXTURE_2D, level.VTexture));
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		mBloomCombineShader->Bind();
@@ -475,13 +475,13 @@ void FGLRenderer::BloomScene(int fixedcm)
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_ONE, GL_ONE);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, level0.VTexture);
+	GL(glBindTexture(GL_TEXTURE_2D, level0.VTexture));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	mBloomCombineShader->Bind();
 	mBloomCombineShader->BloomTexture.Set(0);
 	RenderScreenQuad();
-	glViewport(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height);
+	GL(glViewport(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height));
 
 	FGLDebug::PopGroup();
 }
@@ -519,9 +519,9 @@ void FGLRenderer::BlurScene(float gameinfobluramount)
 	const auto &level0 = mBuffers->BloomLevels[0];
 
 	// Grab the area we want to bloom:
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, mBuffers->GetCurrentFB());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, level0.VFramebuffer);
-	glBlitFramebuffer(viewport.left, viewport.top, viewport.width, viewport.height, 0, 0, level0.Width, level0.Height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	GL(glBindFramebuffer(GL_READ_FRAMEBUFFER, mBuffers->GetCurrentFB()));
+	GL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, level0.VFramebuffer));
+	GL(glBlitFramebuffer(viewport.left, viewport.top, viewport.width, viewport.height, 0, 0, level0.Width, level0.Height, GL_COLOR_BUFFER_BIT, GL_LINEAR));
 
 	// Blur and downscale:
 	for (int i = 0; i < numLevels - 1; i++)
@@ -542,10 +542,10 @@ void FGLRenderer::BlurScene(float gameinfobluramount)
 		mBlurShader->BlurVertical(this, blurAmount, sampleCount, level.HTexture, level.VFramebuffer, level.Width, level.Height);
 
 		// Linear upscale:
-		glBindFramebuffer(GL_FRAMEBUFFER, next.VFramebuffer);
-		glViewport(0, 0, next.Width, next.Height);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, level.VTexture);
+		GL(glBindFramebuffer(GL_FRAMEBUFFER, next.VFramebuffer));
+		GL(glViewport(0, 0, next.Width, next.Height));
+		GL(glActiveTexture(GL_TEXTURE0));
+		GL(glBindTexture(GL_TEXTURE_2D, level.VTexture));
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		mBloomCombineShader->Bind();
@@ -557,11 +557,11 @@ void FGLRenderer::BlurScene(float gameinfobluramount)
 	mBlurShader->BlurVertical(this, blurAmount, sampleCount, level0.HTexture, level0.VFramebuffer, level0.Width, level0.Height);
 
 	// Copy blur back to scene texture:
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, level0.VFramebuffer);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mBuffers->GetCurrentFB());
-	glBlitFramebuffer(0, 0, level0.Width, level0.Height, viewport.left, viewport.top, viewport.width, viewport.height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	GL(glBindFramebuffer(GL_READ_FRAMEBUFFER, level0.VFramebuffer));
+	GL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mBuffers->GetCurrentFB()));
+	GL(glBlitFramebuffer(0, 0, level0.Width, level0.Height, viewport.left, viewport.top, viewport.width, viewport.height, GL_COLOR_BUFFER_BIT, GL_LINEAR));
 
-	glViewport(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height);
+	GL(glViewport(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height));
 
 	FGLDebug::PopGroup();
 }
@@ -592,7 +592,7 @@ void FGLRenderer::TonemapScene()
 	if (mTonemapShader->IsPaletteMode())
 	{
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, mTonemapPalette->GetTextureHandle(0));
+		GL(glBindTexture(GL_TEXTURE_2D, mTonemapPalette->GetTextureHandle(0)));
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -604,8 +604,8 @@ void FGLRenderer::TonemapScene()
 	else
 	{
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, mBuffers->ExposureTexture);
-		glActiveTexture(GL_TEXTURE0);
+		GL(glBindTexture(GL_TEXTURE_2D, mBuffers->ExposureTexture));
+		GL(glActiveTexture(GL_TEXTURE0));
 
 		mTonemapShader->ExposureTexture.Set(1);
 	}
@@ -736,7 +736,7 @@ void FGLRenderer::LensDistortScene()
 	mLensShader->CubicDistortionValue.Set(kcube);
 	RenderScreenQuad();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 	mBuffers->NextTexture();
 
 	FGLDebug::PopGroup();
@@ -962,7 +962,7 @@ void FGLRenderer::ClearBorders()
 		glScissor(box.left + box.width, box.top, clientWidth - box.left - box.width, box.height);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
-	glDisable(GL_SCISSOR_TEST);
+	GL(glDisable(GL_SCISSOR_TEST));
 }
 
 

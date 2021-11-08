@@ -32,7 +32,9 @@
 #include "m_argv.h"
 #include "c_cvars.h"
 #include "g_levellocals.h"
+#include "g_game.h"
 #include "gl/system/gl_interface.h"
+#include "gl/system/gl_debug.h"
 #include "gl/renderer/gl_renderer.h"
 #include "gl/shaders/gl_shader.h"
 #include "gl/data/gl_data.h"
@@ -49,31 +51,31 @@ CVAR(Int, gl_buffer_size, 2000000, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
 FVertexBuffer::FVertexBuffer(bool wantbuffer)
 {
 	vbo_id = 0;
-	if (wantbuffer) glGenBuffers(1, &vbo_id);
+	if (wantbuffer) GL(glGenBuffers(1, &vbo_id));
 }
 	
 FVertexBuffer::~FVertexBuffer()
 {
 	if (vbo_id != 0)
 	{
-		glDeleteBuffers(1, &vbo_id);
+		GL(glDeleteBuffers(1, &vbo_id));
 	}
 }
 
 
 void FSimpleVertexBuffer::BindVBO()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+	GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
 	if (!gl.legacyMode)
 	{
-		glVertexAttribPointer(VATTR_VERTEX, 3, GL_FLOAT, false, sizeof(FSimpleVertex), &VSiO->x);
-		glVertexAttribPointer(VATTR_TEXCOORD, 2, GL_FLOAT, false, sizeof(FSimpleVertex), &VSiO->u);
-		glVertexAttribPointer(VATTR_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(FSimpleVertex), &VSiO->color);
-		glEnableVertexAttribArray(VATTR_VERTEX);
-		glEnableVertexAttribArray(VATTR_TEXCOORD);
-		glEnableVertexAttribArray(VATTR_COLOR);
-		glDisableVertexAttribArray(VATTR_VERTEX2);
-		glDisableVertexAttribArray(VATTR_NORMAL);
+		GL(glVertexAttribPointer(VATTR_VERTEX, 3, GL_FLOAT, false, sizeof(FSimpleVertex), &VSiO->x));
+		GL(glVertexAttribPointer(VATTR_TEXCOORD, 2, GL_FLOAT, false, sizeof(FSimpleVertex), &VSiO->u));
+		GL(glVertexAttribPointer(VATTR_COLOR, 4, GL_UNSIGNED_BYTE, true, sizeof(FSimpleVertex), &VSiO->color));
+		GL(glEnableVertexAttribArray(VATTR_VERTEX));
+		GL(glEnableVertexAttribArray(VATTR_TEXCOORD));
+		GL(glEnableVertexAttribArray(VATTR_COLOR));
+		GL(glDisableVertexAttribArray(VATTR_VERTEX2));
+		GL(glDisableVertexAttribArray(VATTR_NORMAL));
 	}
 	else
 	{
@@ -92,7 +94,7 @@ void FSimpleVertexBuffer::EnableColorArray(bool on)
 	{
 		if (!gl.legacyMode)
 		{
-			glEnableVertexAttribArray(VATTR_COLOR);
+			GL(glEnableVertexAttribArray(VATTR_COLOR));
 		}
 		else
 		{
@@ -103,7 +105,7 @@ void FSimpleVertexBuffer::EnableColorArray(bool on)
 	{
 		if (!gl.legacyMode)
 		{
-			glDisableVertexAttribArray(VATTR_COLOR);
+			GL(glDisableVertexAttribArray(VATTR_COLOR));
 		}
 		else
 		{
@@ -115,10 +117,10 @@ void FSimpleVertexBuffer::EnableColorArray(bool on)
 
 void FSimpleVertexBuffer::set(FSimpleVertex *verts, int count)
 {
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+	GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
 	gl_RenderState.ResetVertexBuffer();
 	gl_RenderState.SetVertexBuffer(this);
-	glBufferData(GL_ARRAY_BUFFER, count * sizeof(*verts), verts, GL_STREAM_DRAW);
+	GL(glBufferData(GL_ARRAY_BUFFER, count * sizeof(*verts), verts, GL_STREAM_DRAW));
 }
 
 //==========================================================================
@@ -135,9 +137,9 @@ FFlatVertexBuffer::FFlatVertexBuffer(int width, int height)
 	case BM_PERSISTENT:
 	{
 		unsigned int bytesize = gl_buffer_size * sizeof(FFlatVertex);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-		glBufferStorage(GL_ARRAY_BUFFER, bytesize, NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-		map = (FFlatVertex*)glMapBufferRange(GL_ARRAY_BUFFER, 0, bytesize, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
+		GL(glBufferStorage(GL_ARRAY_BUFFER, bytesize, NULL, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT));
+		GL(map = (FFlatVertex*)glMapBufferRange(GL_ARRAY_BUFFER, 0, bytesize, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT));
 		DPrintf(DMSG_NOTIFY, "Using persistent buffer\n");
 		break;
 	}
@@ -145,8 +147,8 @@ FFlatVertexBuffer::FFlatVertexBuffer(int width, int height)
 	case BM_DEFERRED:
 	{
 		unsigned int bytesize = gl_buffer_size * sizeof(FFlatVertex);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-		glBufferData(GL_ARRAY_BUFFER, bytesize, NULL, GL_STREAM_DRAW);
+		GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
+		GL(glBufferData(GL_ARRAY_BUFFER, bytesize, NULL, GL_STREAM_DRAW));
 		map = nullptr;
 		DPrintf(DMSG_NOTIFY, "Using deferred buffer\n");
 		break;
@@ -205,9 +207,9 @@ FFlatVertexBuffer::~FFlatVertexBuffer()
 {
 	if (vbo_id != 0)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-		glUnmapBuffer(GL_ARRAY_BUFFER);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
+		GL(glUnmapBuffer(GL_ARRAY_BUFFER));
+		GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	}
 	if (gl.legacyMode)
 	{
@@ -230,16 +232,16 @@ void FFlatVertexBuffer::OutputResized(int width, int height)
 
 void FFlatVertexBuffer::BindVBO()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+	GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
 	if (!gl.legacyMode)
 	{
-		glVertexAttribPointer(VATTR_VERTEX, 3, GL_FLOAT, false, sizeof(FFlatVertex), &VTO->x);
-		glVertexAttribPointer(VATTR_TEXCOORD, 2, GL_FLOAT, false, sizeof(FFlatVertex), &VTO->u);
-		glEnableVertexAttribArray(VATTR_VERTEX);
-		glEnableVertexAttribArray(VATTR_TEXCOORD);
-		glDisableVertexAttribArray(VATTR_COLOR);
-		glDisableVertexAttribArray(VATTR_VERTEX2);
-		glDisableVertexAttribArray(VATTR_NORMAL);
+		GL(glVertexAttribPointer(VATTR_VERTEX, 3, GL_FLOAT, false, sizeof(FFlatVertex), &VTO->x));
+		GL(glVertexAttribPointer(VATTR_TEXCOORD, 2, GL_FLOAT, false, sizeof(FFlatVertex), &VTO->u));
+		GL(glEnableVertexAttribArray(VATTR_VERTEX));
+		GL(glEnableVertexAttribArray(VATTR_TEXCOORD));
+		GL(glDisableVertexAttribArray(VATTR_COLOR));
+		GL(glDisableVertexAttribArray(VATTR_VERTEX2));
+		GL(glDisableVertexAttribArray(VATTR_NORMAL));
 	}
 	else
 	{
@@ -251,14 +253,34 @@ void FFlatVertexBuffer::BindVBO()
 	}
 }
 
+#ifdef __GL_PCH_H	// we need the system includes for this but we cannot include them ourselves without creating #define clashes. The affected files wouldn't try to draw anyway.
+
+void FFlatVertexBuffer::RenderArray(unsigned int primtype, unsigned int offset, unsigned int count)
+{
+	drawcalls.Clock();
+	GL(glDrawArrays(primtype, offset, count));
+	drawcalls.Unclock();
+}
+
+void FFlatVertexBuffer::RenderCurrent(FFlatVertex *newptr, unsigned int primtype, unsigned int *poffset, unsigned int *pcount)
+{
+	unsigned int offset;
+	unsigned int count = GetCount(newptr, &offset);
+	RenderArray(primtype, offset, count);
+	if (poffset) *poffset = offset;
+	if (pcount) *pcount = count;
+}
+
+#endif
+
 void FFlatVertexBuffer::Map()
 {
 	if (gl.buffermethod == BM_DEFERRED)
 	{
 		unsigned int bytesize = gl_buffer_size * sizeof(FFlatVertex);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+		GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
 		gl_RenderState.ResetVertexBuffer();
-		map = (FFlatVertex*)glMapBufferRange(GL_ARRAY_BUFFER, 0, bytesize, GL_MAP_WRITE_BIT|GL_MAP_UNSYNCHRONIZED_BIT);
+		GL(map = (FFlatVertex*)glMapBufferRange(GL_ARRAY_BUFFER, 0, bytesize, GL_MAP_WRITE_BIT|GL_MAP_UNSYNCHRONIZED_BIT));
 		if (map == nullptr)
 		{
 			GLenum err = glGetError();
@@ -271,14 +293,9 @@ void FFlatVertexBuffer::Unmap()
 {
 	if (gl.buffermethod == BM_DEFERRED)
 	{
-		unsigned int bytesize = gl_buffer_size * sizeof(FFlatVertex);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+		GL(glBindBuffer(GL_ARRAY_BUFFER, vbo_id));
 		gl_RenderState.ResetVertexBuffer();
-		if (glUnmapBuffer(GL_ARRAY_BUFFER) == GL_FALSE)
-        {
-            GLenum err = glGetError();
-            Printf("ERROR: glUnmapBuffer failed to unmap with error %X\n", (int)err);
-        }
+		GL(glUnmapBuffer(GL_ARRAY_BUFFER));
 		map = nullptr;
 	}
 }
