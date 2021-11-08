@@ -197,11 +197,8 @@ void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 	// The model position and orientation has to be drawn independently from the position of the player,
 	// but we need to position it correctly in the world for light to work properly.
 	VSMatrix objectToWorldMatrix = GetViewToWorldMatrix();
-	int hand = oculusquest_rightHanded ? 1 : 0;
-	if (psp->GetCaller() == playermo->player->OffhandWeapon) {
-		hand = 1 - hand;
-	}
-	if (s3d::Stereo3DMode::getCurrentMode().GetHandTransform(hand, &objectToWorldMatrix))
+	int hand = psp->GetCaller() == playermo->player->OffhandWeapon ? 1 : 0;
+	if (s3d::Stereo3DMode::getCurrentMode().GetWeaponTransform(&objectToWorldMatrix, hand))
 	{
 		float scale = 0.01f;
 		objectToWorldMatrix.scale(scale, scale, scale);

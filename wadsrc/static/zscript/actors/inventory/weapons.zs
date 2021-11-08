@@ -83,6 +83,7 @@ class Weapon : StateProvider
 	flagdef OffhandWeapon: WeaponFlags, 19;		// weapon is an offhand weapon
 	flagdef NoHandSwitch: WeaponFlags, 20;		// weapon cannot be moved from one hand to another
 	flagdef TwoHanded: WeaponFlags, 21;			// two handed weapon
+	flagdef NoAutoReverse: WeaponFlags, 22;		// prevent auto reverse of model and sprite when switching to offhand
 
 	// no-op flags
 	flagdef NoLMS: none, 0;

@@ -160,6 +160,7 @@ enum
 	WIF_OFFHANDWEAPON =		0x00080000, // weapon is an offhand weapon
 	WIF_NOHANDSWITCH =		0x00100000, // weapon cannot be moved from one hand to another
 	WIF_TWOHANDED =			0x00200000, // two handed weapon
+	WIF_NO_AUTO_REVERSE =	0x00400000, // prevent auto reverse of model and sprite when switching to offhand
 	WIF_CHEATNOTWEAPON	=	0x08000000,	// Give cheat considers this not a weapon (used by Sigil)
 };
 

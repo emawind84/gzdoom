@@ -359,11 +359,18 @@ namespace s3d
 
     bool OculusQuestMode::GetWeaponTransform(VSMatrix* out, int hand_weapon) const
     {
+        player_t * player = r_viewpoint.camera ? r_viewpoint.camera->player : nullptr;
+        bool autoReverse = true;
+        if (player)
+        {
+            AActor *weap = hand_weapon ? player->OffhandWeapon : player->ReadyWeapon;
+            autoReverse = weap == nullptr || !(weap->IntVar(NAME_WeaponFlags) & WIF_NO_AUTO_REVERSE);
+        }
         bool oculusquest_rightHanded = vr_control_scheme < 10;
         int hand = hand_weapon ? 1 - oculusquest_rightHanded : oculusquest_rightHanded;
         if (GetHandTransform(hand, out))
         {
-            if (!hand)
+            if (!hand && autoReverse)
                 out->scale(-1.0f, 1.0f, 1.0f);
             return true;
         }
