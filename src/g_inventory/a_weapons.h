@@ -157,6 +157,9 @@ enum
 	//WIF_DEHAMMO	=			0x00010000,	
 	WIF_NODEATHDESELECT =	0x00020000, // Don't jump to the Deselect state when the player dies
 	WIF_NODEATHINPUT =		0x00040000, // The weapon cannot be fired/reloaded/whatever when the player is dead
+	WIF_OFFHANDWEAPON =		0x00080000, // weapon is an offhand weapon
+	WIF_NOHANDSWITCH =		0x00100000, // weapon cannot be moved from one hand to another
+	WIF_TWOHANDED =			0x00200000, // two handed weapon
 	WIF_CHEATNOTWEAPON	=	0x08000000,	// Give cheat considers this not a weapon (used by Sigil)
 };
 
