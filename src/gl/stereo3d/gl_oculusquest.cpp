@@ -98,8 +98,7 @@ float getDoomPlayerHeightWithoutCrouch(const player_t *player)
 {
     if (!vr_crouch_use_button)
     {
-        double pixelstretch = level.info ? level.info->pixelstretch : 1.2;
-        return ((hmdPosition[1] + vr_height_adjust) * vr_vunits_per_meter) / pixelstretch;
+        return getHmdAdjustedHeightInMapUnit();
     }
     static float height = 0;
     if (height == 0)
@@ -108,6 +107,12 @@ float getDoomPlayerHeightWithoutCrouch(const player_t *player)
     }
 
     return height;
+}
+
+float getHmdAdjustedHeightInMapUnit()
+{
+    double pixelstretch = level.info ? level.info->pixelstretch : 1.2;
+    return ((hmdPosition[1] + vr_height_adjust) * vr_vunits_per_meter) / pixelstretch;
 }
 
 extern "C" float getViewpointYaw()
@@ -155,9 +160,7 @@ namespace s3d
         LSVec3 eyeOffset(tmp[0], tmp[1], tmp[2]);
 
         const player_t & player = players[consoleplayer];
-        double pixelstretch = level.info ? level.info->pixelstretch : 1.2;
-        double hh = ((hmdPosition[1] + vr_height_adjust) * vr_vunits_per_meter) / pixelstretch; // HMD is actually here
-        eyeOffset[2] += hh - getDoomPlayerHeightWithoutCrouch(&player);
+        eyeOffset[2] += getHmdAdjustedHeightInMapUnit() - getDoomPlayerHeightWithoutCrouch(&player);
 
         outViewShift[0] = eyeOffset[0];
         outViewShift[1] = eyeOffset[1];
@@ -523,8 +526,7 @@ namespace s3d
                 {
                     static double defaultViewHeight = player->DefaultViewHeight();
                     player->crouching = 10;
-                    double hh = ((hmdPosition[1] + vr_height_adjust) * vr_vunits_per_meter) / pixelstretch;
-                    player->crouchfactor = hh / defaultViewHeight;
+                    player->crouchfactor = getHmdAdjustedHeightInMapUnit() / defaultViewHeight;
                 }
                 else if (player->crouching == 10)
                 {
