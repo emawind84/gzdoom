@@ -515,8 +515,8 @@ class PlayerPawn : Actor
 		if (player.PendingWeapon != NULL && player.PendingWeapon != WP_NOCHANGE)
 		{
 			hand = player.PendingWeapon.bOffhandWeapon ? 1 : 0;
-			if ((player.ReadyWeapon == null && !hand) ||
-				(player.OffhandWeapon == null && hand))
+			Weapon weap = hand ? player.OffhandWeapon : player.ReadyWeapon;
+			if (weap == null)
 			{
 				player.mo.BringUpWeapon();
 				return;
@@ -1907,10 +1907,10 @@ class PlayerPawn : Actor
 		int disableswitch = hand ? WF_OFFHANDDISABLESWITCH : WF_DISABLESWITCH;
 		// Since the weapon is dropping, stop blocking switching.
 		player.WeaponState &= ~disableswitch;
-		Weapon weap = !!hand ? player.OffhandWeapon : player.ReadyWeapon;
+		Weapon weap = hand ? player.OffhandWeapon : player.ReadyWeapon;
 		if ((weap != null) && (player.health > 0 || !weap.bNoDeathDeselect))
 		{
-			player.SetPsprite(!!hand ? PSP_OFFHANDWEAPON : PSP_WEAPON, weap.GetDownState());
+			player.SetPsprite(hand ? PSP_OFFHANDWEAPON : PSP_WEAPON, weap.GetDownState());
 		}
 	}
 	

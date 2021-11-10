@@ -430,7 +430,8 @@ class StateProvider : Inventory
 		int refireok = weapon == player.ReadyWeapon ? WF_REFIRESWITCHOK : WF_OFFHANDREFIRESWITCHOK;
 		int attackbt = weapon == player.ReadyWeapon ? BT_ATTACK : BT_OFFHANDATTACK;
 		int altattackbt = weapon == player.ReadyWeapon ? BT_ALTATTACK : BT_OFFHANDALTATTACK;
-		pending = player.PendingWeapon != WP_NOCHANGE && (player.WeaponState & refireok);
+		pending = player.PendingWeapon != WP_NOCHANGE && (player.WeaponState & refireok)
+			&& (player.PendingWeapon.bOffhandWeapon == weapon.bOffhandWeapon);
 		if ((player.cmd.buttons & attackbt)
 			&& !weapon.bAltFire && !pending && player.health > 0)
 		{

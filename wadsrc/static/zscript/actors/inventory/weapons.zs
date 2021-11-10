@@ -299,7 +299,8 @@ class Weapon : StateProvider
 		{
 			return;
 		}
-		if (player.PendingWeapon != WP_NOCHANGE)
+		if (player.PendingWeapon != WP_NOCHANGE && 
+			player.PendingWeapon.bOffhandWeapon == weapon.bOffhandWeapon)
 		{
 			player.mo.DropWeapon(weapon.bOffhandWeapon);
 			return;
@@ -571,8 +572,8 @@ class Weapon : StateProvider
 		}
 		if (Owner.player != NULL)
 		{
-			if ((useweap.bOffhandWeapon && Owner.player.OffhandWeapon != useweap) ||
-				(!useweap.bOffhandWeapon && Owner.player.ReadyWeapon != useweap))
+			Weapon weap = useweap.bOffhandWeapon ? Owner.player.OffhandWeapon : Owner.player.ReadyWeapon;
+			if (weap != useweap)
 			{
 				Owner.player.PendingWeapon = useweap;
 			}
