@@ -489,7 +489,6 @@ void gl_SetFog(int lightlevel, int rellight, bool fullbright, const FColormap *c
 
 		gl_RenderState.EnableFog(true);
 		gl_RenderState.SetFog(fogcolor, fogdensity);
-		gl_RenderState.InitFadeColor();
 
 		// Korshun: fullbright fog like in software renderer.
 		if (glset.lightmode >= 8 && cmap && cmap->BlendFactor == 0 && glset.brightfog && fogdensity != 0 && fogcolor != 0)

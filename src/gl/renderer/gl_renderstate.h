@@ -117,6 +117,7 @@ class FRenderState
 	PalEntry mFadeColor;
 	PalEntry mObjectColor;
 	PalEntry mObjectColor2;
+	PalEntry mSceneColor;
 	FStateVec4 mDynColor;
 	float mClipSplit[2];
 
@@ -460,14 +461,20 @@ public:
 		return mFogColor;
 	}
 
-	void InitFadeColor()
+	void SetSceneColor(PalEntry sceneColor)
+	{
+		mSceneColor = sceneColor;
+	}
+
+	void InitSceneClearColor()
 	{
 		if (gl_global_fade)
 		{
-			GLRenderer->mSceneClearColor[0] = mFadeColor.r / 255.f;
-			GLRenderer->mSceneClearColor[1] = mFadeColor.g / 255.f;
-			GLRenderer->mSceneClearColor[2] = mFadeColor.b / 255.f;
+			mSceneColor = mFadeColor;
 		}
+		GLRenderer->mSceneClearColor[0] = mSceneColor.r / 255.f;
+		GLRenderer->mSceneClearColor[1] = mSceneColor.g / 255.f;
+		GLRenderer->mSceneClearColor[2] = mSceneColor.b / 255.f;
 	}
 
 	void ResetFadeColor()

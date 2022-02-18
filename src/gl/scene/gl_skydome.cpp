@@ -505,9 +505,7 @@ void GLSkyPortal::DrawContents()
 	if (origin->texture[0])
 	{
 		PalEntry pe = origin->texture[0]->tex->GetSkyCapColor(false);
-		GLRenderer->mSceneClearColor[0] = pe.r / 255.f;
-		GLRenderer->mSceneClearColor[1] = pe.g / 255.f;
-		GLRenderer->mSceneClearColor[2] = pe.b / 255.f;
+		gl_RenderState.SetSceneColor(pe);
 	}
 	if (!gl_skydome) return;
 	
