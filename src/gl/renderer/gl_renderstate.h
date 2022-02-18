@@ -111,6 +111,7 @@ class FRenderState
 	PalEntry mFogColor;
 	PalEntry mObjectColor;
 	PalEntry mObjectColor2;
+	PalEntry mSceneColor;
 	FStateVec4 mDynColor;
 	float mClipSplit[2];
 
@@ -445,6 +446,18 @@ public:
 	PalEntry GetFogColor() const
 	{
 		return mFogColor;
+	}
+
+	void SetSceneColor(PalEntry sceneColor)
+	{
+		mSceneColor = sceneColor;
+	}
+
+	void InitSceneClearColor()
+	{
+		GLRenderer->mSceneClearColor[0] = mSceneColor.r / 255.f;
+		GLRenderer->mSceneClearColor[1] = mSceneColor.g / 255.f;
+		GLRenderer->mSceneClearColor[2] = mSceneColor.b / 255.f;
 	}
 
 	void SetClipSplit(float bottom, float top)
