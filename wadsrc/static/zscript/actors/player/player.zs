@@ -385,6 +385,10 @@ class PlayerPawn : Actor
 		{
 			return;
 		}
+		if (hand == 1 && player.WeaponState & WF_TWOHANDSTABILIZED)
+		{
+			return;
+		}
 
 		let weapn = hand ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapn == null || !weapn.CheckAmmo (Weapon.PrimaryFire, true))
@@ -417,6 +421,10 @@ class PlayerPawn : Actor
 		// [SO] 9/2/02: People were able to do an awful lot of damage
 		// when they were observers...
 		if (player.Bot == null && bot_observer)
+		{
+			return;
+		}
+		if (hand == 1 && player.WeaponState & WF_TWOHANDSTABILIZED)
 		{
 			return;
 		}
@@ -2834,7 +2842,7 @@ struct PlayerInfo native play	// self is what internally is known as player_t
 	native int lastkilltime;
 	native uint8 multicount;
 	native uint8 spreecount;
-	native uint16 WeaponState;
+	native uint WeaponState;
 	native Weapon ReadyWeapon;
 	native Weapon PendingWeapon;
 	native Weapon OffhandWeapon;

@@ -391,6 +391,11 @@ class Weapon : StateProvider
 			}
 		}
 
+		if (hand == 1 && player.WeaponState & WF_TWOHANDSTABILIZED)
+		{
+			return;
+		}
+
 		// Prepare for firing action.
 		int prim_state = hand ? WF_OFFHANDREADY : WF_WEAPONREADY;
 		int alt_state = hand ? WF_OFFHANDREADYALT : WF_WEAPONREADYALT;

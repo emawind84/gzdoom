@@ -50,6 +50,8 @@
 #include "gl/renderer/gl_quaddrawer.h"
 #include "gl/stereo3d/gl_stereo3d.h"
 
+#include <QzDoom/VrCommon.h>
+
 EXTERN_CVAR (Bool, r_drawplayersprites)
 EXTERN_CVAR(Float, transsouls)
 EXTERN_CVAR(Int, gl_fuzztype)
@@ -497,6 +499,10 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector)
 
 	for(DPSprite *psp = player->psprites; psp != nullptr && psp->GetID() < PSP_TARGETCENTER; psp = psp->GetNext())
 	{
+		if (weaponStabilised && psp->GetCaller() == player->OffhandWeapon)
+		{
+			continue;
+		}
 		auto rs = psp->GetRenderStyle(playermo->RenderStyle, playermo->Alpha);
 
 		visstyle_t vis;

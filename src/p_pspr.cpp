@@ -47,6 +47,7 @@
 #include "vm.h"
 #include "sbar.h"
 
+#include <QzDoom/VrCommon.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -461,12 +462,17 @@ void DPSprite::SetState(FState *newstate, bool pending)
 	if (ID == PSP_WEAPON)
 	{ // A_WeaponReady will re-set these as needed
 		Owner->WeaponState &= ~(WF_WEAPONREADY | WF_WEAPONREADYALT | WF_WEAPONBOBBING | WF_WEAPONSWITCHOK | WF_WEAPONRELOADOK | WF_WEAPONZOOMOK |
-								WF_USER1OK | WF_USER2OK | WF_USER3OK | WF_USER4OK);
+								WF_USER1OK | WF_USER2OK | WF_USER3OK | WF_USER4OK | WF_TWOHANDSTABILIZED);
 	}
 	if (ID == PSP_OFFHANDWEAPON)
 	{
 		Owner->WeaponState &= ~(WF_OFFHANDREADY | WF_OFFHANDREADYALT | WF_OFFHANDBOBBING | WF_OFFHANDSWITCHOK | WF_WEAPONRELOADOK | WF_WEAPONZOOMOK |
-								WF_USER1OK | WF_USER2OK | WF_USER3OK | WF_USER4OK);
+								WF_USER1OK | WF_USER2OK | WF_USER3OK | WF_USER4OK | WF_TWOHANDSTABILIZED);
+	}
+
+	if (weaponStabilised)
+	{
+		Owner->WeaponState |= WF_TWOHANDSTABILIZED;
 	}
 
 	processPending = pending;
@@ -645,6 +651,10 @@ static void P_CheckWeaponButtons (player_t *player, int hand = 0)
 	}
 	auto weapon = hand ? player->OffhandWeapon : player->ReadyWeapon;
 	if (weapon == nullptr)
+	{
+		return;
+	}
+	if (hand == 1 && player->WeaponState & WF_TWOHANDSTABILIZED)
 	{
 		return;
 	}

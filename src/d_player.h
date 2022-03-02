@@ -149,6 +149,7 @@ enum
 	WF_OFFHANDSWITCHOK       = 1 << 15,
 	WF_OFFHANDDISABLESWITCH  = 1 << 16,
 	WF_OFFHANDREFIRESWITCHOK = 1 << 17,
+	WF_TWOHANDSTABILIZED     = 1 << 18,
 };
 
 // The VM cannot deal with this as an invalid pointer because it performs a read barrier on every object pointer read.
@@ -329,7 +330,7 @@ public:
 	int			lastkilltime = 0;			// [RH] For multikills
 	uint8_t		multicount = 0;
 	uint8_t		spreecount = 0;				// [RH] Keep track of killing sprees
-	uint16_t	WeaponState = 0;
+	uint32_t	WeaponState = 0;
 
 	AActor	   *ReadyWeapon = nullptr;
 	AActor	   *PendingWeapon = nullptr;			// WP_NOCHANGE if not changing
