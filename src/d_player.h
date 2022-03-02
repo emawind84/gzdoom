@@ -329,7 +329,7 @@ public:
 	int			lastkilltime = 0;			// [RH] For multikills
 	uint8_t		multicount = 0;
 	uint8_t		spreecount = 0;				// [RH] Keep track of killing sprees
-	uint16_t	WeaponState = 0;
+	int			WeaponState = 0;
 
 	AActor	   *ReadyWeapon = nullptr;
 	AActor	   *PendingWeapon = nullptr;			// WP_NOCHANGE if not changing

@@ -2871,7 +2871,7 @@ struct PlayerInfo native play	// self is what internally is known as player_t
 	native int lastkilltime;
 	native uint8 multicount;
 	native uint8 spreecount;
-	native uint16 WeaponState;
+	native int WeaponState;
 	native Weapon ReadyWeapon;
 	native Weapon PendingWeapon;
 	native Weapon OffhandWeapon;
