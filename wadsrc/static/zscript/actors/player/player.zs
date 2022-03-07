@@ -159,19 +159,6 @@ class PlayerPawn : Actor
 			}
 		}
 		Super.Tick();
-
-
-        //Taken from the Wolf-3D TC - Prevent player having momentum/acceleration to avoid puking
-		CVar vr_momentum = CVar.FindCVar("vr_momentum");
-		if ((!vr_momentum || !vr_momentum.GetInt()) && pos.z == floorz)
-		{
-			vel *= 0;
-			Speed = Default.Speed * 8;
-		}
-		else
-		{
-			Speed = Default.Speed;
-		}
 	}
 
 	//===========================================================================
@@ -1342,6 +1329,20 @@ class PlayerPawn : Actor
 
 		player.onground = (pos.z <= floorz + 2) || bOnMobj || bMBFBouncer || (player.cheats & CF_NOCLIP2);
 
+		double friction, movefactor;
+		[friction, movefactor] = GetFriction();
+		CVar vr_momentum = CVar.FindCVar("vr_momentum");
+		//Taken from the Wolf-3D TC - Prevent player having momentum/acceleration to avoid puking
+		if ((!vr_momentum || !vr_momentum.GetInt()) && player.onground && friction == ORIG_FRICTION)
+		{
+			vel *= 0.0001;
+			Speed = Default.Speed * 8;
+		}
+		else
+		{
+			Speed = Default.Speed;
+		}
+
 		// killough 10/98:
 		//
 		// We must apply thrust to the player and bobbing separately, to avoid
@@ -1353,10 +1354,8 @@ class PlayerPawn : Actor
 		{
 			double forwardmove, sidemove;
 			double bobfactor;
-			double friction, movefactor;
 			double fm, sm;
 
-			[friction, movefactor] = GetFriction();
 			bobfactor = friction < ORIG_FRICTION ? movefactor : ORIG_FRICTION_FACTOR;
 			if (!player.onground && !bNoGravity && !waterlevel)
 			{
