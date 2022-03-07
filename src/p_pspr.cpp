@@ -622,16 +622,16 @@ void P_BringUpWeapon (player_t *player)
 
 void P_BobWeapon (player_t *player, float *x, float *y, double ticfrac)
 {
-	IFVIRTUALPTRNAME(player->mo, NAME_PlayerPawn, BobWeapon)
-	{
-		VMValue param[] = { player->mo, ticfrac };
-		DVector2 result;
-		VMReturn ret(&result);
-		VMCall(func, param, 2, &ret, 1);
-		*x = (float)result.X;
-		*y = (float)result.Y;
-		return;
-	}
+	// IFVIRTUALPTRNAME(player->mo, NAME_PlayerPawn, BobWeapon)
+	// {
+	// 	VMValue param[] = { player->mo, ticfrac };
+	// 	DVector2 result;
+	// 	VMReturn ret(&result);
+	// 	VMCall(func, param, 2, &ret, 1);
+	// 	*x = (float)result.X;
+	// 	*y = (float)result.Y;
+	// 	return;
+	// }
 	*x = *y = 0;
 }
 
