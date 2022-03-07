@@ -6,6 +6,7 @@ class MWeapLightning : MageWeapon
 	Default
 	{
 		+NOGRAVITY
+		+WEAPON.TWOHANDED
 		Weapon.SelectionOrder 1100;
 		Weapon.AmmoUse1 5;
 		Weapon.AmmoGive1 25;

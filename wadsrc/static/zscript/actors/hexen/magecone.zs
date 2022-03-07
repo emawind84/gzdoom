@@ -6,6 +6,7 @@ class MWeapFrost : MageWeapon
 	Default
 	{
 		+BLOODSPLATTER
+		+WEAPON.TWOHANDED
 		Weapon.SelectionOrder 1700;
 		Weapon.AmmoUse1 3;
 		Weapon.AmmoGive1 25;
