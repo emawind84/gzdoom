@@ -85,7 +85,7 @@
 //-----------------------------------------------------------------------------
 
 CVAR(Float, skyoffset, 0, 0)	// for testing
-CVAR(Bool, gl_skydome, false, CVAR_GLOBALCONFIG|CVAR_ARCHIVE)
+CVAR(Bool, gl_skydome, true, CVAR_GLOBALCONFIG|CVAR_ARCHIVE)
 
 //-----------------------------------------------------------------------------
 //
