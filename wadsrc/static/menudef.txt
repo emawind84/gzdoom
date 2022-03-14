@@ -2973,38 +2973,39 @@ OptionMenu QZDOptionsMenu protected
 	Title "QUESTZDOOM Quick Menu"
 
 	StaticText " "
-	StaticText "CHANGE QUEST REFRESH RATE - USUALLY 60HZ RECOMMENDED "
-	Option "Refresh Rate",                      "vid_refreshrate", "RefreshRate"
+	Option "Refresh Rate", "vid_refreshrate", "RefreshRate"
+	StaticText "Change the refresh rate, recommended 72Hz.", "Brown"
 	
 	StaticText " "
-	StaticText "STRONGLY RECOMMEND TURNING OFF FOR PERFORMANCE "
-	Option "Dynamic Lights",			gl_lights,				"OnOff"
+	Option "$GLLIGHTMNU_LIGHTSENABLED", gl_lights, "OnOff"
+	StaticText "Greatly affects performance, best off.", "Brown"
 	
 	StaticText " "
-	StaticText "TURN OFF FOR PERFORMANCE BOOST (SKY NOT SHOWN) "
-	Option "$GLPREFMNU_RENDERSKYDOME",			gl_skydome, 					"YesNo"
+	Option "$GLPREFMNU_RENDERSKYDOME", gl_skydome, "YesNo"
+	StaticText "Greatly affects performance, best off.", "Brown"
 	
 	StaticText " "
-	StaticText "MAY CAUSE ISSUES WITH SOME MODS "
-	Option "$DSPLYMNU_SPRITESHADOW",			"r_actorspriteshadow", "SpriteShadowModes"
+	Option "$DSPLYMNU_SPRITESHADOW", "r_actorspriteshadow", "SpriteShadowModes"
+	StaticText "May cause issues with some mods.", "Brown"
 	
 	StaticText " "
-	StaticText "SET THIS TO SSBO IF YOU ARE EXPERIENCING CRASHES "
-	Option "$GLLIGHTMNU_LIGHTBUFFERTYPE",		gl_light_buffer_type,	"LightBuffer"
+	Option "$GLLIGHTMNU_LIGHTBUFFERTYPE", gl_light_buffer_type, "LightBuffer"
+	StaticText "Choose UBO for performance and SSBO for stability.", "Brown"
 	
 	StaticText " "
-	StaticText "LIGHT / SHADOW - CERTAIN MODS LOOK BETTER WITH DIFFERENT MODES "
-	Option "$GLPREFMNU_SECLIGHTMODE",			gl_lightmode,					"LightingModes"
+	Option "$GLPREFMNU_SECLIGHTMODE", gl_lightmode, "LightingModes"
+	StaticText "Certain mods look better with different modes.", "Brown"
 	
 	StaticText " "
-	StaticText "SET TO NONE FOR ORIGINAL UNFILTERED PIXEL APPEARANCE "
-	Option "$GLTEXMNU_TEXFILTER",		gl_texture_filter,				"FilterModes"
+	Option "$GLTEXMNU_TEXFILTER", gl_texture_filter, "FilterModes"
+	StaticText "Set to None for unfiltered pixel appearance.", "Brown"
 	
 	StaticText " "
-	StaticText "SHOW FPS IN TOP RIGHT OF SCREEN (GOOD FOR CHECKING PERFORMANCE) "
-	Option "Show FPS on HUD",		                "vid_fps", "OnOff"
+	Option "Show FPS on HUD", "vid_fps", "OnOff"
+	StaticText "Option retained only for the current session.", "Brown"
 	
 	StaticText " "
-	StaticText "IS JUMP ALLOWED? "
-	Option "$GMPLYMNU_ALLOWJUMP",				"sv_jump", "JumpCrouchFreeLook"
+	Option "$GMPLYMNU_ALLOWJUMP", "sv_jump", "JumpCrouchFreeLook"
+	StaticText "Gameplay option only intended", "Brown"
+	StaticText "for a specific session/playthrough.", "Brown"
 }
