@@ -2794,6 +2794,7 @@ GLLIGHTMNU_LIGHTSENABLED			= "Dynamic Lights (OpenGL)";
 GLLIGHTMNU_LIGHTDEFS				= "Enable light definitions";
 GLLIGHTMNU_CLIPLIGHTS				= "Clip lights";
 GLLIGHTMNU_LIGHTSPRITES				= "Lights affect sprites";
+GLLIGHTMNU_LIGHTWEAPONS				= "Lights affect weapons";
 GLLIGHTMNU_LIGHTPARTICLES			= "Lights affect particles";
 GLLIGHTMNU_LIGHTSHADOWMAP			= "Light shadowmaps";
 GLLIGHTMNU_LIGHTSHADOWMAPQUALITY	= "Shadowmap quality";
