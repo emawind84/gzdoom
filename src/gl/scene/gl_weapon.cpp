@@ -658,8 +658,8 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector)
 				}
 				else
 				{
-					wx = 0;
-					wy = 0;
+					wx = 0.0001f;
+					wy = 0.0001f;
 				}
 				sx += wx;
 				sy += wy;
