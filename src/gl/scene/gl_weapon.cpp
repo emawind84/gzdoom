@@ -376,13 +376,10 @@ void GLSceneDrawer::SetupWeaponLight()
 		if (psp->GetState() != nullptr)
 		{
 			// set the lighting parameters
-			if (gl_lights && GLRenderer->mLightCount && FixedColormap == CM_DEFAULT && gl_light_sprites)
+			if (gl_lights && GLRenderer->mLightCount && FixedColormap == CM_DEFAULT && gl_light_weapons)
 			{
-				FSpriteModelFrame *smf = psp->GetCaller() ? FindModelFrame(psp->GetCaller()->GetClass(), psp->GetState()->sprite, psp->GetState()->GetFrame(), false) : nullptr;
-				if (smf)
-				{
-					weapondynlightindex[psp] = gl_SetDynModelLight(playermo, -1);
-				}
+				FSpriteModelFrame *smf = psp->GetCaller() ? FindModelFrame(psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
+				weapondynlightindex[psp] = smf ? gl_SetDynModelLight(playermo, -1) : 0;
 			}
 		}
 	}
@@ -608,7 +605,7 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector)
 			}
 			else
 			{
-				if (gl_lights && GLRenderer->mLightCount && FixedColormap == CM_DEFAULT && gl_light_sprites)
+				if (gl_lights && GLRenderer->mLightCount && FixedColormap == CM_DEFAULT && gl_light_weapons)
 				{
 					FSpriteModelFrame *smf = psp->GetCaller() ? FindModelFrame(psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetState()->GetFrame(), false) : nullptr;
 					if (smf)
@@ -668,13 +665,8 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector)
 				sy += wy;
 			}
 
-			bool hudModelStep = false;
-			DPSprite *weapon = psp->GetCaller() == player->ReadyWeapon ? readyWeaponPsp : offhandWeaponPsp;
-			if (weapon != nullptr)
-			{
-				auto *smf = FindModelFrame(weapon->GetCaller()->GetClass(), weapon->GetSprite(), weapon->GetFrame(), false);
-				hudModelStep = smf != nullptr;
-			}
+			auto *smf = FindModelFrame(psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetFrame(), false);
+			bool hudModelStep = smf != nullptr;
 			if (!hudModelStep) s3d::Stereo3DMode::getCurrentMode().AdjustPlayerSprites(psp->GetCaller() == player->OffhandWeapon);
 			DrawPSprite(player, psp, sx, sy, hudModelStep, OverrideShader, !!(RenderStyle.Flags & STYLEF_RedIsAlpha), r_viewpoint.TicFrac);
 			if (!hudModelStep) s3d::Stereo3DMode::getCurrentMode().UnAdjustPlayerSprites();
