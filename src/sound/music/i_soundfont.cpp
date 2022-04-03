@@ -85,7 +85,7 @@ std::pair<FileReader, FString> FSoundFontReader::LookupFile(const char *name)
 void FSoundFontReader::AddPath(const char *strp)
 {
 	if (*strp == 0) return;
-	if (!mAllowAbsolutePaths && IsAbsPath(strp)) return;	// of no use so we may just discard it right away
+	//if (!mAllowAbsolutePaths && IsAbsPath(strp)) return;	// of no use so we may just discard it right away
 	int i = 0;
 	FString str = strp;
 	FixPathSeperator(str);
@@ -219,6 +219,7 @@ FileReader FZipPatReader::OpenFile(const char *name)
 			return lump->NewReader();
 		}
 	}
+	fr.OpenFile(name);
 	return fr;
 }
 
@@ -479,12 +480,6 @@ FSoundFontReader *FSoundFontManager::OpenSoundFont(const char *name, int allowed
 		}
 	}
 
-	auto sfi = FindSoundFont(name, allowed);
-	if (sfi != nullptr)
-	{
-		if (sfi->type == SF_SF2) return new FSF2Reader(sfi->mFilename);
-		else return new FZipPatReader(sfi->mFilename);
-	}
 	// The sound font collection did not yield any good results.
 	// Next check if the file is a .sf file
 	if (allowed & SF_SF2)
@@ -523,6 +518,12 @@ FSoundFontReader *FSoundFontManager::OpenSoundFont(const char *name, int allowed
 		{
 			return new FPatchSetReader(name);
 		}
+	}
+	auto sfi = FindSoundFont(name, allowed);
+	if (sfi != nullptr)
+	{
+		if (sfi->type == SF_SF2) return new FSF2Reader(sfi->mFilename);
+		else return new FZipPatReader(sfi->mFilename);
 	}
 	return nullptr;
 

@@ -258,7 +258,8 @@ static void SetupWgOpn()
 
 static void SetupDMXGUS()
 {
-	int lump = Wads.CheckNumForFullName("DMXGUS");
+	int lump = Wads.CheckNumForName("DMXGUSC", ns_global);
+	if (lump < 0) lump = Wads.CheckNumForName("DMXGUS", ns_global);
 	if (lump < 0)
 	{
 		return;
