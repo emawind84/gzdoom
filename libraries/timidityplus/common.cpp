@@ -157,23 +157,28 @@ void default_ctl_cmsg(int type, int verbosity_level, const char* fmt, ...)
 {
 	if (verbosity_level >= VERB_DEBUG) return;	// Don't waste time on diagnostics.
 
+	std::string msg;
 	va_list args;
 	va_start(args, fmt);
 
 	switch (type)
 	{
 	case CMSG_ERROR:
-		vprintf("Error: %s\n", args);
+		msg = "Error: ";
 		break;
 
 	case CMSG_WARNING:
-		vprintf("Warning: %s\n", args);
+		msg = "Warning: ";
 		break;
 
 	case CMSG_INFO:
-		vprintf("Info: %s\n", args);
+		msg = "Info: ";
 		break;
 	}
+
+	msg += fmt;
+	vprintf(msg.c_str(), args);
+	va_end(args);
 }
 
 // Allow hosting applications to capture the messages and deal with them themselves.

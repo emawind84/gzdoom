@@ -379,7 +379,7 @@ void Renderer::start_note(int chan, int note, int vel)
 		if (ip->samples != 1 && ip->sample->type == INST_GUS)
 		{
 			printMessage(CMSG_WARNING, VERB_VERBOSE, 
-				"Strange: percussion instrument with %d samples!", ip->samples);
+				"Strange: percussion instrument with %d samples!\n", ip->samples);
 		}
 	}
 	else

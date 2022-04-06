@@ -797,7 +797,7 @@ DLL_EXPORT bool ChangeMusicSettingString(EStringConfigKey key, MusInfo* currSong
 			
 		case zmusic_gus_patchdir:
 			gusConfig.gus_patchdir = value;
-			return devType() == MDEV_GUS && gusConfig.gus_dmxgus;
+			return devType() == MDEV_GUS;
 
 		case zmusic_timidity_config:
 			timidityConfig.timidity_config = value;

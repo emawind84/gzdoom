@@ -43,6 +43,7 @@ void _WM_ERROR_NEW(const char * wmfmt, ...) {
 	va_list args;
 	va_start(args, wmfmt);
 	wm_error_func(wmfmt, args);
+	va_end(args);
 }
 
 void _WM_ERROR(const char * func, unsigned int lne, int wmerno,
