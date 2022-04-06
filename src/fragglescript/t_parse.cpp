@@ -735,6 +735,7 @@ void script_error(const char *s, ...)
 	va_list args;
 	va_start(args, s);
 	composed.VFormat(s, args);
+	va_end(args);
 	throw CFsError(composed);
 }
 
