@@ -300,8 +300,8 @@ DPSprite *player_t::GetPSprite(PSPLayers layer, AActor *newcaller)
 		newcaller = ReadyWeapon;
 	}
 
-	if (newcaller == nullptr) return nullptr; // Error case was not handled properly. This function cannot give a guarantee to always succeed!
-
+	if (newcaller == nullptr || layer == PSP_CALLERID) return nullptr; // Error case was not handled properly. This function cannot give a guarantee to always succeed!
+	
 	DPSprite *pspr = FindPSprite(layer);
 	if (pspr == nullptr)
 	{
