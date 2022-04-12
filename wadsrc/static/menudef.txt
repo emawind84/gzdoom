@@ -1929,6 +1929,8 @@ OptionMenu SoundOptions protected
 	StaticText " "
 	Submenu "$SNDMNU_ADVANCED",			"AdvSoundOptions"
 	Submenu "$OPTMNU_REVERB",			"ReverbEdit"
+	StaticText " "
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar snd_mastervolume snd_sfxvolume snd_musicvolume snd_menuvolume snd_mididevice snd_waterreverb snd_pitched snd_channels"
 }
 
 /*=======================================
@@ -1973,6 +1975,8 @@ OptionMenu AdvSoundOptions protected
 	Submenu "$SNDMNU_MODREPLAYER",		"ModReplayerOptions"
 	StaticText " "
 	Command "$SNDMNU_RESTART",			"snd_reset"
+	StaticText " "
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar snd_samplerate snd_hrtf i_soundinbackground"
 }
 
 OptionMenu GusConfigMenu protected
@@ -2096,6 +2100,19 @@ OptionMenu ModReplayerOptions protected
 	Option "$ADVSNDMNU_CHORUS", 			"fluid_chorus", "OnOff"
 	Slider "$ADVSNDMNU_MIDIVOICES", 		"fluid_voices", 16, 4096, 16, 0
 	// other CVARs need to be revieved for usefulness
+	StaticText ""
+	StaticText "Advanced Options", gold
+	Slider "Reverb room size",				"fluid_reverb_roomsize", 0, 1.2, 0.1, 1
+	Slider "Reverb damping",				"fluid_reverb_damping", 0, 1.0, 0.1, 1
+	Slider "Reverb width",					"fluid_reverb_width", 0, 100.0, 0.1, 1
+	Slider "Reverb level",					"fluid_reverb_level", 0, 1.0, 0.1, 1
+	StaticText ""
+	Slider "Chorus voices",					"fluid_chorus_voices", 0, 99, 1, 0
+	Slider "Chorus level",					"fluid_chorus_level", 0, 10.0, 0.1, 1
+	Slider "Chorus speed",					"fluid_chorus_speed", 0.29, 5.0, 0.1, 2
+	Slider "Chorus depth",					"fluid_chorus_depth", 0, 256.0, 0.1, 1
+	StaticText " "
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar fluid_patchset fluid_gain fluid_voices fluid_reverb fluid_reverb_roomsize fluid_reverb_damping fluid_reverb_width fluid_reverb_level fluid_chorus fluid_chorus_voices fluid_chorus_level fluid_chorus_speed fluid_chorus_depth"
  }
 
  OptionMenu TimidityOptions protected
@@ -2106,6 +2123,8 @@ OptionMenu ModReplayerOptions protected
 	Slider "$ADVSNDMNU_REVERB_LEVEL", 		"timidity_reverb_level", 0, 127, 1, 0
 	Option "$ADVSNDMNU_CHORUS", 			"timidity_chorus", "OnOff"
 	// other CVARs need to be revieved for usefulness
+	StaticText " "
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar timidity_config timidity_reverb timidity_reverb_level timidity_chorus"
  }
 
  OptionMenu GUSOptions protected
@@ -2115,6 +2134,8 @@ OptionMenu ModReplayerOptions protected
 	Slider "$ADVSNDMNU_MIDIVOICES",			"midi_voices", 16, 256, 4, 0
 	Option "$ADVSNDMNU_DMXGUS", 			"midi_dmxgus", "OnOff"
 	Option "$ADVSNDMNU_GUSMEMSIZE", 		"gus_memsize", "GusMemory"
+	StaticText " "
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar midi_config midi_voices midi_dmxgus gus_memsize"
  }
 
   OptionMenu WildMidiOptions protected
@@ -2123,6 +2144,8 @@ OptionMenu ModReplayerOptions protected
 	LabeledSubMenu "$ADVSNDMNU_SELCONFIG",		"wildmidi_config", "WildMidiConfigMenu"
 	Option "$ADVSNDMNU_REVERB", 			"wildmidi_reverb", "OnOff"
 	Option "$ADVSNDMNU_ADVRESAMPLING",		"wildmidi_enhanced_resampling", "OnOff"
+	StaticText " "
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar wildmidi_config wildmidi_reverb wildmidi_enhanced_resampling"
  }
 
  OptionMenu OPLOptions protected
@@ -2131,6 +2154,8 @@ OptionMenu ModReplayerOptions protected
 	Option "$ADVSNDMNU_OPLCORES", 			"opl_core", "OplCores"
 	Slider "$ADVSNDMNU_OPLNUMCHIPS", 		"opl_numchips", 1, 8, 1, 0
 	Option "$ADVSNDMNU_OPLFULLPAN",			"opl_fullpan", "OnOff"
+	StaticText " "
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar opl_core opl_numchips opl_fullpan"
  }
 
  OptionValue AdlVolumeModels
@@ -2181,6 +2206,8 @@ OptionMenu ModReplayerOptions protected
 	StaticText ""
 	Option "$ADVSNDMNU_ADLCUSTOMBANK", 	 "adl_use_custom_bank", "OnOff"
 	LabeledSubmenu "$ADVSNDMNU_OPLBANKFILE", "adl_custom_bank", "ADLMIDICustomBanksMenu"
+	StaticText " "
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar adl_emulator_id adl_run_at_pcm_rate adl_chips_count adl_fullpan adl_volume_model adl_use_custom_bank"
  }
 
  OptionMenu OPNOptions protected
@@ -2193,6 +2220,8 @@ OptionMenu ModReplayerOptions protected
 	StaticText ""
 	Option "$ADVSNDMNU_OPNCUSTOMBANK", 	 "opn_use_custom_bank", "OnOff"
 	LabeledSubmenu "$ADVSNDMNU_OPNBANKFILE", "opn_custom_bank", "OPNMIDICustomBanksMenu"
+	StaticText " "
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar opn_emulator_id opn_run_at_pcm_rate opn_chips_count opn_fullpan opn_use_custom_bank"
  }
 
 /*=======================================
