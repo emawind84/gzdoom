@@ -130,9 +130,11 @@ class MacePowered : Mace
 		}
 
 		int alflags = 0;
+		int snd_channel = CHAN_WEAPON;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
 			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
@@ -147,7 +149,7 @@ class MacePowered : Mace
 				mo.tracer = t.linetarget;
 			}
 		}
-		A_StartSound ("weapons/maceshoot", CHAN_WEAPON);
+		A_StartSound ("weapons/maceshoot", snd_channel);
 	}
 }
 

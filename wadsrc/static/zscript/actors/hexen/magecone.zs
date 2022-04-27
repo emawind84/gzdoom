@@ -62,14 +62,16 @@ class MWeapFrost : MageWeapon
 		}
 
 		int alflags = 0;
+		int snd_channel = CHAN_WEAPON;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
 			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
-		A_StartSound ("MageShardsFire", CHAN_WEAPON);
+		A_StartSound ("MageShardsFire", snd_channel);
 
 		int damage = random[MageCone](90, 105);
 		for (int i = 0; i < 16; i++)

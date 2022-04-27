@@ -60,10 +60,11 @@ class Mauler : StrifeWeapon
 		int hand = 0;
 		int laflags = 0;
 		int alflags = 0;
-		A_StartSound ("weapons/mauler1", CHAN_WEAPON);
+		int snd_channel = CHAN_WEAPON;
 		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null)
 		{
+			snd_channel = weap.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
 			hand = weap.bOffhandWeapon ? 1 : 0;
 			laflags |= hand ? LAF_ISOFFHAND : 0;
 			alflags |= hand ? ALF_ISOFFHAND : 0;
@@ -71,6 +72,7 @@ class Mauler : StrifeWeapon
 				return;
 			
 		}
+		A_StartSound ("weapons/mauler1", snd_channel);
 		player.mo.PlayAttacking2 ();
 
 		double pitch = BulletSlope (aimflags: alflags);
@@ -137,8 +139,7 @@ class Mauler2 : Mauler
 
 	action void A_FireMauler2Pre ()
 	{
-		A_StartSound ("weapons/mauler2charge", CHAN_WEAPON);
-
+		int snd_channel = CHAN_WEAPON;
 		if (player != null)
 		{
 			PSprite psp = player.GetPSprite(PSP_WEAPON);
@@ -147,7 +148,13 @@ class Mauler2 : Mauler
 				psp.x += Random2[Mauler2]() / 64.;
 				psp.y += Random2[Mauler2]() / 64.;
 			}
+			Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
+			if (weapon != null)
+			{
+				snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
+			}
 		}
+		A_StartSound ("weapons/mauler2charge", snd_channel);
 	}
 
 	//============================================================================

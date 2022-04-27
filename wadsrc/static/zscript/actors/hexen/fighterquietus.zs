@@ -140,9 +140,11 @@ class FWeapQuietus : FighterWeapon
 		}
 
 		int alflags = 0;
+		int snd_channel = CHAN_WEAPON;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
+			snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
 			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
@@ -152,7 +154,7 @@ class FWeapQuietus : FighterWeapon
 		SpawnPlayerMissile ("FSwordMissile", Angle          ,0, 0,   0, aimflags: alflags);
 		SpawnPlayerMissile ("FSwordMissile", Angle - (45./8),0, 0,   5, aimflags: alflags);
 		SpawnPlayerMissile ("FSwordMissile", Angle - (45./4),0, 0,  10, aimflags: alflags);
-		A_StartSound ("FighterSwordFire", CHAN_WEAPON);
+		A_StartSound ("FighterSwordFire", snd_channel);
 	}
 
 	

@@ -169,6 +169,8 @@ enum EChannel
 	CHAN_5 = 5,
 	CHAN_6 = 6,
 	CHAN_7 = 7,
+
+	CHAN_OFFWEAPON = 5,  // channel for the offhand weapon
 };
 
 
