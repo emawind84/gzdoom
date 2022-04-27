@@ -442,6 +442,7 @@ enum ESoundFlags
 
 	CHANF_LOOPING = CHANF_LOOP | CHANF_NOSTOP, // convenience value for replicating the old 'looping' boolean.
 
+	CHAN_OFFWEAPON = 5,  // channel for the offhand weapon
 };
 
 // sound attenuation values

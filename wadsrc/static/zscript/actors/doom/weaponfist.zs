@@ -48,16 +48,21 @@ extend class Actor
 	action void A_Punch()
 	{
 		int laflags = LAF_ISMELEEATTACK;
+		int snd_channel = CHAN_WEAPON;
 		FTranslatedLineTarget t;
 
 		if (player != null)
 		{
 			Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-			if (weap != null && !weap.bDehAmmo && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
+			if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 			{
+				snd_channel = weap.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
 				laflags |= weap.bOffhandWeapon ? LAF_ISOFFHAND : 0;
-				if (!weap.DepleteAmmo (weap.bAltFire))
-					return;
+				if (!weap.bDehAmmo)
+				{
+					if (!weap.DepleteAmmo (weap.bAltFire))
+						return;
+				}
 			}
 		}
 
@@ -74,7 +79,7 @@ extend class Actor
 		// turn to face target
 		if (t.linetarget)
 		{
-			A_StartSound ("*fist", CHAN_WEAPON);
+			A_StartSound ("*fist", snd_channel);
 			angle = t.angleFromSource;
 		}
 	}
