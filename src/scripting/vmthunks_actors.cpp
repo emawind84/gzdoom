@@ -133,11 +133,20 @@ static void NativeStopSound(AActor *actor, int slot)
 	S_StopSound(actor, slot);
 }
 
-DEFINE_ACTION_FUNCTION_NATIVE(AActor, A_StopSound, NativeStopSound)
+DEFINE_ACTION_FUNCTION(AActor, A_StopSound)
 {
-	PARAM_SELF_PROLOGUE(AActor);
+	PARAM_ACTION_PROLOGUE(AActor);
 	PARAM_INT(slot);
 	
+	if (self->player != nullptr && stateinfo != nullptr)
+	{
+		DPSprite *pspr = self->player->FindPSprite(stateinfo->mPSPIndex);
+		if (pspr->GetID() == PSP_OFFHANDWEAPON && slot == CHAN_WEAPON)
+		{
+			slot = CHAN_OFFWEAPON;
+		}
+	}
+
 	S_StopSound(self, slot);
 	return 0;
 }
@@ -169,9 +178,9 @@ DEFINE_ACTION_FUNCTION_NATIVE(AActor, A_SoundVolume, S_ChangeActorSoundVolume)
 	return 0;
 }
 
-DEFINE_ACTION_FUNCTION_NATIVE(AActor, A_PlaySound, A_PlaySound)
+DEFINE_ACTION_FUNCTION(AActor, A_PlaySound)
 {
-	PARAM_SELF_PROLOGUE(AActor);
+	PARAM_ACTION_PROLOGUE(AActor);
 	PARAM_SOUND(soundid);
 	PARAM_INT(channel);
 	PARAM_FLOAT(volume);
@@ -179,13 +188,24 @@ DEFINE_ACTION_FUNCTION_NATIVE(AActor, A_PlaySound, A_PlaySound)
 	PARAM_FLOAT(attenuation);
 	PARAM_BOOL(local);
 	PARAM_FLOAT(pitch);
+
+	if (self->player != nullptr && stateinfo != nullptr)
+	{
+		DPSprite *pspr = self->player->FindPSprite(stateinfo->mPSPIndex);
+		if (pspr->GetID() == PSP_OFFHANDWEAPON && (channel & 7) == CHAN_WEAPON)
+		{
+			channel &= ~7;
+			channel |= CHAN_OFFWEAPON;
+		}
+	}
+
 	A_PlaySound(self, soundid, channel, volume, looping, attenuation, local, pitch);
 	return 0;
 }
 
-DEFINE_ACTION_FUNCTION_NATIVE(AActor, A_StartSound, A_StartSound)
+DEFINE_ACTION_FUNCTION(AActor, A_StartSound)
 {
-	PARAM_SELF_PROLOGUE(AActor);
+	PARAM_ACTION_PROLOGUE(AActor);
 	PARAM_SOUND(soundid);
 	PARAM_INT(channel);
 	PARAM_INT(flags);
@@ -193,6 +213,16 @@ DEFINE_ACTION_FUNCTION_NATIVE(AActor, A_StartSound, A_StartSound)
 	PARAM_FLOAT(attenuation);
 	PARAM_FLOAT(pitch);
 	PARAM_FLOAT(startTime);
+
+	if (self->player != nullptr && stateinfo != nullptr)
+	{
+		DPSprite *pspr = self->player->FindPSprite(stateinfo->mPSPIndex);
+		if (pspr->GetID() == PSP_OFFHANDWEAPON && channel == CHAN_WEAPON)
+		{
+			channel = CHAN_OFFWEAPON;
+		}
+	}
+
 	A_StartSound(self, soundid, channel, flags, volume, attenuation, pitch, startTime);
 	return 0;
 }
