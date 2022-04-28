@@ -70,6 +70,7 @@ extend class StateProvider
 			return;
 		}
 		int hand = 0;
+		int alflags = 0;
 		int snd_channel = CHAN_WEAPON;
 
 		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
@@ -77,6 +78,7 @@ extend class StateProvider
 		{
 			hand = weap.bOffhandWeapon ? 1 : 0;
 			snd_channel = weap.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
+			alflags |= weap.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 2))
 				return;
 			
@@ -85,7 +87,7 @@ extend class StateProvider
 		A_StartSound ("weapons/sshotf", snd_channel);
 		player.mo.PlayAttacking2 ();
 
-		double pitch = BulletSlope ();
+		double pitch = BulletSlope (aimflags: alflags);
 			
 		for (int i = 0 ; i < 20 ; i++)
 		{
