@@ -33,12 +33,16 @@
 
 #include "gl/data/gl_data.h"
 #include "gl/renderer/gl_lightdata.h"
+#include "gl/renderer/gl_renderstate.h"
 #include "gl/scene/gl_drawinfo.h"
 #include "gl/scene/gl_portal.h"
 #include "gl/textures/gl_material.h"
 
 CVAR(Bool,gl_noskyboxes, false, 0)
-
+CUSTOM_CVAR(Bool, gl_skydome, true, CVAR_GLOBALCONFIG|CVAR_ARCHIVE)
+{
+	gl_noskyboxes = !self;
+}
 //==========================================================================
 //
 //  Set up the skyinfo struct
@@ -114,6 +118,7 @@ void GLSkyInfo::init(int sky1, PalEntry FadeColor)
 
 void GLWall::SkyPlane(sector_t *sector, int plane, bool allowreflect)
 {
+	if (gl_global_fade) return;
 	int ptype = -1;
 
 	FSectorPortal *sportal = sector->ValidatePortal(plane);
@@ -124,6 +129,11 @@ void GLWall::SkyPlane(sector_t *sector, int plane, bool allowreflect)
 	{
 		GLSkyInfo skyinfo;
 		skyinfo.init(sector->sky, Colormap.FadeColor);
+		if (skyinfo.texture[0])
+		{
+			PalEntry pe = skyinfo.texture[0]->tex->GetSkyCapColor(false);
+			gl_RenderState.SetSceneColor(pe);
+		}
 		ptype = PORTALTYPE_SKY;
 		sky = UniqueSkies.Get(&skyinfo);
 	}
@@ -162,7 +172,7 @@ void GLWall::SkyPlane(sector_t *sector, int plane, bool allowreflect)
 		ptype = PORTALTYPE_PLANEMIRROR;
 		planemirror = plane == sector_t::ceiling ? &sector->ceilingplane : &sector->floorplane;
 	}
-	if (ptype != -1)
+	if (ptype != -1 && gl_skydome)
 	{
 		PutPortal(ptype);
 	}

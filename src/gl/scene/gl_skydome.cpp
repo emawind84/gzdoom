@@ -79,13 +79,12 @@
 
 //-----------------------------------------------------------------------------
 //
-// Shamelessly lifted from Doomsday (written by Jaakko Ker?en)
+// Shamelessly lifted from Doomsday (written by Jaakko Keränen)
 // also shamelessly lifted from ZDoomGL! ;)
 //
 //-----------------------------------------------------------------------------
 
 CVAR(Float, skyoffset, 0, 0)	// for testing
-CVAR(Bool, gl_skydome, true, CVAR_GLOBALCONFIG|CVAR_ARCHIVE)
 
 //-----------------------------------------------------------------------------
 //
@@ -501,14 +500,6 @@ static void RenderBox(FTextureID texno, FMaterial * gltex, float x_offset, bool 
 //-----------------------------------------------------------------------------
 void GLSkyPortal::DrawContents()
 {
-	if (gl_global_fade) return;
-	if (origin->texture[0])
-	{
-		PalEntry pe = origin->texture[0]->tex->GetSkyCapColor(false);
-		gl_RenderState.SetSceneColor(pe);
-	}
-	if (!gl_skydome) return;
-	
 	bool drawBoth = false;
 
 	// We have no use for Doom lighting special handling here, so disable it for this function.
