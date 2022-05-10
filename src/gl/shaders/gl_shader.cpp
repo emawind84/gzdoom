@@ -408,6 +408,11 @@ bool FShader::Load(const char * name, const char * vert_prog_lump, const char * 
 	i_data += "uniform sampler2D texture4;\n";
 	i_data += "uniform sampler2D texture5;\n";
 	i_data += "uniform sampler2D texture6;\n";
+	i_data += "uniform sampler2D texture7;\n";
+	i_data += "uniform sampler2D texture8;\n";
+	i_data += "uniform sampler2D texture9;\n";
+	i_data += "uniform sampler2D texture10;\n";
+	i_data += "uniform sampler2D texture11;\n";
 
 	// timer data
 	i_data += "uniform float timer;\n"; // To do: we must search user shaders for this declaration and remove it
