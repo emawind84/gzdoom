@@ -884,11 +884,15 @@ DEFINE_ACTION_FUNCTION(AActor, A_OverlayOffset)
 
 DEFINE_ACTION_FUNCTION(AActor, A_WeaponOffset)
 {
-	PARAM_SELF_PROLOGUE(AActor);
+	PARAM_ACTION_PROLOGUE(AActor);
 	PARAM_FLOAT(wx)	
 	PARAM_FLOAT(wy)	
 	PARAM_INT(flags)
-	A_OverlayOffset(self, PSP_WEAPON, wx, wy, flags);
+
+	if (ACTION_CALL_FROM_PSPRITE())
+	{
+		A_OverlayOffset(self, stateinfo->mPSPIndex, wx, wy, flags);
+	}
 	return 0;
 }
 
