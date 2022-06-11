@@ -2812,6 +2812,7 @@ GLPREFMNU_SECLIGHTMODE 			= "Sector light mode";
 GLPREFMNU_FOGMODE 				= "Fog mode";
 GLPREFMNU_FOGFORCEFULLBRIGHT 	= "Fog forces fullbright";
 GLPREFMNU_WPNLIGHTSTR 			= "Weapon light strength";
+GLPREFMNU_MIRRORS				= "Display mirrors";
 GLPREFMNU_ENVIRONMENTMAPMIRROR 	= "Environment map on mirrors";
 GLPREFMNU_ENV 					= "Enhanced night vision mode";
 GLPREFMNU_ENVSTEALTH 			= "ENV shows stealth monsters";
