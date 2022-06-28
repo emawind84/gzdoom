@@ -176,14 +176,14 @@ void FModelRenderer::RenderModel(float x, float y, float z, FSpriteModelFrame *s
 	float orientation = scaleFactorX * scaleFactorY * scaleFactorZ;
 
 	BeginDrawModel(actor, smf, objectToWorldMatrix, orientation < 0);
-	RenderFrameModels(smf, actor->state, actor->tics, actor->GetClass(), translation);
+	RenderFrameModels(smf, actor->state, actor->tics, actor->modelDef != NAME_None ? PClass::FindActor(actor->modelDef) : actor->GetClass(), translation, actor);
 	EndDrawModel(actor, smf);
 }
 
 void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 {
 	AActor * playermo = players[consoleplayer].camera;
-	FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->Caller->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
+	FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->Caller->modelDef != NAME_None ? PClass::FindActor(psp->Caller->modelDef) : psp->Caller->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
 
 	// [BB] No model found for this sprite, so we can't render anything.
 	if (smf == nullptr)
@@ -216,11 +216,11 @@ void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 	BeginDrawHUDModel(playermo, objectToWorldMatrix, orientation < 0);
 	uint32_t trans = psp->GetTranslation() != 0 ? psp->GetTranslation() : 0;
 	if ((psp->Flags & PSPF_PLAYERTRANSLATED)) trans = psp->Owner->mo->Translation;
-	RenderFrameModels(smf, psp->GetState(), psp->GetTics(), psp->Caller->GetClass(), trans);
+	RenderFrameModels(smf, psp->GetState(), psp->GetTics(), psp->Caller->modelDef != NAME_None ? PClass::FindActor(psp->Caller->modelDef) : psp->Caller->GetClass(), trans, psp->Caller);
 	EndDrawHUDModel(playermo);
 }
 
-void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FState *curState, const int curTics, const PClass *ti, int translation)
+void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FState *curState, const int curTics, const PClass *ti, int translation, AActor* actor)
 {
 	// [BB] Frame interpolation: Find the FSpriteModelFrame smfNext which follows after smf in the animation
 	// and the scalar value inter ( element of [0,1) ), both necessary to determine the interpolated frame.
@@ -270,10 +270,12 @@ void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FStat
 
 	for (int i = 0; i < smf->modelsAmount; i++)
 	{
+		if (actor->models[i] != -1)
+			smf->modelIDs[i] = actor->models[i];
 		if (smf->modelIDs[i] != -1)
 		{
 			FModel * mdl = Models[smf->modelIDs[i]];
-			FTexture *tex = smf->skinIDs[i].isValid() ? TexMan(smf->skinIDs[i]) : nullptr;
+			FTexture *tex = actor->skins[i].isValid() ? TexMan(actor->skins[i])  : smf->skinIDs[i].isValid() ? TexMan(smf->skinIDs[i]) : nullptr;
 			mdl->BuildVertexBuffer(this);
 			SetVertexBuffer(mdl->GetVertexBuffer(this));
 
@@ -375,7 +377,7 @@ FTextureID LoadSkin(const char * path, const char * fn)
 //
 //===========================================================================
 
-static int ModelFrameHash(FSpriteModelFrame * smf)
+int ModelFrameHash(FSpriteModelFrame * smf)
 {
 	const uint32_t *table = GetCRCTable ();
 	uint32_t hash = 0xffffffff;
@@ -396,7 +398,7 @@ static int ModelFrameHash(FSpriteModelFrame * smf)
 //
 //===========================================================================
 
-static unsigned FindModel(const char * path, const char * modelfile)
+unsigned FindModel(const char * path, const char * modelfile)
 {
 	FModel * model = nullptr;
 	FString fullname;
