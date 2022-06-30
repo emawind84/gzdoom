@@ -176,14 +176,14 @@ void FModelRenderer::RenderModel(float x, float y, float z, FSpriteModelFrame *s
 	float orientation = scaleFactorX * scaleFactorY * scaleFactorZ;
 
 	BeginDrawModel(actor, smf, objectToWorldMatrix, orientation < 0);
-	RenderFrameModels(smf, actor->state, actor->tics, actor->modelDef != NAME_None ? PClass::FindActor(actor->modelDef) : actor->GetClass(), translation, actor);
+	RenderFrameModels(smf, actor->state, actor->tics, actor->modelData != nullptr ? actor->modelData->modelDef != NAME_None ? PClass::FindActor(actor->modelData->modelDef) : actor->GetClass() : actor->GetClass(), translation, actor);
 	EndDrawModel(actor, smf);
 }
 
 void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 {
 	AActor * playermo = players[consoleplayer].camera;
-	FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->Caller->modelDef != NAME_None ? PClass::FindActor(psp->Caller->modelDef) : psp->Caller->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
+	FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->Caller->modelData != nullptr ? psp->Caller->modelData->modelDef != NAME_None ? PClass::FindActor(psp->Caller->modelData->modelDef) : psp->Caller->GetClass() : psp->Caller->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
 
 	// [BB] No model found for this sprite, so we can't render anything.
 	if (smf == nullptr)
@@ -216,7 +216,7 @@ void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 	BeginDrawHUDModel(playermo, objectToWorldMatrix, orientation < 0);
 	uint32_t trans = psp->GetTranslation() != 0 ? psp->GetTranslation() : 0;
 	if ((psp->Flags & PSPF_PLAYERTRANSLATED)) trans = psp->Owner->mo->Translation;
-	RenderFrameModels(smf, psp->GetState(), psp->GetTics(), psp->Caller->modelDef != NAME_None ? PClass::FindActor(psp->Caller->modelDef) : psp->Caller->GetClass(), trans, psp->Caller);
+	RenderFrameModels(smf, psp->GetState(), psp->GetTics(), psp->Caller->modelData != nullptr ? psp->Caller->modelData->modelDef != NAME_None ? PClass::FindActor(psp->Caller->modelData->modelDef) : psp->Caller->GetClass() : psp->Caller->GetClass(), trans, psp->Caller);
 	EndDrawHUDModel(playermo);
 }
 
