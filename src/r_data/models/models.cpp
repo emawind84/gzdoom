@@ -273,19 +273,22 @@ void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FStat
 	TArray<FTextureID> tempSkinIDs = smf->skinIDs;
 	for (int i = 0; i < smf->modelsAmount; i++)
 	{	
-		if (i < actor->models.Size())
+		if (actor->modelData != nullptr)
 		{
-			if (actor->models[i] >= 0)
-				tempModelIDs[i] = actor->models[i];
+			if (i < (int)actor->modelData->modelIDs.Size())
+			{
+				if(actor->modelData->modelIDs[i] >= 0)
+					tempModelIDs[i] = actor->modelData->modelIDs[i];
+			}
+			if (i < (int)actor->modelData->skinIDs.Size())
+			{
+				if (actor->modelData->skinIDs[i].isValid())
+					tempSkinIDs[i] = actor->modelData->skinIDs[i];
+			}
 		}
 		if (tempModelIDs[i] != -1)
 		{
 			FModel * mdl = Models[tempModelIDs[i]];
-			if (i < actor->skins.Size())
-			{
-				if (actor->skins[i].isValid())
-					tempSkinIDs[i] = actor->skins[i];
-			}
 			auto tex = tempSkinIDs[i].isValid() ? TexMan(tempSkinIDs[i]) : nullptr;
 			mdl->BuildVertexBuffer(this);
 			SetVertexBuffer(mdl->GetVertexBuffer(this));
