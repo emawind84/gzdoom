@@ -365,10 +365,10 @@ void AActor::Serialize(FSerializer &arc)
 		A("cameraheight", CameraHeight)
 		A("camerafov", CameraFOV)
 		A("tag", Tag)
-		A("visiblestartangle",VisibleStartAngle)
-		A("visibleendangle",VisibleEndAngle)
-		A("visiblestartpitch",VisibleStartPitch)
-		A("visibleendpitch",VisibleEndPitch)
+		A("visiblestartangle", VisibleStartAngle)
+		A("visibleendangle", VisibleEndAngle)
+		A("visiblestartpitch", VisibleStartPitch)
+		A("visibleendpitch", VisibleEndPitch)
 		A("woundhealth", WoundHealth)
 		A("rdfactor", RadiusDamageFactor)
 		A("selfdamagefactor", SelfDamageFactor)
@@ -382,8 +382,7 @@ void AActor::Serialize(FSerializer &arc)
 		A("friction", Friction)
 		A("SpriteOffset", SpriteOffset)
 		A("userlights", UserLights)
-		A("modelData", modelData)
-		A("modelDef", modelDef);
+		A("modelData", modelData);
 }
 
 #undef A
@@ -1368,7 +1367,8 @@ bool AActor::Massacre ()
 void DActorModelData::Serialize(FSerializer& arc)
 {
 	Super::Serialize(arc);
-	arc ("modelIDs", modelIDs)
+	arc("modelDef", modelDef)
+		("modelIDs", modelIDs)
 		("skinIDs", skinIDs)
 		("hasModel", hasModel);
 }
