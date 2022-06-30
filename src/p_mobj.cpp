@@ -167,6 +167,7 @@ CVAR (Int, cl_bloodtype, 0, CVAR_ARCHIVE);
 
 // CODE --------------------------------------------------------------------
 
+IMPLEMENT_CLASS(DActorModelData, false, false);
 IMPLEMENT_CLASS(AActor, false, true)
 
 IMPLEMENT_POINTERS_START(AActor)
@@ -380,7 +381,9 @@ void AActor::Serialize(FSerializer &arc)
 		A("spawnorder", SpawnOrder)
 		A("friction", Friction)
 		A("SpriteOffset", SpriteOffset)
-		A("userlights", UserLights);
+		A("userlights", UserLights)
+		A("modelData", modelData)
+		A("modelDef", modelDef);
 }
 
 #undef A
@@ -1354,6 +1357,20 @@ bool AActor::Massacre ()
 		return health <= 0;
 	}
 	return false;
+}
+
+//----------------------------------------------------------------------------
+//
+// Serialize DActorModelData
+//
+//----------------------------------------------------------------------------
+
+void DActorModelData::Serialize(FSerializer& arc)
+{
+	Super::Serialize(arc);
+	arc ("modelIDs", modelIDs)
+		("skinIDs", skinIDs)
+		("hasModel", hasModel);
 }
 
 //----------------------------------------------------------------------------
