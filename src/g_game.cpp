@@ -90,6 +90,7 @@
 #include "dobjgc.h"
 #include "gi.h"
 #include "p_conversation.h"
+#include "r_data/models/models.h"
 
 #include <zlib.h>
 
@@ -2038,6 +2039,14 @@ void G_DoLoadGame ()
 
 	if (longsavemessages) Printf("%s (%s)\n", GStrings("GGLOADED"), savename.GetChars());
 	else Printf("%s\n", GStrings("GGLOADED"));
+
+	//Push any added models from A_ChangeModel
+	for (int i = 0; i < level.savedModelFiles.Size(); i++)
+	{
+		FString modelFilePath = level.savedModelFiles[i].Left(level.savedModelFiles[i].LastIndexOf("/")+1);
+		FString modelFileName = level.savedModelFiles[i].Right(level.savedModelFiles[i].Len() - level.savedModelFiles[i].Left(level.savedModelFiles[i].LastIndexOf("/") + 1).Len());
+		FindModel(modelFilePath, modelFileName);
+	}
 
 	// At this point, the GC threshold is likely a lot higher than the
 	// amount of memory in use, so bring it down now by starting a

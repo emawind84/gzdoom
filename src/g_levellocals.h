@@ -172,6 +172,8 @@ struct FLevelLocals : public FLevelData
 
 	double		teamdamage;
 
+	TArray<FString> savedModelFiles;
+
 	// former OpenGL-exclusive properties that should also be usable by the true color software renderer.
 	int fogdensity;
 	int outsidefogdensity;
