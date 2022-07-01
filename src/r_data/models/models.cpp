@@ -277,7 +277,7 @@ void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FStat
 		{
 			if (i < (int)actor->modelData->modelIDs.Size())
 			{
-				if(actor->modelData->modelIDs[i] >= 0)
+				if(actor->modelData->modelIDs[i] != -1)
 					tempModelIDs[i] = actor->modelData->modelIDs[i];
 			}
 			if (i < (int)actor->modelData->skinIDs.Size())
@@ -286,7 +286,7 @@ void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FStat
 					tempSkinIDs[i] = actor->modelData->skinIDs[i];
 			}
 		}
-		if (tempModelIDs[i] != -1)
+		if (tempModelIDs[i] >= 0)
 		{
 			FModel * mdl = Models[tempModelIDs[i]];
 			auto tex = tempSkinIDs[i].isValid() ? TexMan(tempSkinIDs[i]) : nullptr;
