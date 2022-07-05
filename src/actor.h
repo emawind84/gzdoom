@@ -655,6 +655,7 @@ public:
 	bool				hasModel;
 	TArray<int>			modelIDs;
 	TArray<FTextureID>	skinIDs;
+	TArray<FTextureID>	surfaceSkinIDs;
 
 	DActorModelData() = default;
 	virtual void Serialize(FSerializer& arc) override;
