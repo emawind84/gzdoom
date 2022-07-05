@@ -222,11 +222,13 @@ void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 
 void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FState *curState, const int curTics, const PClass *ti, int translation, AActor* actor)
 {
+	//[SM] - Create a temporary sprite model frame, which prevents data from being overwritten
+	FSpriteModelFrame* tempsmf = new FSpriteModelFrame(*smf);
 	// [BB] Frame interpolation: Find the FSpriteModelFrame smfNext which follows after smf in the animation
 	// and the scalar value inter ( element of [0,1) ), both necessary to determine the interpolated frame.
 	FSpriteModelFrame * smfNext = nullptr;
 	double inter = 0.;
-	if (gl_interpolate_model_frames && !(smf->flags & MDL_NOINTERPOLATION))
+	if (gl_interpolate_model_frames && !(tempsmf->flags & MDL_NOINTERPOLATION))
 	{
 		FState *nextState = curState->GetNextState();
 		if (curState != nextState && nextState)
@@ -248,7 +250,7 @@ void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FStat
 			{
 				// [BB] Workaround for actors that use the same frame twice in a row.
 				// Most of the standard Doom monsters do this in their see state.
-				if ((smf->flags & MDL_INTERPOLATEDOUBLEDFRAMES))
+				if ((tempsmf->flags & MDL_INTERPOLATEDOUBLEDFRAMES))
 				{
 					const FState *prevState = curState - 1;
 					if ((curState->sprite == prevState->sprite) && (curState->Frame == prevState->Frame))
@@ -268,37 +270,42 @@ void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FStat
 		}
 	}
 
-	//[SM] - these temporary arrays prevent actual smf data from being overwritten, which was the source of my problems
-	TArray<int> tempModelIDs = smf->modelIDs;
-	TArray<FTextureID> tempSkinIDs = smf->skinIDs;
-	for (int i = 0; i < smf->modelsAmount; i++)
+	for (int i = 0; i < tempsmf->modelsAmount; i++)
 	{	
 		if (actor->modelData != nullptr)
 		{
 			if (i < (int)actor->modelData->modelIDs.Size())
 			{
 				if(actor->modelData->modelIDs[i] != -1)
-					tempModelIDs[i] = actor->modelData->modelIDs[i];
+					tempsmf->modelIDs[i] = actor->modelData->modelIDs[i];
 			}
 			if (i < (int)actor->modelData->skinIDs.Size())
 			{
 				if (actor->modelData->skinIDs[i].isValid())
-					tempSkinIDs[i] = actor->modelData->skinIDs[i];
+					tempsmf->skinIDs[i] = actor->modelData->skinIDs[i];
+			}
+			for (int surface = i * MD3_MAX_SURFACES; surface < (i + 1) * MD3_MAX_SURFACES; surface++)
+			{
+				if (surface < (int)actor->modelData->surfaceSkinIDs.Size())
+				{
+					if (actor->modelData->surfaceSkinIDs[surface].isValid())
+						tempsmf->surfaceskinIDs[surface] = actor->modelData->surfaceSkinIDs[surface];
+				}
 			}
 		}
-		if (tempModelIDs[i] >= 0)
+		if (tempsmf->modelIDs[i] >= 0)
 		{
-			FModel * mdl = Models[tempModelIDs[i]];
-			auto tex = tempSkinIDs[i].isValid() ? TexMan(tempSkinIDs[i]) : nullptr;
+			FModel * mdl = Models[tempsmf->modelIDs[i]];
+			auto tex = tempsmf->skinIDs[i].isValid() ? TexMan(tempsmf->skinIDs[i]) : nullptr;
 			mdl->BuildVertexBuffer(this);
 			SetVertexBuffer(mdl->GetVertexBuffer(this));
 
-			mdl->PushSpriteMDLFrame(smf, i);
+			mdl->PushSpriteMDLFrame(tempsmf, i);
 
-			if (smfNext && smf->modelframes[i] != smfNext->modelframes[i])
-				mdl->RenderFrame(this, tex, smf->modelframes[i], smfNext->modelframes[i], inter, translation);
+			if (smfNext && tempsmf->modelframes[i] != smfNext->modelframes[i])
+				mdl->RenderFrame(this, tex, tempsmf->modelframes[i], smfNext->modelframes[i], inter, translation);
 			else
-				mdl->RenderFrame(this, tex, smf->modelframes[i], smf->modelframes[i], 0.f, translation);
+				mdl->RenderFrame(this, tex, tempsmf->modelframes[i], tempsmf->modelframes[i], 0.f, translation);
 
 			ResetVertexBuffer();
 		}
