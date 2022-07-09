@@ -1372,6 +1372,7 @@ void DActorModelData::Serialize(FSerializer& arc)
 		("modelIDs", modelIDs)
 		("skinIDs", skinIDs)
 		("surfaceSkinIDs", surfaceSkinIDs)
+		("modelFrameGenerators", modelFrameGenerators)
 		("hasModel", hasModel);
 }
 
