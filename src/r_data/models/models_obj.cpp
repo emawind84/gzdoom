@@ -624,19 +624,19 @@ int FOBJModel::FindFrame(const char* name)
  * @param inter Unused
  * @param translation The translation for the skin
  */
-void FOBJModel::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frameno, int frameno2, double inter, int translation)
+void FOBJModel::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frameno, int frameno2, double inter, int translation, const TArray<FTextureID>& surfaceskinids)
 {
 	for (unsigned int i = 0; i < surfaces.Size(); i++)
 	{
 		OBJSurface *surf = &surfaces[i];
 
 		FTexture *userSkin = skin;
-		if (!userSkin && curSpriteMDLFrame)
+		if (!userSkin)
 		{
 			int ssIndex = i + curMDLIndex * MD3_MAX_SURFACES;
-			if (i < MD3_MAX_SURFACES && curSpriteMDLFrame->surfaceskinIDs[ssIndex].isValid())
+			if (i < MD3_MAX_SURFACES && surfaceskinids[ssIndex].isValid())
 			{
-				userSkin = TexMan(curSpriteMDLFrame->surfaceskinIDs[ssIndex]);
+				userSkin = TexMan(surfaceskinids[ssIndex]);
 			}
 			else if (surf->skin.isValid())
 			{

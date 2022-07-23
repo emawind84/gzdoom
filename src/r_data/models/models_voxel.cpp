@@ -406,7 +406,7 @@ float FVoxelModel::getAspectFactor()
 //
 //===========================================================================
 
-void FVoxelModel::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame, int frame2, double inter, int translation)
+void FVoxelModel::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame, int frame2, double inter, int translation, const TArray<FTextureID>&)
 {
 	renderer->SetMaterial(skin, true, translation);
 	GetVertexBuffer(renderer)->SetupFrame(renderer, 0, 0, 0);
