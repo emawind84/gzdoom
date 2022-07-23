@@ -624,7 +624,7 @@ int FOBJModel::FindFrame(const char* name)
  * @param inter Unused
  * @param translation The translation for the skin
  */
-void FOBJModel::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frameno, int frameno2, double inter, int translation, const TArray<FTextureID>& surfaceskinids)
+void FOBJModel::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frameno, int frameno2, double inter, int translation, const FTextureID* surfaceskinids)
 {
 	for (unsigned int i = 0; i < surfaces.Size(); i++)
 	{
@@ -633,10 +633,9 @@ void FOBJModel::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame
 		FTexture *userSkin = skin;
 		if (!userSkin)
 		{
-			int ssIndex = i + curMDLIndex * MD3_MAX_SURFACES;
-			if (i < MD3_MAX_SURFACES && surfaceskinids[ssIndex].isValid())
+			if (surfaceskinids && surfaceskinids[i].isValid())
 			{
-				userSkin = TexMan(surfaceskinids[ssIndex]);
+				userSkin = TexMan(surfaceskinids[i]);
 			}
 			else if (surf->skin.isValid())
 			{
@@ -661,18 +660,17 @@ void FOBJModel::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame
  *
  * @param hitlist The list of textures
  */
-void FOBJModel::AddSkins(uint8_t* hitlist)
+void FOBJModel::AddSkins(uint8_t* hitlist, const FTextureID* surfaceskinids)
 {
 	for (size_t i = 0; i < surfaces.Size(); i++)
 	{
-		size_t ssIndex = i + curMDLIndex * MD3_MAX_SURFACES;
-		if (curSpriteMDLFrame && i < MD3_MAX_SURFACES && curSpriteMDLFrame->surfaceskinIDs[ssIndex].isValid())
+		if (surfaceskinids && i < MD3_MAX_SURFACES && surfaceskinids[i].isValid())
 		{
 			// Precache skins manually reassigned by the user.
 			// On OBJs with lots of skins, such as Doom map OBJs exported from GZDB,
 			// there may be too many skins for the user to manually change, unless
 			// the limit is bumped or surfaceskinIDs is changed to a TArray<FTextureID>.
-			hitlist[curSpriteMDLFrame->surfaceskinIDs[ssIndex].GetIndex()] |= FTextureManager::HIT_Flat;
+			hitlist[surfaceskinids[i].GetIndex()] |= FTextureManager::HIT_Flat;
 			return; // No need to precache skin that was replaced
 		}
 
