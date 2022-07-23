@@ -2041,10 +2041,10 @@ void G_DoLoadGame ()
 	else Printf("%s\n", GStrings("GGLOADED"));
 
 	//Push any added models from A_ChangeModel
-	for (int i = 0; i < level.savedModelFiles.Size(); i++)
+	for (auto& smf : level.savedModelFiles)
 	{
-		FString modelFilePath = level.savedModelFiles[i].Left(level.savedModelFiles[i].LastIndexOf("/")+1);
-		FString modelFileName = level.savedModelFiles[i].Right(level.savedModelFiles[i].Len() - level.savedModelFiles[i].Left(level.savedModelFiles[i].LastIndexOf("/") + 1).Len());
+		FString modelFilePath = smf.Left(smf.LastIndexOf("/")+1);
+		FString modelFileName = smf.Right(smf.Len() - smf.Left(smf.LastIndexOf("/") + 1).Len());
 		FindModel(modelFilePath, modelFileName);
 	}
 

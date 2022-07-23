@@ -344,7 +344,7 @@ int FMD3Model::FindFrame(const char * name)
 //
 //===========================================================================
 
-void FMD3Model::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frameno, int frameno2, double inter, int translation)
+void FMD3Model::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frameno, int frameno2, double inter, int translation, const TArray<FTextureID>& surfaceskinids)
 {
 	if ((unsigned)frameno >= Frames.Size() || (unsigned)frameno2 >= Frames.Size()) return;
 
@@ -358,17 +358,14 @@ void FMD3Model::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame
 		FTexture *surfaceSkin = skin;
 		if (!surfaceSkin)
 		{
-			if (curSpriteMDLFrame)
+			int ssIndex = i + curMDLIndex * MD3_MAX_SURFACES;
+			if (surfaceskinids[ssIndex].isValid())
 			{
-				int ssIndex = i + curMDLIndex * MD3_MAX_SURFACES;
-				if (curSpriteMDLFrame->surfaceskinIDs[ssIndex].isValid())
-				{
-					surfaceSkin = TexMan(curSpriteMDLFrame->surfaceskinIDs[ssIndex]);
-				}
-				else if (surf->numSkins > 0 && surf->Skins[0].isValid())
-				{
-					surfaceSkin = TexMan(surf->Skins[0]);
-				}
+				surfaceSkin = TexMan(surfaceskinids[ssIndex]);
+			}
+			else if (surf->numSkins > 0 && surf->Skins[0].isValid())
+			{
+				surfaceSkin = TexMan(surf->Skins[0]);
 			}
 
 			if (!surfaceSkin)
