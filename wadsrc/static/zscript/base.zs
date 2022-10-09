@@ -457,7 +457,7 @@ class Object native
 	native static void MarkSound(Sound snd);
 	native static uint BAM(double angle);
 	native static void SetMusicVolume(float vol);
-	deprecated("4.8", "Use MSTimeF instead") native static uint MSTime();
+	native static uint MSTime();
 	native static double MSTimeF();
 	native vararg static void ThrowAbortException(String fmt, ...);
 
