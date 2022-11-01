@@ -35,6 +35,8 @@
 
 #include "vectors.h"
 #include "doomdef.h"
+#include "textures/textures.h"
+#include "r_data/renderstyle.h"
 
 #define FX_ROCKET			0x00000001
 #define FX_GRENADE			0x00000002
@@ -61,6 +63,8 @@ struct particle_t
 	int		color;
 	uint16_t	tnext;
 	uint16_t	snext;
+	FTextureID texture;
+	ERenderStyle style;
 };
 
 extern TArray<particle_t>	Particles;
@@ -77,8 +81,8 @@ class AActor;
 particle_t *JitterParticle (int ttl);
 particle_t *JitterParticle (int ttl, double drift);
 
-void P_ThinkParticles (void);
-void P_SpawnParticle(const DVector3 &pos, const DVector3 &vel, const DVector3 &accel, PalEntry color, double startalpha, int lifetime, double size, double fadestep, double sizestep, int flags = 0);
+void P_ThinkParticles ();
+void P_SpawnParticle(const DVector3 &pos, const DVector3 &vel, const DVector3 &accel, PalEntry color, double startalpha, int lifetime, double size, double fadestep, double sizestep, int flags = 0, FTextureID texture = FNullTextureID(), ERenderStyle style = STYLE_None);
 void P_InitEffects (void);
 
 void P_RunEffect (AActor *actor, int effects);

@@ -306,8 +306,8 @@ enum PSFlag
 	PS_NOTIMEFREEZE =	1 << 5,
 };
 
-void P_SpawnParticle(const DVector3 &pos, const DVector3 &vel, const DVector3 &accel, PalEntry color, double startalpha, int lifetime, double size, 
-	double fadestep, double sizestep, int flags)
+void P_SpawnParticle(const DVector3 &pos, const DVector3 &vel, const DVector3 &accel, PalEntry color, double startalpha, int lifetime, double size,
+	double fadestep, double sizestep, int flags, FTextureID texture, ERenderStyle style)
 {
 	particle_t *particle = NewParticle();
 
@@ -325,6 +325,8 @@ void P_SpawnParticle(const DVector3 &pos, const DVector3 &vel, const DVector3 &a
 		particle->size = size;
 		particle->sizestep = sizestep;
 		particle->notimefreeze = !!(flags & PS_NOTIMEFREEZE);
+		particle->texture = texture;
+		particle->style = style;
 	}
 }
 
