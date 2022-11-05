@@ -296,6 +296,7 @@ class FShader
 	FBufferedUniform1f muGlobalFadeDensity;
 	FBufferedUniform1f muGlobalFadeGradient;
 	FBufferedUniformPE muGlobalFadeColor;
+	FBufferedUniform1i muLightRangeLimit;
 	
 	int lights_index;
 	int projectionmatrix_index;

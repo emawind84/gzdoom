@@ -217,6 +217,7 @@ bool FRenderState::ApplyShader()
 	activeShader->muGlobalFadeDensity.Set(gl_global_fade_density);
 	activeShader->muGlobalFadeGradient.Set(gl_global_fade_gradient);
 	activeShader->muGlobalFadeColor.Set(mFadeColor);
+	activeShader->muLightRangeLimit.Set(gl_light_range_limit);
 
 	if (mGlowEnabled)
 	{

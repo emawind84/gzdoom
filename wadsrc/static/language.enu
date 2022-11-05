@@ -2792,6 +2792,7 @@ GLTEXMNU_SORTDRAWLIST 	= "Sort draw lists by texture";
 
 // Dynamic Light Options
 GLLIGHTMNU_TITLE					= "DYNAMIC LIGHTS";
+GLLIGHTMNU_ADVANCED					= "Advanced options";
 GLLIGHTMNU_LIGHTSENABLED			= "Dynamic Lights (OpenGL)";
 GLLIGHTMNU_LIGHTDEFS				= "Enable light definitions";
 GLLIGHTMNU_CLIPLIGHTS				= "Clip lights";
@@ -2805,6 +2806,9 @@ GLLIGHTMNU_LIGHTBUFFERTYPE			= "Light buffer type";
 GLLIGHTMNU_LIGHTSCULL				= "Light cull distance";
 GLLIGHTMNU_MAXINTENSITY				= "Light max intensity (range)";
 GLLIGHTMNU_MAXCOLLECTEDSS			= "Max collected sub sectors";
+GLLIGHTMNU_MAXWALLLIGHTS			= "Max wall lights";
+GLLIGHTMNU_MAXFLATLIGHTS			= "Max flat lights";
+GLLIGHTMNU_LIGHTRANGELIMIT			= "Light range limit";
 
 // OpenGL Preferences
 GLPREFMNU_TITLE 				= "OPENGL PREFERENCES";

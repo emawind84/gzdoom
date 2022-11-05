@@ -91,6 +91,9 @@ CUSTOM_CVAR (Bool, gl_lights, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOI
 CVAR(Float, gl_light_max_intensity, 1000.0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
 CVAR(Float, gl_light_distance_cull, 4000.0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
 CVAR(Int, gl_light_max_collected_subsectors, 1000, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
+CVAR(Int, gl_light_flat_max_lights, 1000, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
+CVAR(Int, gl_light_wall_max_lights, 1000, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
+CVAR(Int, gl_light_range_limit, 64, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
 
 //==========================================================================
 //

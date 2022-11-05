@@ -2808,11 +2808,17 @@ OptionMenu "GLLightOptions" protected
 	Option "$GLLIGHTMNU_LIGHTBUFFERTYPE",		gl_light_buffer_type,	"LightBuffer"
 	Option "$GLLIGHTMNU_LIGHTSHADOWMAPQUALITY", gl_shadowmap_quality,	"ShadowMapQuality"
 	Option "$GLLIGHTMNU_LIGHTSHADOWMAPFILTER", 	gl_shadowmap_filter,	"ShadowMapFilter"
-	ScaleSlider "$GLLIGHTMNU_LIGHTSCULL",		gl_light_distance_cull, 0.0, 16000.0, 500.0, "Culling disabled"
+
+	StaticText ""
+	StaticText "$GLLIGHTMNU_ADVANCED", gold
+	ScaleSlider "$GLLIGHTMNU_LIGHTSCULL",		gl_light_distance_cull, 0.0, 16000.0, 100.0, "Culling disabled"
 	Slider "$GLLIGHTMNU_MAXINTENSITY",			gl_light_max_intensity, 50, 2000, 50, 0
 	Slider "$GLLIGHTMNU_MAXCOLLECTEDSS",		gl_light_max_collected_subsectors, 200, 5000, 100, 0
+	Slider "$GLLIGHTMNU_MAXWALLLIGHTS",			gl_light_wall_max_lights, 0, 5000, 100, 0
+	Slider "$GLLIGHTMNU_MAXFLATLIGHTS",			gl_light_flat_max_lights, 0, 5000, 100, 0
+	Slider "$GLLIGHTMNU_LIGHTRANGELIMIT",		gl_light_range_limit, 0, 128, 4, 0
 	StaticText " "
-	SafeCommand "$OPTMNU_DEFAULTS",				"resetcvar r_dynlights gl_lights gl_lights_checkside gl_light_sprites gl_light_particles gl_light_shadowmap gl_light_buffer_type gl_shadowmap_quality gl_shadowmap_filter gl_light_distance_cull gl_light_max_intensity gl_light_max_collected_subsectors" 
+	SafeCommand "$OPTMNU_DEFAULTS",				"resetcvar r_dynlights gl_lights gl_lights_checkside gl_light_sprites gl_light_particles gl_light_shadowmap gl_light_buffer_type gl_shadowmap_quality gl_shadowmap_filter gl_light_distance_cull gl_light_max_intensity gl_light_max_collected_subsectors gl_light_max_wall_lights gl_light_max_sprite_lights" 
 }
 
 OptionMenu "OpenGLOptions" protected

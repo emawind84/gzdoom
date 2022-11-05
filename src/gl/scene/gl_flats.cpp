@@ -122,7 +122,7 @@ void GLFlat::SetupSubsectorLights(int pass, subsector_t * sub, int *dli)
 
 	lightdata.Clear();
 	FLightNode * node = sub->lighthead;
-	while (node)
+	while (node && iter_dlightf < gl_light_flat_max_lights)
 	{
 		FDynamicLight * light = node->lightsource;
 			

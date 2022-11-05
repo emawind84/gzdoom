@@ -98,7 +98,7 @@ void GLWall::SetupLights()
 	else node = NULL;
 
 	// Iterate through all dynamic lights which touch this wall and render them
-	while (node)
+	while (node && iter_dlight < gl_light_wall_max_lights)
 	{
 		if (node->lightsource->IsActive() && !gl_IsDistanceCulled(node->lightsource))
 		{

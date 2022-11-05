@@ -45,12 +45,14 @@ vec3 ProcessMaterialLight(Material material, vec3 color)
 			// modulated lights
 			for(int i=lightRange.x; i<lightRange.y; i+=4)
 			{
+				if (i > lightRange.x + uLightRangeLimit) break;
 				dynlight.rgb += lightContribution(i, normal);
 			}
 
 			// subtractive lights
 			for(int i=lightRange.y; i<lightRange.z; i+=4)
 			{
+				if (i > lightRange.y + uLightRangeLimit) break;
 				dynlight.rgb -= lightContribution(i, normal);
 			}
 		}
@@ -68,6 +70,7 @@ vec3 ProcessMaterialLight(Material material, vec3 color)
 			// additive lights
 			for(int i=lightRange.z; i<lightRange.w; i+=4)
 			{
+				if (i > lightRange.z + uLightRangeLimit) break;
 				addlight.rgb += lightContribution(i, normal);
 			}
 
