@@ -71,16 +71,11 @@ extend class StateProvider
 		double slope = AimLineAttack (ang, range, t) + spread_z * (Random2[Saw]() / 255.);
 
 		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-		
-		int snd_channel = CHAN_WEAPON;
-		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
+		if (weap != null && !(flags & SF_NOUSEAMMO) && !(!t.linetarget && (flags & SF_NOUSEAMMOMISS)) && !weap.bDehAmmo &&
+			invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
-			snd_channel = weap.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
-			if (!(flags & SF_NOUSEAMMO) && !(!t.linetarget && (flags & SF_NOUSEAMMOMISS)))
-			{
-				if (!weap.DepleteAmmo (weap.bAltFire))
-					return;
-			}
+			if (!weap.DepleteAmmo (weap.bAltFire))
+				return;
 		}
 
 		int puffFlags = (flags & SF_NORANDOMPUFFZ) ? LAF_NORANDOMPUFFZ : 0;
@@ -96,7 +91,7 @@ extend class StateProvider
 			{
 				player.extralight = !player.extralight;
 			}
-			A_StartSound (fullsound, snd_channel);
+			A_StartSound (fullsound, CHAN_WEAPON);
 			return;
 		}
 
@@ -146,7 +141,7 @@ extend class StateProvider
 			}
 		}
 
-		A_StartSound (hitsound, snd_channel);
+		A_StartSound (hitsound, CHAN_WEAPON);
 			
 		// turn to face target
 		if (!(flags & SF_NOTURN))

@@ -157,11 +157,9 @@ class CWeapWraithverge : ClericWeapon
 			return;
 		}
 		int alflags = 0;
-		int snd_channel = CHAN_WEAPON;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
-			snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
 			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
@@ -173,7 +171,7 @@ class CWeapWraithverge : ClericWeapon
 		}
 
 		invoker.CHolyCount = 3;
-		A_StartSound ("HolySymbolFire", snd_channel);
+		A_StartSound ("HolySymbolFire", CHAN_WEAPON);
 	}
 
 	//============================================================================

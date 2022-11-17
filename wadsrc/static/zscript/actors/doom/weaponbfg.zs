@@ -60,16 +60,7 @@ extend class StateProvider
 {
 	action void A_BFGsound() 
 	{ 
-		int snd_channel = CHAN_WEAPON;
-		if (player != null)
-		{
-			Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-			if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
-			{
-				snd_channel = weap.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
-			}
-		}
-		A_StartSound("weapons/bfgf", snd_channel); 
+		A_StartSound("weapons/bfgf", CHAN_WEAPON); 
 	}
 	
 

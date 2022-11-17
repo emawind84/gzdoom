@@ -107,7 +107,7 @@ class StateProvider : Inventory
 		{
 			laflags |= weapon.bOffhandWeapon ? LAF_ISOFFHAND : 0;
 			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
-			A_StartSound(weapon.AttackSound, weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON);
+			A_StartSound(weapon.AttackSound, CHAN_WEAPON);
 		}
 		
 		if (range == 0)	range = PLAYERMISSILERANGE;
@@ -267,11 +267,7 @@ class StateProvider : Inventory
 		if (!player) return;
 
 		let weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-		int snd_channel = CHAN_WEAPON;
-		if (weapon != NULL)
-		{
-			snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
-		}
+
 		double angle;
 		double pitch;
 		FTranslatedLineTarget t;
@@ -300,7 +296,7 @@ class StateProvider : Inventory
 
 		if (!t.linetarget)
 		{
-			if (MissSound) A_StartSound(MissSound, snd_channel);
+			if (MissSound) A_StartSound(MissSound, CHAN_WEAPON);
 		}
 		else
 		{
@@ -336,8 +332,8 @@ class StateProvider : Inventory
 			}
 			if (weapon != NULL)
 			{
-				if (MeleeSound) A_StartSound(MeleeSound, snd_channel);
-				else			A_StartSound(weapon.AttackSound, snd_channel);
+				if (MeleeSound) A_StartSound(MeleeSound, CHAN_WEAPON);
+				else			A_StartSound(weapon.AttackSound, CHAN_WEAPON);
 			}
 
 			if (!(flags & CPF_NOTURN))

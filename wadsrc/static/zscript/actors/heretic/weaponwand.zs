@@ -53,13 +53,11 @@ class GoldWand : HereticWeapon
 		}
 		int alflags = 0;
 		int laflags = 0;
-		int snd_channel = CHAN_WEAPON;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
 			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			laflags |= weapon.bOffhandWeapon ? LAF_ISOFFHAND : 0;
-			snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
 		}
@@ -71,7 +69,7 @@ class GoldWand : HereticWeapon
 			ang += Random2[FireGoldWand]() * (5.625 / 256);
 		}
 		LineAttack(ang, PLAYERMISSILERANGE, pitch, damage, 'Hitscan', "GoldWandPuff1", laflags);
-		A_StartSound("weapons/wandhit", snd_channel);
+		A_StartSound("weapons/wandhit", CHAN_WEAPON);
 	}
 	
 }
@@ -112,12 +110,10 @@ class GoldWandPowered : GoldWand
 		int hand = 0;
 		int laflags = 0;
 		int alflags = 0;
-		int snd_channel = CHAN_WEAPON;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != null)
 		{
 			hand = weapon.bOffhandWeapon ? 1 : 0;
-			snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
 			laflags |= hand ? LAF_ISOFFHAND : 0;
 			alflags |= hand ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
@@ -135,7 +131,7 @@ class GoldWandPowered : GoldWand
 			LineAttack (ang, PLAYERMISSILERANGE, pitch, damage, 'Hitscan', "GoldWandPuff2", laflags);
 			ang += ((45. / 8) * 2) / 4;
 		}
-		A_StartSound("weapons/wandhit", snd_channel);
+		A_StartSound("weapons/wandhit", CHAN_WEAPON);
 	}
 
 	

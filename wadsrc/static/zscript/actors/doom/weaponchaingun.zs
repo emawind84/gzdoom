@@ -58,13 +58,11 @@ extend class StateProvider
 		}
 		int hand = 0;
 		int alflags = 0;
-		int snd_channel = CHAN_WEAPON;
 		Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
 		{
 			hand = weap.bOffhandWeapon ? 1 : 0;
 			alflags |= hand ? ALF_ISOFFHAND : 0;
-			snd_channel = weap.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
 			if (!weap.DepleteAmmo (weap.bAltFire, true, 1))
 				return;
 
@@ -83,7 +81,7 @@ extend class StateProvider
 			}
 		}
 		player.mo.PlayAttacking2 ();
-		A_StartSound ("weapons/chngun", snd_channel);
+		A_StartSound ("weapons/chngun", CHAN_WEAPON);
 		GunShot (!player.refire, "BulletPuff", BulletSlope (aimflags: alflags));
 	}
 }

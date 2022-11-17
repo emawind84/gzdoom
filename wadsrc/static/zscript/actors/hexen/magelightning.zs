@@ -60,16 +60,7 @@ class MWeapLightning : MageWeapon
 		A_WeaponReady();
 		if (random[LightningReady]() < 160)
 		{
-			int snd_channel = CHAN_WEAPON;
-			if (player != null)
-			{
-				Weapon weap = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-				if (weap != null && invoker == weap && stateinfo != null && stateinfo.mStateType == STATE_Psprite)
-				{
-					snd_channel = weap.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
-				}
-			}
-			A_StartSound ("MageLightningReady", snd_channel);
+			A_StartSound ("MageLightningReady", CHAN_WEAPON);
 		}
 	}
 

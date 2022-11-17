@@ -274,17 +274,11 @@ class Sigil : Weapon
 
 	action void A_SigilCharge ()
 	{
-		int snd_channel = CHAN_WEAPON;
 		if (player != null)
 		{
 			player.extralight = 2;
-			Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-			if (weapon != null)
-			{
-				snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
-			}
 		}
-		A_StartSound ("weapons/sigilcharge", snd_channel);
+		A_StartSound ("weapons/sigilcharge", CHAN_WEAPON);
 	}
 
 	//============================================================================
@@ -306,7 +300,7 @@ class Sigil : Weapon
 			return;
 
 		DamageMobj (self, null, 1*4, 'Sigil', DMG_NO_ARMOR);
-		A_StartSound ("weapons/sigilcharge", weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON);
+		A_StartSound ("weapons/sigilcharge", CHAN_WEAPON);
 
 		int alflags = ALF_PORTALRESTRICT | (weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0);
 		BulletSlope (t, alflags);
@@ -349,7 +343,7 @@ class Sigil : Weapon
 			return;
 
 		DamageMobj (self, null, 2*4, 'Sigil', DMG_NO_ARMOR);
-		A_StartSound ("weapons/sigilcharge", weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON);
+		A_StartSound ("weapons/sigilcharge", CHAN_WEAPON);
 
 		int alflags = weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 		SpawnPlayerMissile ("SpectralLightningH1", aimflags: alflags);
@@ -371,7 +365,7 @@ class Sigil : Weapon
 			return;
 
 		DamageMobj (self, null, 3*4, 'Sigil', DMG_NO_ARMOR);
-		A_StartSound ("weapons/sigilcharge", weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON);
+		A_StartSound ("weapons/sigilcharge", CHAN_WEAPON);
 
 		angle -= 90.;
 		for (int i = 0; i < 20; ++i)
@@ -404,7 +398,7 @@ class Sigil : Weapon
 			return;
 
 		DamageMobj (self, null, 4*4, 'Sigil', DMG_NO_ARMOR);
-		A_StartSound ("weapons/sigilcharge", weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON);
+		A_StartSound ("weapons/sigilcharge", CHAN_WEAPON);
 
 		int alflags = ALF_PORTALRESTRICT | (weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0);
 		BulletSlope (t, alflags);
@@ -442,7 +436,7 @@ class Sigil : Weapon
 			return;
 
 		DamageMobj (self, null, 5*4, 'Sigil', DMG_NO_ARMOR);
-		A_StartSound ("weapons/sigilcharge", weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON);
+		A_StartSound ("weapons/sigilcharge", CHAN_WEAPON);
 
 		int alflags = weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 		SpawnPlayerMissile ("SpectralLightningBigBall1", aimflags: alflags);

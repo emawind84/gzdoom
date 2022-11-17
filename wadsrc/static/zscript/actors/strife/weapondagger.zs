@@ -49,13 +49,11 @@ class PunchDagger : StrifeWeapon
 
 		int alflags = 0;
 		int laflags = LAF_ISMELEEATTACK;
-		int snd_channel = CHAN_WEAPON;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
-		if (weapon != null)
+		if (weapon != null && weapon.bOffhandWeapon)
 		{
-			snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
-			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
-			laflags |= weapon.bOffhandWeapon ? LAF_ISOFFHAND : 0;
+			alflags |= ALF_ISOFFHAND;
+			laflags |= LAF_ISOFFHAND;
 		}
 		
 		if (FindInventory("SVETalismanPowerup"))
@@ -80,14 +78,14 @@ class PunchDagger : StrifeWeapon
 		// turn to face target
 		if (t.linetarget)
 		{
-			A_StartSound (t.linetarget.bNoBlood ? sound("misc/metalhit") : sound("misc/meathit"), snd_channel);
+			A_StartSound (t.linetarget.bNoBlood ? sound("misc/metalhit") : sound("misc/meathit"), CHAN_WEAPON);
 			angle = t.angleFromSource;
 			bJustAttacked = true;
 			t.linetarget.DaggerAlert (self);
 		}
 		else
 		{
-			A_StartSound ("misc/swish", snd_channel);
+			A_StartSound ("misc/swish", CHAN_WEAPON);
 		}
 	}
 }	

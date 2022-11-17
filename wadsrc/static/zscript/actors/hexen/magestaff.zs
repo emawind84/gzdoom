@@ -185,11 +185,9 @@ class MWeapBloodscourge : MageWeapon
 		}
 
 		int alflags = 0;
-		int snd_channel = CHAN_WEAPON;
 		Weapon weapon = invoker == player.OffhandWeapon ? player.OffhandWeapon : player.ReadyWeapon;
 		if (weapon != NULL)
 		{
-			snd_channel = weapon.bOffhandWeapon ? CHAN_OFFWEAPON : CHAN_WEAPON;
 			alflags |= weapon.bOffhandWeapon ? ALF_ISOFFHAND : 0;
 			if (!weapon.DepleteAmmo (weapon.bAltFire))
 				return;
@@ -204,7 +202,7 @@ class MWeapBloodscourge : MageWeapon
 		MStaffSpawn (angle, t.linetarget, alflags);
 		MStaffSpawn (angle-5, t.linetarget, alflags);
 		MStaffSpawn (angle+5, t.linetarget, alflags);
-		A_StartSound ("MageStaffFire", snd_channel);
+		A_StartSound ("MageStaffFire", CHAN_WEAPON);
 		invoker.MStaffCount = 3;
 	}
 
