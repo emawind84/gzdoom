@@ -291,6 +291,11 @@ class StateProvider : Inventory
 			pufftype = 'BulletPuff';
 		int puffFlags = LAF_ISMELEEATTACK | ((flags & CPF_NORANDOMPUFFZ) ? LAF_NORANDOMPUFFZ : 0);
 
+		if (weapon != NULL)
+		{
+			puffFlags |= weapon.bOffhandWeapon ? LAF_ISOFFHAND : 0;
+		}
+
 		Actor puff;
 		[puff, actualdamage] = LineAttack (angle, range, pitch, damage, 'Melee', pufftype, puffFlags, t);
 
