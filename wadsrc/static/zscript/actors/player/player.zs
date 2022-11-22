@@ -2298,7 +2298,7 @@ class PlayerPawn : Actor
 			weap.bOffhandWeapon = hand == 1;
 			player.PendingWeapon = weap;
 			player.mo.BringUpWeapon();
-			if (nextweap != weap && !weap.bTwoHanded) {
+			if (nextweap != weap && !weap.bTwoHanded && !nextweap.bTwoHanded) {
 				player.PendingWeapon = nextweap;
 				player.mo.BringUpWeapon();
 			}
