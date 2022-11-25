@@ -4682,7 +4682,7 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 				int hand = flags & LAF_ISOFFHAND;
 				// [TN] If the actor or weapon has a decal defined, use that one.
 				if (t1->DecalGenerator != NULL ||
-					(weapon != NULL && weapon->DecalGenerator != NULL))
+					(t1->player != NULL && weapon != NULL && weapon->DecalGenerator != NULL))
 				{
 					// [ZK] If puff has FORCEDECAL set, do not use the weapon's decal
 					if (puffDefaults->flags7 & MF7_FORCEDECAL && puff != NULL && puff->DecalGenerator)
@@ -4760,7 +4760,7 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 			{
 				int dmgflags = DMG_INFLICTOR_IS_PUFF | pflag;
 				// Allow MF5_PIERCEARMOR on a weapon as well.
-				if ((dmgflags & DMG_PLAYERATTACK) && weapon != NULL &&
+				if (t1->player != NULL && (dmgflags & DMG_PLAYERATTACK) && weapon != NULL &&
 					weapon->flags5 & MF5_PIERCEARMOR)
 				{
 					dmgflags |= DMG_NO_ARMOR;
