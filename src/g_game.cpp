@@ -1424,6 +1424,7 @@ void G_PlayerReborn (int player)
 	p->settings_controller = settings_controller;
 
 	p->oldbuttons = ~0, p->attackdown = true; p->usedown = true;	// don't do anything immediately
+	p->ohattackdown = true;
 	p->original_oldbuttons = ~0;
 	p->playerstate = PST_LIVE;
 

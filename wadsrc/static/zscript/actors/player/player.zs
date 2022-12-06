@@ -461,48 +461,38 @@ class PlayerPawn : Actor
 	//
 	//---------------------------------------------------------------------------
 
-	void CheckWeaponFire ()
+	bool CheckWeaponFire (int hand = 0)
 	{
 		let player = self.player;
-		let ready_weapon = player.ReadyWeapon;
-		let offhand_weapon = player.OffhandWeapon;
+		let weapon = hand ? player.OffhandWeapon : player.ReadyWeapon;
+		
+		if (weapon == NULL)
+			return false;
+
+		int ready_state = hand ? WF_OFFHANDREADY : WF_WEAPONREADY;
+		int alt_state = hand ? WF_OFFHANDREADYALT : WF_WEAPONREADYALT;
+		int bt_attack = hand ? BT_OFFHANDATTACK : BT_ATTACK;
+		int bt_altattack = hand ? BT_OFFHANDALTATTACK : BT_ALTATTACK;
 		bool attackdown = false;
 
 		// Check for fire. Some weapons do not auto fire.
-		if (ready_weapon != NULL && (player.WeaponState & WF_WEAPONREADY) && (player.cmd.buttons & BT_ATTACK))
+		if ((player.WeaponState & ready_state) && (player.cmd.buttons & bt_attack))
 		{
-			if (!player.attackdown || !ready_weapon.bNoAutofire)
+			if (!player.attackdown || !weapon.bNoAutofire)
 			{
 				attackdown = true;
-				FireWeapon (NULL);
+				FireWeapon (NULL, hand);
 			}
 		}
-		else if (ready_weapon != NULL && (player.WeaponState & WF_WEAPONREADYALT) && (player.cmd.buttons & BT_ALTATTACK))
+		else if ((player.WeaponState & alt_state) && (player.cmd.buttons & bt_altattack))
 		{
-			if (!player.attackdown || !ready_weapon.bNoAutofire)
+			if (!player.attackdown || !weapon.bNoAutofire)
 			{
 				attackdown = true;
-				FireWeaponAlt (NULL);
+				FireWeaponAlt (NULL, hand);
 			}
 		}
-
-		if (offhand_weapon != NULL && (player.WeaponState & WF_OFFHANDREADY) && (player.cmd.buttons & BT_OFFHANDATTACK))
-		{
-			if (!player.attackdown || !offhand_weapon.bNoAutofire)
-			{
-				attackdown = true;
-				FireWeapon (NULL, 1);
-			}
-		}
-		else if (offhand_weapon != NULL && (player.WeaponState & WF_OFFHANDREADYALT) && (player.cmd.buttons & BT_OFFHANDALTATTACK))
-		{
-			if (!player.attackdown || !offhand_weapon.bNoAutofire)
-			{
-				attackdown = true;
-				FireWeaponAlt (NULL, 1);
-			}
-		}
-		player.attackdown = attackdown;
+		return attackdown;
 	}
 
 	//---------------------------------------------------------------------------
@@ -591,7 +581,8 @@ class PlayerPawn : Actor
 				CheckWeaponChange();
 				if (player.WeaponState & (WF_WEAPONREADY | WF_WEAPONREADYALT | WF_OFFHANDREADY | WF_OFFHANDREADYALT))
 				{
-					CheckWeaponFire();
+					player.attackdown = CheckWeaponFire(0);
+					player.ohattackdown = CheckWeaponFire(1);
 				}
 				// Check custom buttons
 				CheckWeaponButtons(0);  // check mainhand
@@ -2832,6 +2823,7 @@ struct PlayerInfo native play	// self is what internally is known as player_t
 	native bool centering;
 	native uint8 turnticks;
 	native bool attackdown;
+	native bool ohattackdown;
 	native bool usedown;
 	native uint oldbuttons;
 	native int health;

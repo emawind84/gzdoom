@@ -268,7 +268,8 @@ void FMugShot::Tick(player_t *player)
 			CurrentState = NULL;
 		}
 	}
-	if (player->attackdown && !(player->cheats & (CF_FROZEN | CF_TOTALLYFROZEN)) && player->ReadyWeapon)
+	bool isWeaponAttackDown = (player->attackdown && player->ReadyWeapon) || (player->ohattackdown && player->OffhandWeapon);
+	if (isWeaponAttackDown && !(player->cheats & (CF_FROZEN | CF_TOTALLYFROZEN)))
 	{
 		if (RampageTimer != ST_RAMPAGEDELAY)
 		{

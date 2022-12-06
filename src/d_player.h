@@ -317,6 +317,7 @@ public:
 
 
 	bool		attackdown = false;
+	bool		ohattackdown = false;
 	bool		usedown = false;
 	uint32_t	oldbuttons = false;
 	int			health = 0;					// only used between levels, mo->health

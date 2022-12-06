@@ -358,6 +358,7 @@ void player_t::CopyFrom(player_t &p, bool copyPSP)
 	centering = p.centering;
 	turnticks = p.turnticks;
 	attackdown = p.attackdown;
+	ohattackdown = p.ohattackdown;
 	usedown = p.usedown;
 	oldbuttons = p.oldbuttons;
 	health = p.health;
@@ -1828,6 +1829,7 @@ DEFINE_FIELD_X(PlayerInfo, player_t, Vel)
 DEFINE_FIELD_X(PlayerInfo, player_t, centering)
 DEFINE_FIELD_X(PlayerInfo, player_t, turnticks)
 DEFINE_FIELD_X(PlayerInfo, player_t, attackdown)
+DEFINE_FIELD_X(PlayerInfo, player_t, ohattackdown)
 DEFINE_FIELD_X(PlayerInfo, player_t, usedown)
 DEFINE_FIELD_X(PlayerInfo, player_t, oldbuttons)
 DEFINE_FIELD_X(PlayerInfo, player_t, health)
