@@ -130,6 +130,42 @@ class OptionMenuItemSubmenu : OptionMenuItem
 	}
 }
 
+class OptionMenuItemStaticPatch : OptionMenuItem
+{
+	TextureID mTexture;
+
+	void Init(int x, int y, TextureID patch, bool centered = false)
+	{
+		Super.init('None', 'None', centered);
+		mXpos = x;
+		mYpos = y;
+		mTexture = patch;
+	}
+	
+	override int Draw(OptionMenuDescriptor desc, int y, int indent, bool selected)
+	{
+		if (!mTexture.Exists())
+		{
+			return 0;
+		}
+
+		double x = mXpos;
+		Vector2 vec = TexMan.GetScaledSize(mTexture);
+		if (mYpos >= 0)
+		{
+			if (mCentered) x -= vec.X / 2;
+			screen.DrawTexture (mTexture, true, x, mYpos, DTA_CleanTop, true);
+		}
+		else
+		{
+			x = (mXpos - 160) * CleanXfac + (Screen.GetWidth()>>1);
+			if (mCentered) x -= (vec.X * CleanXfac)/2;
+			screen.DrawTexture (mTexture, true, x, -mYpos*CleanYfac, DTA_CleanNoMove, true);
+		}
+		return 0;
+	}
+}
+
 //=============================================================================
 //
 // opens a submenu, command is a submenu name
