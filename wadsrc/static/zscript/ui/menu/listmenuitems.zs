@@ -109,7 +109,7 @@ class ListMenuItemStaticPatch : ListMenuItem
 		Vector2 vec = TexMan.GetScaledSize(mTexture);
 		if (mYpos >= 0)
 		{
-			if (mSubstitute == "" || TexMan.OkForLocalization(mTexture))
+			if (mSubstitute == "" || TexMan.OkForLocalization(mTexture, mSubstitute))
 			{
 				if (mCentered) x -= vec.X / 2;
 				screen.DrawTexture (mTexture, true, x, mYpos, DTA_Clean, true);
@@ -123,7 +123,7 @@ class ListMenuItemStaticPatch : ListMenuItem
 		else
 		{
 			x = (mXpos - 160) * CleanXfac + (Screen.GetWidth()>>1);
-			if (mSubstitute == "" || TexMan.OkForLocalization(mTexture))
+			if (mSubstitute == "" || TexMan.OkForLocalization(mTexture, mSubstitute))
 			{
 				if (mCentered) x -= (vec.X * CleanXfac)/2;
 				screen.DrawTexture (mTexture, true, x, -mYpos*CleanYfac, DTA_CleanNoMove, true);
