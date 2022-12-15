@@ -388,6 +388,10 @@ static void ParseListMenuBody(FScanner &sc, DListMenuDescriptor *desc, int inser
 				sc.MustGetString();
 			}
 		}
+		else if (sc.Compare("ForceList"))
+		{
+			desc->mForceList = true;
+		}
 		else
 		{
 			bool success = false;
@@ -707,6 +711,7 @@ static void ParseListMenu(FScanner &sc)
 	desc->mWLeft = 0;
 	desc->mWRight = 0;
 	desc->mCenter = false;
+	desc->mForceList = false;
 
 	ParseListMenuBody(sc, desc, -1);
 	ReplaceMenu(sc, desc);
@@ -954,13 +959,19 @@ static void ParseOptionMenuBody(FScanner &sc, DOptionMenuDescriptor *desc, int i
 				{
 					auto &args = func->Variants[0].Proto->ArgumentTypes;
 					TArray<VMValue> params;
+					int start = 1;
 
 					params.Push(0);
+					if (args.Size() > 1 && args[1] == NewPointer(PClass::FindClass("OptionMenuDescriptor")))
+					{
+						params.Push(desc);
+						start = 2;
+					}
 					auto TypeCVar = NewPointer(NewStruct("CVar", nullptr, true));
 
 					// Note that this array may not be reallocated so its initial size must be the maximum possible elements.
 					TArray<FString> strings(args.Size());
-					for (unsigned i = 1; i < args.Size(); i++)
+					for (unsigned i = start; i < args.Size(); i++)
 					{
 						sc.MustGetString();
 						if (args[i] == TypeString)
@@ -975,6 +986,24 @@ static void ParseOptionMenuBody(FScanner &sc, DOptionMenuDescriptor *desc, int i
 						else if (args[i] == TypeColor)
 						{
 							params.Push(V_GetColor(nullptr, sc));
+						}
+						else if (args[i] == TypeFont)
+						{
+							auto f = V_GetFont(sc.String);
+							if (f == nullptr)
+							{
+								sc.ScriptError("Unknown font %s", sc.String);
+							}
+							params.Push(f);
+						}
+						else if (args[i] == TypeTextureID)
+						{
+							auto f = TexMan.CheckForTexture(sc.String, ETextureType::MiscPatch);
+							if (!f.Exists())
+							{
+								sc.ScriptMessage("Unknown texture %s", sc.String);
+							}
+							params.Push(f.GetIndex());
 						}
 						else if (args[i]->isIntCompatible())
 						{
@@ -1235,9 +1264,9 @@ static void BuildEpisodeMenu()
 			// center the menu on the screen if the top space is larger than the bottom space
 			int totalheight = posy + AllEpisodes.Size() * ld->mLinespacing - topy;
 
-			if (totalheight < 190 || AllEpisodes.Size() == 1)
+			if (ld->mForceList || totalheight < 190 || AllEpisodes.Size() == 1)
 			{
-				int newtop = (200 - totalheight + topy) / 2;
+				int newtop = std::max(10, 200 - totalheight) / 2;
 				int topdelta = newtop - topy;
 				if (topdelta < 0)
 				{
@@ -1358,9 +1387,9 @@ static void BuildPlayerclassMenu()
 				ld->mAutoselect = ld->mItems.Push(it);
 				success = true;
 			}
-			else if (totalheight <= 190)
+			else if (ld->mForceList || totalheight <= 190)
 			{
-				int newtop = (200 - totalheight + topy) / 2;
+				int newtop = (std::max(10, 200 - totalheight) + topy) / 2;
 				int topdelta = newtop - topy;
 				if (topdelta < 0)
 				{
@@ -1816,9 +1845,9 @@ void M_StartupSkillMenu(FGameStartup *gs)
 				// center the menu on the screen if the top space is larger than the bottom space
 				int totalheight = posy + MenuSkills.Size() * ld->mLinespacing - topy;
 
-				if (totalheight < 190 || MenuSkills.Size() == 1)
+				if (ld->mForceList || totalheight < 190 || MenuSkills.Size() == 1)
 				{
-					int newtop = (200 - totalheight + topy) / 2;
+					int newtop = std::max(10, 200 - totalheight) / 2;
 					int topdelta = newtop - topy;
 					if (topdelta < 0)
 					{

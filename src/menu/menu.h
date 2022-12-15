@@ -150,6 +150,7 @@ public:
 	EColorRange mFontColor;
 	EColorRange mFontColor2;
 	bool mCenter;
+	bool mForceList;
 
 	void Reset()
 	{
