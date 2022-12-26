@@ -90,6 +90,7 @@ EXTERN_CVAR (Bool, gl_legacy_mode)
 EXTERN_CVAR (Bool, r_drawvoxels)
 
 extern bool NoInterpolateView;
+extern bool vid_hdr_active;
 
 area_t			in_area;
 TArray<uint8_t> currentmapsection;
@@ -974,62 +975,75 @@ void FGLRenderer::RenderView (player_t* player)
 
 void GLSceneDrawer::WriteSavePic (player_t *player, FileWriter *file, int width, int height)
 {
-	GL_IRECT bounds;
+	// GL_IRECT bounds;
 
-	gl_ClearFakeFlat();
-	P_FindParticleSubsectors();	// make sure that all recently spawned particles have a valid subsector.
-	bounds.left=0;
-	bounds.top=0;
-	bounds.width=width;
-	bounds.height=height;
-	glFlush();
-	SetFixedColormap(player);
-	gl_RenderState.SetVertexBuffer(GLRenderer->mVBO);
-	GLRenderer->mVBO->Reset();
-	if (!gl.legacyMode) GLRenderer->mLights->Clear();
-
-	// // Check if there's some lights. If not some code can be skipped.
-	// GLRenderer->mLightCount = !!level.lights;
-
-	// sector_t *viewsector = RenderViewpoint(players[consoleplayer].camera, &bounds,
-	// 							r_viewpoint.FieldOfView.Degrees, 1.6f, 1.6f, true, false);
-	// glDisable(GL_STENCIL_TEST);
-	// gl_RenderState.SetFixedColormap(CM_DEFAULT);
-	// gl_RenderState.SetSoftLightLevel(-1);
-	// screen->Begin2D(false);
-	// if (!FGLRenderBuffers::IsEnabled())
-	// {
-	// 	DrawBlend(viewsector);
-	// }
-	// GLRenderer->CopyToBackbuffer(&bounds, false);
+	// gl_ClearFakeFlat();
+	// P_FindParticleSubsectors();	// make sure that all recently spawned particles have a valid subsector.
+	// bounds.left=0;
+	// bounds.top=0;
+	// bounds.width=width;
+	// bounds.height=height;
 	// glFlush();
+	// SetFixedColormap(player);
+	// gl_RenderState.SetVertexBuffer(GLRenderer->mVBO);
+	// GLRenderer->mVBO->Reset();
+	// if (!gl.legacyMode) GLRenderer->mLights->Clear();
 
-	int sceneWidth = GLRenderer->mSceneViewport.width;
-	int sceneHeight = GLRenderer->mSceneViewport.height;
 
-	uint8_t * scr = (uint8_t *)M_Malloc(sceneWidth * sceneHeight * 3);
-	glReadPixels(0, 0, sceneWidth, sceneHeight, GL_RGB, GL_UNSIGNED_BYTE, scr);
+	const auto &viewport = GLRenderer->mOutputLetterbox;
+	
+	int sceneTop = viewport.top;
+	int sceneLeft = viewport.left;
+	//int sceneWidth = screen->GetClientWidth();
+	//int sceneHeight = screen->GetClientHeight();
+	int sceneWidth = viewport.width;
+	int sceneHeight = viewport.height;
+	if (width > sceneWidth) width = sceneWidth;
+	if (height > sceneHeight) height = sceneHeight;
+	DPrintf(DMSG_WARNING, "%d %d\n", sceneWidth, sceneHeight);
+	
+	uint8_t * sceneBuffer = (uint8_t *)M_Malloc(sceneWidth * sceneHeight * 3);
 
-	width = sceneWidth/3;
-	height = sceneHeight/3;
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glReadPixels(sceneLeft, sceneTop, sceneWidth, sceneHeight, GL_RGB, GL_UNSIGNED_BYTE, sceneBuffer);
+	glPixelStorei(GL_PACK_ALIGNMENT, 4);
 
-	uint8_t * scr2 = (uint8_t *)M_Malloc(width * height * 3);
+	const uint8_t *buffer;
+	int pitch;
+	ESSType color_type;
+	float gamma;
 
-	int z = 0;
-	for (int y = 0; y < sceneHeight; y+=3)
+	uint8_t * imageBuffer = new uint8_t[width * height * 3];
+	float rcpWidth = 1.0f / width;
+	float rcpHeight = 1.0f / height;
+	for (int y = 0; y < height; y++)
 	{
-		for (int x = y * sceneWidth; x < y * sceneWidth + sceneWidth; x+=3)
+		for (int x = 0; x < width; x++)
 		{
-			scr2[z*3] = scr[x*3];
-			scr2[z*3+1] = scr[x*3+1];
-			scr2[z*3+2] = scr[x*3+2];
-			z++;
+			float u = (x + 0.5f) * rcpWidth;
+			float v = (y + 0.5f) * rcpHeight;
+			int sx = u * sceneWidth;
+			int sy = v * sceneHeight;
+			int sindex = (sx + sy * sceneWidth) * 3;
+			int dindex = (x + y * width) * 3;
+			imageBuffer[dindex] = sceneBuffer[sindex];
+			imageBuffer[dindex + 1] = sceneBuffer[sindex + 1];
+			imageBuffer[dindex + 2] = sceneBuffer[sindex + 2];
 		}
 	}
+	pitch = -width*3;
+	color_type = SS_RGB;
+	buffer = imageBuffer + width * 3 * (height - 1);
+	// Screenshot should not use gamma correction if it was already applied to rendered image
+	EXTERN_CVAR(Bool, fullscreen);
+	EXTERN_CVAR(Int, vid_hwgamma);
+	gamma = 1 == vid_hwgamma || (2 == vid_hwgamma && !fullscreen) ? 1.0f : Gamma;
+	if (vid_hdr_active && fullscreen)
+		gamma *= 2.2f;
 
-	M_CreatePNG (file, scr2 + ((height-1) * width * 3), NULL, SS_RGB, width, height, -width * 3, Gamma);
-	M_Free(scr);
-	M_Free(scr2);
+	M_CreatePNG (file, buffer, NULL, color_type, width, height, pitch, gamma);
+	M_Free(imageBuffer);
+	M_Free(sceneBuffer);
 }
 
 
