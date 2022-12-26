@@ -988,26 +988,48 @@ void GLSceneDrawer::WriteSavePic (player_t *player, FileWriter *file, int width,
 	GLRenderer->mVBO->Reset();
 	if (!gl.legacyMode) GLRenderer->mLights->Clear();
 
-	// Check if there's some lights. If not some code can be skipped.
-	GLRenderer->mLightCount = !!level.lights;
+	// // Check if there's some lights. If not some code can be skipped.
+	// GLRenderer->mLightCount = !!level.lights;
 
-	sector_t *viewsector = RenderViewpoint(players[consoleplayer].camera, &bounds,
-								r_viewpoint.FieldOfView.Degrees, 1.6f, 1.6f, true, false);
-	glDisable(GL_STENCIL_TEST);
-	gl_RenderState.SetFixedColormap(CM_DEFAULT);
-	gl_RenderState.SetSoftLightLevel(-1);
-	screen->Begin2D(false);
-	if (!FGLRenderBuffers::IsEnabled())
+	// sector_t *viewsector = RenderViewpoint(players[consoleplayer].camera, &bounds,
+	// 							r_viewpoint.FieldOfView.Degrees, 1.6f, 1.6f, true, false);
+	// glDisable(GL_STENCIL_TEST);
+	// gl_RenderState.SetFixedColormap(CM_DEFAULT);
+	// gl_RenderState.SetSoftLightLevel(-1);
+	// screen->Begin2D(false);
+	// if (!FGLRenderBuffers::IsEnabled())
+	// {
+	// 	DrawBlend(viewsector);
+	// }
+	// GLRenderer->CopyToBackbuffer(&bounds, false);
+	// glFlush();
+
+	int sceneWidth = GLRenderer->mSceneViewport.width;
+	int sceneHeight = GLRenderer->mSceneViewport.height;
+
+	uint8_t * scr = (uint8_t *)M_Malloc(sceneWidth * sceneHeight * 3);
+	glReadPixels(0, 0, sceneWidth, sceneHeight, GL_RGB, GL_UNSIGNED_BYTE, scr);
+
+	width = sceneWidth/3;
+	height = sceneHeight/3;
+
+	uint8_t * scr2 = (uint8_t *)M_Malloc(width * height * 3);
+
+	int z = 0;
+	for (int y = 0; y < sceneHeight; y+=3)
 	{
-		DrawBlend(viewsector);
+		for (int x = y * sceneWidth; x < y * sceneWidth + sceneWidth; x+=3)
+		{
+			scr2[z*3] = scr[x*3];
+			scr2[z*3+1] = scr[x*3+1];
+			scr2[z*3+2] = scr[x*3+2];
+			z++;
+		}
 	}
-	GLRenderer->CopyToBackbuffer(&bounds, false);
-	glFlush();
 
-	uint8_t * scr = (uint8_t *)M_Malloc(width * height * 3);
-	glReadPixels(0,0,width, height,GL_RGB,GL_UNSIGNED_BYTE,scr);
-	M_CreatePNG (file, scr + ((height-1) * width * 3), NULL, SS_RGB, width, height, -width * 3, Gamma);
+	M_CreatePNG (file, scr2 + ((height-1) * width * 3), NULL, SS_RGB, width, height, -width * 3, Gamma);
 	M_Free(scr);
+	M_Free(scr2);
 }
 
 
