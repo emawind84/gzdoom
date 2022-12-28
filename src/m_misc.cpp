@@ -341,7 +341,7 @@ void M_LoadDefaults ()
 	GameConfig->DoGlobalSetup ();
 }
 
-extern "C" const char *M_GetActiveProfile ()
+const char *M_GetActiveProfile ()
 {
 	FGameConfigFile *configfile;
 	if (GameConfig != nullptr)
@@ -358,13 +358,6 @@ extern "C" const char *M_GetActiveProfile ()
 	}
 	return "";
 }
-
-extern "C" void PrepareEnvironment(const char* path)
-{
-	progdir = path;
-	chdir(path);
-}
-
 
 //
 // SCREEN SHOTS
