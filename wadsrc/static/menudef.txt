@@ -503,6 +503,12 @@ OptionMenu "CustomizeControls" protected
 	Submenu    "$CNTRLMNU_POPUPS"      , "PopupControlsMenu"
 	Submenu    "$MNU_MULTIPLAYER"      , "ChatControlsMenu"
 	StaticText " "
+	StaticText "Double bindings", gold
+	Submenu    "$CNTRLMNU_ACTION"      , "ActionDoubleControlsMenu"
+	Submenu    "$CNTRLMNU_WEAPONS"     , "WeaponsDoubleControlMenu"
+	Submenu    "$CNTRLMNU_INVENTORY"   , "InventoryDoubleControlsMenu"
+	Submenu    "$CNTRLMNU_OTHER"       , "OtherDoubleControlsMenu"
+	StaticText " "
 	Option "$CNTRLMNU_LAYOUT",			"k_modern", "Layouts"
 	SafeCommand "$OPTMNU_DEFAULTS",		"resetb2defaults"
 }
@@ -556,6 +562,58 @@ OptionMenu "ActionControlsMenu" protected
 	Control    "$CNTRLMNU_STRAFE"           , "+strafe"
 }
 
+OptionMenu "ActionDoubleControlsMenu" protected
+{
+	Title "$CNTRLMNU_ACTION_TITLE"
+	ScrollTop 2
+	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
+
+	StaticText ""
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L1", brown
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L2", brown
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_ATTACK"           , "+attack"
+	DoubleControl    "$CNTRLMNU_ALTATTACK"        , "+altattack"
+	DoubleControl    "$CNTRLMNU_RELOAD"           , "+reload"
+	DoubleControl    "$CNTRLMNU_ZOOM"             , "+zoom"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_USE"              , "+use"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_FORWARD"          , "+forward"
+	DoubleControl    "$CNTRLMNU_BACK"             , "+back"
+	DoubleControl    "$CNTRLMNU_MOVELEFT"         , "+moveleft"
+	DoubleControl    "$CNTRLMNU_MOVERIGHT"        , "+moveright"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_TURNLEFT"         , "+left"
+	DoubleControl    "$CNTRLMNU_TURNRIGHT"        , "+right"
+	DoubleControl    "$CNTRLMNU_TURN180"          , "turn180"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_JUMP"             , "+jump"
+	DoubleControl    "$CNTRLMNU_CROUCH"           , "+crouch"
+	DoubleControl    "$CNTRLMNU_TOGGLECROUCH"     , "crouch"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_MOVEUP"           , "+moveup"
+	DoubleControl    "$CNTRLMNU_MOVEDOWN"         , "+movedown"
+	DoubleControl    "$CNTRLMNU_LAND"             , "land"
+
+	StaticText ""
+	Control    "$CNTRLMNU_MOUSELOOK"        , "+mlook"
+	Control    "$CNTRLMNU_KEYBOARDLOOK"     , "+klook"
+	Control    "$CNTRLMNU_LOOKUP"           , "+lookup"
+	Control    "$CNTRLMNU_LOOKDOWN"         , "+lookdown"
+	Control    "$CNTRLMNU_CENTERVIEW"       , "centerview"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_RUN"              , "+speed"
+	DoubleControl    "$CNTRLMNU_TOGGLERUN"        , "toggle cl_run"
+	DoubleControl    "$CNTRLMNU_STRAFE"           , "+strafe"
+}
+
 OptionMenu "ChatControlsMenu" protected
 {
 	Title "$MNU_MULTIPLAYER"
@@ -600,6 +658,38 @@ OptionMenu "WeaponsControlMenu" protected
 	Control    "$CNTRLMNU_USER4"            , "+user4"
 }
 
+OptionMenu "WeaponsDoubleControlMenu" protected
+{
+	Title "$CNTRLMNU_WEAPONS_TITLE"
+	ScrollTop 2
+	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
+
+	StaticText ""
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L1", brown
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L2", brown
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_NEXTWEAPON"     , "weapnext"
+	DoubleControl    "$CNTRLMNU_PREVIOUSWEAPON" , "weapprev"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_SLOT1"          , "slot 1"
+	DoubleControl    "$CNTRLMNU_SLOT2"          , "slot 2"
+	DoubleControl    "$CNTRLMNU_SLOT3"          , "slot 3"
+	DoubleControl    "$CNTRLMNU_SLOT4"          , "slot 4"
+	DoubleControl    "$CNTRLMNU_SLOT5"          , "slot 5"
+	DoubleControl    "$CNTRLMNU_SLOT6"          , "slot 6"
+	DoubleControl    "$CNTRLMNU_SLOT7"          , "slot 7"
+	DoubleControl    "$CNTRLMNU_SLOT8"          , "slot 8"
+	DoubleControl    "$CNTRLMNU_SLOT9"          , "slot 9"
+	DoubleControl    "$CNTRLMNU_SLOT0"          , "slot 0"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_USER1"            , "+user1"
+	DoubleControl    "$CNTRLMNU_USER2"            , "+user2"
+	DoubleControl    "$CNTRLMNU_USER3"            , "+user3"
+	DoubleControl    "$CNTRLMNU_USER4"            , "+user4"
+}
+
 OptionMenu "InventoryControlsMenu" protected
 {
 	Title "$CNTRLMNU_INVENTORY_TITLE"
@@ -625,6 +715,37 @@ OptionMenu "InventoryControlsMenu" protected
 	{
 		StaticText ""
 		Control    "$CNTRLMNU_USEFLECHETTE", "useflechette"
+	}
+}
+
+OptionMenu "InventoryDoubleControlsMenu" protected
+{
+	Title "$CNTRLMNU_INVENTORY_TITLE"
+	ScrollTop 2
+	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
+
+	StaticText ""
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L1", brown
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L2", brown
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_USEITEM"      , "invuse"
+	DoubleControl    "$CNTRLMNU_USEALLITEMS"  , "invuseall"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_NEXTITEM"     , "invnext"
+	DoubleControl    "$CNTRLMNU_PREVIOUSITEM" , "invprev"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_DROPITEM"     , "invdrop"
+	DoubleControl    "$CNTRLMNU_QUERYITEM"    , "invquery"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_DROPWEAPON"   , "weapdrop"
+
+	IfGame(Hexen)
+	{
+		StaticText ""
+		DoubleControl    "$CNTRLMNU_USEFLECHETTE", "useflechette"
 	}
 }
 
@@ -672,6 +793,55 @@ OptionMenu "OtherControlsMenu" protected
 	Control    "Decrease fade density"     , "fade_density_down"
 	Control    "Increase fade gradient"    , "fade_gradient_up"
 	Control    "Decrease fade gradient"    , "fade_gradient_down"
+}
+
+OptionMenu "OtherDoubleControlsMenu" protected
+{
+	Title "$CNTRLMNU_OTHER_TITLE"
+	ScrollTop 2
+	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
+
+	StaticText ""
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L1", brown
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L2", brown
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_AUTOMAP"         , "togglemap"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_CHASECAM"        , "chase"
+	DoubleControl    "$CNTRLMNU_COOPSPY"         , "spynext"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_SCREENSHOT"      , "screenshot"
+	DoubleControl    "$CNTRLMNU_CONSOLE"         , "toggleconsole"
+	DoubleControl    "$CNTRLMNU_PAUSE"           , "pause"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_DISPLAY_INC"     , "sizeup"
+	DoubleControl    "$CNTRLMNU_DISPLAY_DEC"     , "sizedown"
+	DoubleControl    "$CNTRLMNU_TOGGLE_MESSAGES" , "togglemessages"
+	DoubleControl    "$CNTRLMNU_ADJUST_GAMMA"    , "bumpgamma"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_OPEN_MAIN"       , "menu_main"
+	DoubleControl    "$CNTRLMNU_OPEN_HELP"       , "menu_help"
+	DoubleControl    "$CNTRLMNU_OPEN_SAVE"       , "menu_save"
+	DoubleControl    "$CNTRLMNU_OPEN_LOAD"       , "menu_load"
+	DoubleControl    "$CNTRLMNU_OPEN_OPTIONS"    , "menu_options"
+	DoubleControl    "$CNTRLMNU_OPEN_DISPLAY"    , "menu_display"
+	DoubleControl    "$CNTRLMNU_EXIT_TO_MAIN"    , "menu_endgame"
+	DoubleControl    "$CNTRLMNU_MENU_QUIT"       , "menu_quit"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_QUICKSAVE"       , "quicksave"
+	DoubleControl    "$CNTRLMNU_QUICKLOAD"       , "quickload"
+
+	StaticText ""
+	DoubleControl    "Toggle global fade"        , "fade_toggle"
+	DoubleControl    "Increase fade density"     , "fade_density_up"
+	DoubleControl    "Decrease fade density"     , "fade_density_down"
+	DoubleControl    "Increase fade gradient"    , "fade_gradient_up"
+	DoubleControl    "Decrease fade gradient"    , "fade_gradient_down"
 }
 
 OptionMenu "PopupControlsMenu" protected
