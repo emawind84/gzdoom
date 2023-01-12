@@ -1346,6 +1346,54 @@ class OptionMenuItemNumberField : OptionMenuFieldBase
 	float mStep;
 }
 
+class OptionMenuItemCommandInput : OptionMenuItemTextField
+{
+	void Init(String label)
+	{
+		Super.Init(label, "");
+	}
+
+	private native static void DoCommand(String cmd, bool unsafe);
+
+	override bool MenuEvent(int mkey, bool fromcontroller)
+	{
+		if (mEnter != null)
+		{
+			mtext = mEnter.GetText();
+		}
+		if (mkey == Menu.MKEY_Enter)
+		{
+			Menu.MenuSound("menu/choose");
+			mEnter = TextEnterMenu.OpenTextEnter(Menu.GetCurrentMenu(), SmallFont, mText, -1, fromcontroller);
+			mEnter.ActivateMenu();
+			return true;
+		}
+		else if (mkey == Menu.MKEY_Input)
+		{
+			if (mEnter != null) mEnter.Close();
+			let curmenu = Menu.GetCurrentMenu();
+			if (curmenu != null) curmenu.Close();
+			DoCommand("toggleconsole", false);
+			DoCommand(mtext, false);
+			//mtext = "";
+			mEnter = null;
+			return true;
+		}
+		else if (mkey == Menu.MKEY_Abort)
+		{
+			//mtext = "";
+			mEnter = null;
+			return true;
+		}
+
+		return Super.MenuEvent(mkey, fromcontroller);
+	}
+
+	String GetText() { return mText; }
+
+	private string  mText;
+}
+
 //=============================================================================
 //
 // A special slider that displays plain text for special settings related

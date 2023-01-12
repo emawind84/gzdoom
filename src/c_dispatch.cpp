@@ -702,6 +702,24 @@ DEFINE_ACTION_FUNCTION(DOptionMenuItemCommand, DoCommand)
 	return 0;
 }
 
+DEFINE_ACTION_FUNCTION(DOptionMenuItemCommandInput, DoCommand)
+{
+	if (CurrentMenu == nullptr) return 0;
+	PARAM_PROLOGUE;
+	PARAM_STRING(cmd);
+	PARAM_BOOL(unsafe);
+
+	// Only menus are allowed to execute CCMDs.
+	if (DMenu::InMenu == 0)
+	{
+		I_FatalError("Attempt to execute CCMD '%s' outside of menu code", cmd.GetChars());
+	}
+
+	UnsafeExecutionScope scope(unsafe);
+	C_DoCommand(cmd);
+	return 0;
+}
+
 void AddCommandString (const char *text, int keynum)
 {
 	// Operate on a local copy instead of messing around with the data that's being passed in here.

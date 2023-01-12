@@ -355,6 +355,7 @@ OptionMenu "OptionsMenu" protected
 	Submenu "$OPTMNU_CHANGERENDER",		"RendererMenu"
 	StaticText " "
 	Submenu "$OS_TITLE", "os_Menu"
+	CommandInput "Type a command"
 	StaticText " "
 	SafeCommand "$OPTMNU_DEFAULTS",	"reset2defaults"
 	SafeCommand	"$OPTMNU_RESETTOSAVED",	"reset2saved"
