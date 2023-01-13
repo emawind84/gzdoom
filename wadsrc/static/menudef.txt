@@ -508,6 +508,8 @@ OptionMenu "CustomizeControls" protected
 	Submenu    "$CNTRLMNU_WEAPONS"     , "WeaponsDoubleControlMenu"
 	Submenu    "$CNTRLMNU_INVENTORY"   , "InventoryDoubleControlsMenu"
 	Submenu    "$CNTRLMNU_OTHER"       , "OtherDoubleControlsMenu"
+	Submenu    "$CNTRLMNU_POPUPS"      , "PopupDoubleControlsMenu"
+	Submenu    "$MNU_MULTIPLAYER"      , "ChatDoubleControlsMenu"
 	StaticText " "
 	Option "$CNTRLMNU_LAYOUT",			"k_modern", "Layouts"
 	SafeCommand "$OPTMNU_DEFAULTS",		"resetb2defaults"
@@ -627,6 +629,24 @@ OptionMenu "ChatControlsMenu" protected
 	StaticText ""
 	Control    "$CNTRLMNU_SAY"     , "messagemode"
 	Control    "$CNTRLMNU_TEAMSAY" , "messagemode2"
+}
+
+OptionMenu "ChatDoubleControlsMenu" protected
+{
+	Title "$MNU_MULTIPLAYER"
+	ScrollTop 2
+	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
+
+	StaticText ""
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L1", brown
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L2", brown
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_SCOREBOARD"       , "+showscores"
+	DoubleControl    "$CNTRLMNU_TOGGLESCOREBOARD" , "togglescoreboard"
+
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_SAY"     , "messagemode"
+	DoubleControl    "$CNTRLMNU_TEAMSAY" , "messagemode2"
 }
 
 OptionMenu "WeaponsControlMenu" protected
@@ -854,6 +874,21 @@ OptionMenu "PopupControlsMenu" protected
 	Control    "$CNTRLMNU_MISSION" , "showpop 1"
 	Control    "$CNTRLMNU_KEYS"    , "showpop 2"
 	Control    "$CNTRLMNU_STATS"   , "showpop 3"
+}
+
+OptionMenu "PopupDoubleControlsMenu" protected
+{
+	Title "$CNTRLMNU_POPUPS_TITLE"
+	ScrollTop 2
+	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
+
+	StaticText ""
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L1", brown
+	StaticText "$CNTRLMNU_DBLBINDTEXT_L2", brown
+	StaticText ""
+	DoubleControl    "$CNTRLMNU_MISSION" , "showpop 1"
+	DoubleControl    "$CNTRLMNU_KEYS"    , "showpop 2"
+	DoubleControl    "$CNTRLMNU_STATS"   , "showpop 3"
 }
 
 //-------------------------------------------------------------------------------------------
