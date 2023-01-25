@@ -47,6 +47,8 @@
 #include "w_wad.h"
 #include "d_gui.h"
 #include "d_event.h"
+#include "doomstat.h"
+#include "c_console.h"
 
 #include "QzDoom/VrCommon.h"
 #include "LSMatrix.h"
@@ -513,11 +515,15 @@ namespace s3d
         vr_secondarybuttonmappings = vr_secondary_button_mappings;
         vr_twohandedweapons = vr_two_handed_weapons;
         QzDoom_getTrackedRemotesOrientation(vr_control_scheme);
+        player_t* player = r_viewpoint.camera ? r_viewpoint.camera->player : nullptr;
 
         //Some crazy stuff to ascertain the actual yaw that doom is using at the right times!
-        if (getGameState() != GS_LEVEL || getMenuState() != MENU_Off)
+        if (getGameState() != GS_LEVEL || getMenuState() != MENU_Off 
+        || ConsoleState == c_down || ConsoleState == c_falling 
+        || (player && player->playerstate == PST_DEAD)
+        || paused 
+        )
         {
-            doomYaw = (float)r_viewpoint.Angles.Yaw.Degrees;
             resetDoomYaw = true;
         }
         else if (getGameState() == GS_LEVEL && resetDoomYaw) {
@@ -527,7 +533,6 @@ namespace s3d
 
         if (getMenuState() == MENU_Off)
         {
-            player_t* player = r_viewpoint.camera ? r_viewpoint.camera->player : nullptr;
             if (player)
             {
                 double pixelstretch = level.info ? level.info->pixelstretch : 1.2;
