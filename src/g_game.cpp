@@ -830,11 +830,11 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	LocalViewPitch = 0;
 
 	// special buttons
-	// if (sendturn180)
-	// {
-	// 	sendturn180 = false;
-	// 	cmd->ucmd.buttons |= BT_TURN180;
-	// }
+	if (sendturn180)
+	{
+		sendturn180 = false;
+		cmd->ucmd.buttons |= BT_TURN180;
+	}
 	if (sendpause)
 	{
 		sendpause = false;

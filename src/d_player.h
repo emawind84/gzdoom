@@ -327,6 +327,7 @@ public:
 
 	bool		centering = false;
 	uint8_t		turnticks = 0;
+	bool		resetDoomYaw = false;
 
 
 	bool		attackdown = false;

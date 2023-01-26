@@ -1306,12 +1306,14 @@ class PlayerPawn : Actor
 	{
 		let player = self.player;
 		UserCmd cmd = player.cmd;
+		player.resetDoomYaw = false;
 
 		// [RH] 180-degree turn overrides all other yaws
 		if (player.turnticks)
 		{
 			player.turnticks--;
 			Angle += (180. / TURN180_TICKS);
+			player.resetDoomYaw = true;
 		}
 		else
 		{
@@ -2865,6 +2867,7 @@ struct PlayerInfo native play	// self is what internally is known as player_t
 	native vector2 vel;
 	native bool centering;
 	native uint8 turnticks;
+	native bool resetDoomYaw;
 	native bool attackdown;
 	native bool ohattackdown;
 	native bool usedown;
