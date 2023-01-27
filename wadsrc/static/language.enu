@@ -1941,7 +1941,7 @@ DSPLYMNU_WEAPHPOS				= "Horizontal position";
 DSPLYMNU_WEAPVPOS				= "Vertical position";
 DSPLYMNU_WEAPSCALE				= "Scale";
 DSPLYMNU_WEAPOFSX				= "Position left/right";
-DSPLYMNU_WEAPOFSY				= "Position up/down";
+DSPLYMNU_WEAPOFSY				= "Position down/up";
 DSPLYMNU_WEAPOFSZ				= "Position forward/backward";
 
 // HUD Options
