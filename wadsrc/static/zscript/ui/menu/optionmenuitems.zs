@@ -1384,13 +1384,10 @@ class OptionMenuItemCommandInput : OptionMenuItemTextField
 		}
 		else if (mkey == Menu.MKEY_Input)
 		{
-			if (mEnter != null) mEnter.Close();
-			let curmenu = Menu.GetCurrentMenu();
-			if (curmenu != null) curmenu.Close();
-			DoCommand("toggleconsole", false);
-			DoCommand(mtext, false);
-			//mtext = "";
 			mEnter = null;
+			DoCommand(mtext, false);
+			DoCommand("closemenu", false);
+			//DoCommand("toggleconsole", false);
 			return true;
 		}
 		else if (mkey == Menu.MKEY_Abort)
