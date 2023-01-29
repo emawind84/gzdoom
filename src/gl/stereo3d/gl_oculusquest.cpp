@@ -532,9 +532,9 @@ namespace s3d
             resetDoomYaw = false;
         }
 
-        if (getMenuState() == MENU_Off)
+        if (gamestate == GS_LEVEL && getMenuState() == MENU_Off)
         {
-            if (player)
+            if (player && player->mo)
             {
                 double pixelstretch = level.info ? level.info->pixelstretch : 1.2;
 
