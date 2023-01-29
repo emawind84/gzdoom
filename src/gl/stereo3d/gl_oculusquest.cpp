@@ -525,10 +525,10 @@ namespace s3d
             resetDoomYaw = false;
         }
 
-        if (getMenuState() == MENU_Off)
+        if (gamestate == GS_LEVEL && getMenuState() == MENU_Off)
         {
             player_t* player = r_viewpoint.camera ? r_viewpoint.camera->player : nullptr;
-            if (player)
+            if (player && player->mo)
             {
                 double pixelstretch = level.info ? level.info->pixelstretch : 1.2;
 
