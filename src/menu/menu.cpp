@@ -1201,12 +1201,12 @@ DEFINE_FIELD(FOptionMenuSettings, mLinespacing)
 
 struct IJoystickConfig;
 // These functions are used by dynamic menu creation.
-DMenuItemBase * CreateOptionMenuItemStaticText(const char *name, int v)
+DMenuItemBase * CreateOptionMenuItemStaticText(const char *name, int v, bool centered)
 {
 	auto c = PClass::FindClass("OptionMenuItemStaticText");
 	auto p = c->CreateNew();
 	FString namestr = name;
-	VMValue params[] = { p, &namestr, v };
+	VMValue params[] = { p, &namestr, v, centered };
 	auto f = dyn_cast<PFunction>(c->FindSymbol("Init", false));
 	VMCall(f->Variants[0].Implementation, params, countof(params), nullptr, 0);
 	return (DMenuItemBase*)p;

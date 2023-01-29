@@ -670,7 +670,7 @@ static bool ReplaceMenu(FScanner &sc, DMenuDescriptor *desc)
 			{
 				auto sep = CreateOptionMenuItemStaticText(" ");
 				(*pOld)->mItems.Push(sep);
-				sep = CreateOptionMenuItemStaticText("---------------", 1);
+				sep = CreateOptionMenuItemStaticText("---------------", 1, false);
 				(*pOld)->mItems.Push(sep);
 				for (auto it : desc->mItems)
 				{

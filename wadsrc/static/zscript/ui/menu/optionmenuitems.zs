@@ -646,18 +646,18 @@ class OptionMenuItemStaticText : OptionMenuItem
 	int mColor;
 
 	// this function is only for use from MENUDEF, it needs to do some strange things with the color for backwards compatibility.
-	OptionMenuItemStaticText Init(String label, int cr = -1)
+	OptionMenuItemStaticText Init(String label, int cr = -1, bool center = true)
 	{
-		Super.Init(label, 'None', true);
+		Super.Init(label, 'None', center);
 		mColor = OptionMenuSettings.mFontColor;
 		if ((cr & 0xffff0000) == 0x12340000) mColor = cr & 0xffff;
 		else if (cr > 0) mColor = OptionMenuSettings.mFontColorHeader;
 		return self;
 	}
 
-	OptionMenuItemStaticText InitDirect(String label, int cr)
+	OptionMenuItemStaticText InitDirect(String label, int cr, bool center = true)
 	{
-		Super.Init(label, 'None', true);
+		Super.Init(label, 'None', center);
 		mColor = cr;
 		return self;
 	}
