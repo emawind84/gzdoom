@@ -329,7 +329,7 @@ void FDMDModel::BuildVertexBuffer(FModelRenderer *renderer)
 //
 //===========================================================================
 
-void FDMDModel::AddSkins(uint8_t *hitlist)
+void FDMDModel::AddSkins(uint8_t *hitlist, const FTextureID*)
 {
 	for (int i = 0; i < info.numSkins; i++)
 	{
@@ -360,7 +360,7 @@ int FDMDModel::FindFrame(const char * name)
 //
 //===========================================================================
 
-void FDMDModel::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frameno, int frameno2, double inter, int translation)
+void FDMDModel::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frameno, int frameno2, double inter, int translation, const FTextureID*)
 {
 	if (frameno >= info.numFrames || frameno2 >= info.numFrames) return;
 

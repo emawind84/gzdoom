@@ -848,7 +848,7 @@ void GLSprite::Process(AActor* thing, sector_t * sector, int thruportal, bool is
 		z += fz;
 	}
 
-	modelframe = isPicnumOverride ? nullptr : FindModelFrame(thing->GetClass(), spritenum, thing->frame, !!(thing->flags & MF_DROPPED));
+	modelframe = isPicnumOverride ? nullptr : FindModelFrame(thing->modelData != nullptr ? thing->modelData->modelDef != NAME_None ? PClass::FindActor(thing->modelData->modelDef) : thing->GetClass() : thing->GetClass(), spritenum, thing->frame, !!(thing->flags & MF_DROPPED));
 
 	// don't bother drawing sprite shadows if this is a model (it will never look right)
 	if (modelframe && isSpriteShadow)

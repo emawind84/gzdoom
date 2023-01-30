@@ -647,6 +647,21 @@ struct FDropItem
 	int Amount;
 };
 
+class DActorModelData : public DObject
+{
+	DECLARE_CLASS(DActorModelData, DObject);
+public:
+	FName				modelDef;
+	bool				hasModel;
+	TArray<int>			modelIDs;
+	TArray<FTextureID>	skinIDs;
+	TArray<FTextureID>	surfaceSkinIDs;
+	TArray<int>			modelFrameGenerators;
+
+	DActorModelData() = default;
+	virtual void Serialize(FSerializer& arc) override;
+};
+
 const double MinVel = EQUAL_EPSILON;
 
 // Map Object definition.
@@ -1073,6 +1088,7 @@ public:
 	DVector2		SpriteOffset;
 	double			Speed;
 	double			FloatSpeed;
+	TObjPtr<DActorModelData*>		modelData;
 
 // interaction info
 	FBlockNode		*BlockNode;			// links in blocks (if needed)

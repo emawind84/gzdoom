@@ -990,7 +990,8 @@ void G_SerializeLevel(FSerializer &arc, bool hubload)
 		("level.spawnindex", level.spawnindex)
 		.Array("level.bodyque", level.bodyque, level.BODYQUESIZE)
 		("level.corpsequeue", level.CorpseQueue)
-		("level.frozenstate", level.frozenstate);
+		("level.frozenstate", level.frozenstate)
+		("level.savedModelFiles", level.savedModelFiles);
 
 	// Hub transitions must keep the current total time
 	if (!hubload)

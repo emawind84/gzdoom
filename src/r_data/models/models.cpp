@@ -179,14 +179,14 @@ void FModelRenderer::RenderModel(float x, float y, float z, FSpriteModelFrame *s
 	float orientation = scaleFactorX * scaleFactorY * scaleFactorZ;
 
 	BeginDrawModel(actor, smf, objectToWorldMatrix, orientation < 0);
-	RenderFrameModels(smf, actor->state, actor->tics, actor->GetClass(), translation);
+	RenderFrameModels(smf, actor->state, actor->tics, actor->modelData != nullptr ? actor->modelData->modelDef != NAME_None ? PClass::FindActor(actor->modelData->modelDef) : actor->GetClass() : actor->GetClass(), translation, actor);
 	EndDrawModel(actor, smf);
 }
 
 void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 {
 	AActor * playermo = players[consoleplayer].camera;
-	FSpriteModelFrame *smf = FindModelFrame(psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetFrame(), false);
+	FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->GetCaller()->modelData != nullptr ? psp->GetCaller()->modelData->modelDef != NAME_None ? PClass::FindActor(psp->GetCaller()->modelData->modelDef) : psp->GetCaller()->GetClass() : psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
 
 	// [BB] No model found for this sprite, so we can't render anything.
 	if (smf == nullptr)
@@ -237,11 +237,11 @@ void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 	BeginDrawHUDModel(playermo, objectToWorldMatrix, orientation < 0);
 	uint32_t trans = psp->GetTranslation() != 0 ? psp->GetTranslation() : 0;
 	if ((psp->Flags & PSPF_PLAYERTRANSLATED)) trans = psp->Owner->mo->Translation;
-	RenderFrameModels(smf, psp->GetState(), psp->GetTics(), psp->GetCaller()->GetClass(), trans);
+	RenderFrameModels(smf, psp->GetState(), psp->GetTics(), psp->GetCaller()->modelData != nullptr ? psp->GetCaller()->modelData->modelDef != NAME_None ? PClass::FindActor(psp->GetCaller()->modelData->modelDef) : psp->GetCaller()->GetClass() : psp->GetCaller()->GetClass(), trans, psp->GetCaller());
 	EndDrawHUDModel(playermo);
 }
 
-void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FState *curState, const int curTics, const PClass *ti, int translation)
+void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FState *curState, const int curTics, const PClass *ti, int translation, AActor* actor)
 {
 	// [BB] Frame interpolation: Find the FSpriteModelFrame smfNext which follows after smf in the animation
 	// and the scalar value inter ( element of [0,1) ), both necessary to determine the interpolated frame.
@@ -289,21 +289,77 @@ void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FStat
 		}
 	}
 
-	for (int i = 0; i < smf->modelsAmount; i++)
+	int modelsamount = smf->modelsAmount;
+	//[SM] - if we added any models for the frame to also render, then we also need to update modelsAmount for this smf
+	if (actor->modelData != nullptr)
 	{
-		if (smf->modelIDs[i] != -1)
+		modelsamount = actor->modelData->modelIDs.Size();
+	}
+
+	TArray<FTextureID> surfaceskinids;
+
+	for (int i = 0; i < modelsamount; i++)
+	{	
+		int modelid = -1;
+		int modelframe = -1;
+		int modelframenext = -1;
+		FTextureID skinid; skinid.SetInvalid();
+
+		surfaceskinids.Clear();
+		bool surfaceskinsswapped = false;
+		if (actor->modelData != nullptr)
 		{
-			FModel * mdl = Models[smf->modelIDs[i]];
-			FTexture *tex = smf->skinIDs[i].isValid() ? TexMan(smf->skinIDs[i]) : nullptr;
+			modelid = actor->modelData->modelIDs[i];
+
+			if (i < (int)actor->modelData->modelFrameGenerators.Size())
+			{
+				//[SM] - We will use this little snippet to allow a modder to specify a model index to clone. It's also pointless to clone something that clones something else in this case. And causes me headaches.
+				if (actor->modelData->modelFrameGenerators[i] >= 0 && smf->modelframes.Size() < (unsigned)i && smf->modelframes[i] != -1)
+				{
+					modelframe = smf->modelframes[actor->modelData->modelFrameGenerators[i]];
+					if (smfNext) modelframenext = smfNext->modelframes[actor->modelData->modelFrameGenerators[i]];
+				}
+			}
+			if (i < (int)actor->modelData->skinIDs.Size())
+			{
+				if (actor->modelData->skinIDs[i].isValid())
+					skinid = actor->modelData->skinIDs[i];
+			}
+			for (int surface = i * MD3_MAX_SURFACES; surface < (i + 1) * MD3_MAX_SURFACES; surface++)
+			{
+				if (surface < (int)actor->modelData->surfaceSkinIDs.Size())
+				{
+					if (actor->modelData->surfaceSkinIDs[surface].isValid())
+					{
+						// only make a copy of the surfaceskinIDs array if really needed
+						if (surfaceskinids.Size() == 0) surfaceskinids = smf->surfaceskinIDs;
+						surfaceskinids[surface] = actor->modelData->surfaceSkinIDs[surface];
+					}
+				}
+			}
+		}
+		if (i < smf->modelsAmount)
+		{
+			if (modelid == -1) modelid = smf->modelIDs[i];
+			if (modelframe == -1) modelframe = smf->modelframes[i];
+			if (modelframenext == -1 && smfNext) modelframenext = smfNext->modelframes[i];
+			if (!skinid.isValid()) skinid = smf->skinIDs[i];
+		}
+
+		if (modelid >= 0)
+		{
+			FModel * mdl = Models[modelid];
+			auto tex = skinid.isValid() ? TexMan(skinid) : nullptr;
 			mdl->BuildVertexBuffer(this);
 			SetVertexBuffer(mdl->GetVertexBuffer(this));
 
-			mdl->PushSpriteMDLFrame(smf, i);
+			auto& ssids = surfaceskinids.Size() > 0 ? surfaceskinids : smf->surfaceskinIDs;
+			auto ssidp = (unsigned)(i * MD3_MAX_SURFACES) < ssids.Size() ? &ssids[i * MD3_MAX_SURFACES] : nullptr;
 
-			if (smfNext && smf->modelframes[i] != smfNext->modelframes[i])
-				mdl->RenderFrame(this, tex, smf->modelframes[i], smfNext->modelframes[i], inter, translation);
+			if (smfNext && modelframe != modelframenext)
+				mdl->RenderFrame(this, tex, modelframe, modelframenext, inter, translation, ssidp);
 			else
-				mdl->RenderFrame(this, tex, smf->modelframes[i], smf->modelframes[i], 0.f, translation);
+				mdl->RenderFrame(this, tex, modelframe, modelframe, 0.f, translation, ssidp);
 
 			ResetVertexBuffer();
 		}
@@ -396,7 +452,7 @@ FTextureID LoadSkin(const char * path, const char * fn)
 //
 //===========================================================================
 
-static int ModelFrameHash(FSpriteModelFrame * smf)
+int ModelFrameHash(FSpriteModelFrame * smf)
 {
 	const uint32_t *table = GetCRCTable ();
 	uint32_t hash = 0xffffffff;
@@ -417,7 +473,7 @@ static int ModelFrameHash(FSpriteModelFrame * smf)
 //
 //===========================================================================
 
-static unsigned FindModel(const char * path, const char * modelfile)
+unsigned FindModel(const char * path, const char * modelfile)
 {
 	FModel * model = nullptr;
 	FString fullname;
