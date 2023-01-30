@@ -84,7 +84,7 @@
 #include "actorinlines.h"
 #include "vm.h"
 #include "types.h"
-#include "model.h"
+#include "r_data/models/models.h"
 
 AActor *SingleActorFromTID(int tid, AActor *defactor);
 
@@ -3442,7 +3442,7 @@ DEFINE_ACTION_FUNCTION(AActor, A_WolfAttack)
 
 	// Target can dodge if it can see enemy
 	DAngle angle = absangle(self->target->Angles.Yaw, self->target->AngleTo(self));
-	bool dodge = (P_CheckSight(self->target, self) && angle < 30. * 256. / 360.);	// 30 byteangles ~ 21°
+	bool dodge = (P_CheckSight(self->target, self) && angle < 30. * 256. / 360.);	// 30 byteangles ~ 21ï¿½
 
 	// Distance check is simplistic
 	DVector2 vec = self->Vec2To(self->target);
@@ -5063,10 +5063,10 @@ DEFINE_ACTION_FUNCTION(AActor, A_ChangeModel)
 	if (modelpath[(int)modelpath.Len() - 1] != '/') modelpath += '/';
 	if (skinpath[(int)skinpath.Len() - 1] != '/') skinpath += '/';
 
-	mobj->hasmodel = modeldef == nullptr && !mobj->hasmodel ? 1 : 0;
+	mobj->hasmodel = modeldef == NAME_None && !mobj->hasmodel ? 1 : 0;
 	mobj->modelDef = modeldef;
-	mobj->models[modelindex] = model != nullptr ? FindModel(modelpath.GetChars(), model.GetChars()) : -1;
-	mobj->skins[skinindex] = skin != nullptr ? LoadSkin(skinpath.GetChars(), skin.GetChars()) : mobj->skins[skinindex] = FNullTextureID();
+	mobj->models[modelindex] = model != NAME_None ? FindModel(modelpath.GetChars(), model.GetChars()) : -1;
+	mobj->skins[skinindex] = skin != NAME_None ? LoadSkin(skinpath.GetChars(), skin.GetChars()) : mobj->skins[skinindex] = FNullTextureID();
 
 	return 0;
 }

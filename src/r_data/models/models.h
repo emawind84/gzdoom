@@ -85,7 +85,7 @@ public:
 	virtual void DrawElements(int numIndices, size_t offset) = 0;
 
 private:
-	void RenderFrameModels(const FSpriteModelFrame *smf, const FState *curState, const int curTics, const PClass *ti, int translation);
+	void RenderFrameModels(const FSpriteModelFrame* smf, const FState* curState, const int curTics, const PClass* ti, int translation, AActor* actor);
 };
 
 struct FModelVertex
@@ -465,6 +465,9 @@ struct FSpriteModelFrame
 FSpriteModelFrame * FindModelFrame(const PClass * ti, int sprite, int frame, bool dropped);
 bool IsHUDModelForPlayerAvailable(player_t * player);
 void FlushModels();
+int ModelFrameHash(FSpriteModelFrame* smf);
+unsigned FindModel(const char* path, const char* modelfile);
+
 
 
 extern TDeletingArray<FModel*> Models;
