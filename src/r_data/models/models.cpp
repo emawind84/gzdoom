@@ -609,18 +609,25 @@ static void ParseModelDefLump(int Lump)
 			{
 				smf.modelsAmount = MIN_MODELS;
 			}
-
-			const auto initArray = [](auto& array, const unsigned count, const auto value)
+			//Allocate TArrays
+			smf.modelIDs.Alloc(smf.modelsAmount);
+			smf.skinIDs.Alloc(smf.modelsAmount);
+			smf.surfaceskinIDs.Alloc(smf.modelsAmount * MD3_MAX_SURFACES);
+			smf.modelframes.Alloc(smf.modelsAmount);
+			//Make sure all modelIDs are -1 by default
+			for (auto& modelID : smf.modelIDs)
 			{
-				array.Alloc(count);
-				std::fill(array.begin(), array.end(), value);
-			};
-
-			initArray(smf.modelIDs, smf.modelsAmount, -1);
-			initArray(smf.skinIDs, smf.modelsAmount, FNullTextureID());
-			initArray(smf.surfaceskinIDs, smf.modelsAmount * MD3_MAX_SURFACES, FNullTextureID());
-			initArray(smf.modelframes, smf.modelsAmount, 0);
-
+				modelID = -1;
+			}
+			//Make sure no TArray elements of type FTextureID are null. These elements will have a textureid (FTextureID.texnum) of 0.
+			for (auto& skinID : smf.skinIDs)
+			{
+				skinID = FTextureID(FNullTextureID());
+			}
+			for (auto& surfaceskinID : smf.surfaceskinIDs)
+			{
+				surfaceskinID = FTextureID(FNullTextureID());
+			}
 			sc.RestorePos(scPos);
 			sc.MustGetStringName("{");
 			while (!sc.CheckString("}"))
