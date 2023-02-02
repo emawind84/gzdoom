@@ -679,6 +679,7 @@ void GLSceneDrawer::EndDrawScene(sector_t * viewsector)
 	{
 		// [BB] The HUD model should be drawn over everything else already drawn.
 		glClear(GL_DEPTH_BUFFER_BIT);
+		DPrintf(DMSG_WARNING, ">>> EndDrawScene 88\n");
 		DrawPlayerSprites (viewsector, true);
 	}
 
@@ -710,6 +711,7 @@ void GLSceneDrawer::DrawEndScene2D(sector_t * viewsector)
 	// [BB] Only draw the sprites if we didn't render a HUD model before.
 	if (renderHUDModel == false)
 	{
+		DPrintf(DMSG_WARNING, ">>> DrawEndScene2D 77\n");
 		DrawPlayerSprites(viewsector, false);
 	}
 	if (gl.legacyMode)

@@ -311,6 +311,7 @@ void FMD3Model::AddSkins(uint8_t *hitlist)
 		{
 			hitlist[curSpriteMDLFrame->surfaceskinIDs[ssIndex].GetIndex()] |= FTextureManager::HIT_Flat;
 		}
+		DPrintf(DMSG_WARNING, ">>> ssIndex: \n");
 
 		MD3Surface * surf = &Surfaces[i];
 		for (unsigned j = 0; j < surf->numSkins; j++)
@@ -346,6 +347,7 @@ int FMD3Model::FindFrame(const char * name)
 
 void FMD3Model::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frameno, int frameno2, double inter, int translation)
 {
+	DPrintf(DMSG_WARNING, ">>> RenderFrame\n");
 	if ((unsigned)frameno >= Frames.Size() || (unsigned)frameno2 >= Frames.Size()) return;
 
 	renderer->SetInterpolation(inter);
@@ -370,6 +372,7 @@ void FMD3Model::RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame
 					surfaceSkin = TexMan(surf->Skins[0]);
 				}
 			}
+			DPrintf(DMSG_WARNING, ">>> ssIndex: \n");
 
 			if (!surfaceSkin)
 			{

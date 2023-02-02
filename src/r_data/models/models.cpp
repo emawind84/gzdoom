@@ -59,6 +59,7 @@ TDeletingArray<FModel*> Models;
 void FModelRenderer::RenderModel(float x, float y, float z, FSpriteModelFrame *smf, AActor *actor)
 {
 	// Setup transformation.
+	DPrintf(DMSG_WARNING, ">>> RenderModel 33\n");
 
 	int translation = 0;
 	if (!(smf->flags & MDL_IGNORETRANSLATION))
@@ -182,6 +183,7 @@ void FModelRenderer::RenderModel(float x, float y, float z, FSpriteModelFrame *s
 
 void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 {
+	DPrintf(DMSG_WARNING, ">>> RenderHUDModel 33\n");
 	AActor * playermo = players[consoleplayer].camera;
 	FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->Caller->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
 
@@ -222,6 +224,7 @@ void FModelRenderer::RenderHUDModel(DPSprite *psp, float ofsX, float ofsY)
 
 void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FState *curState, const int curTics, const PClass *ti, int translation)
 {
+	DPrintf(DMSG_WARNING, ">>> RenderFrameModels 44\n");
 	// [BB] Frame interpolation: Find the FSpriteModelFrame smfNext which follows after smf in the animation
 	// and the scalar value inter ( element of [0,1) ), both necessary to determine the interpolated frame.
 	FSpriteModelFrame * smfNext = nullptr;
@@ -270,6 +273,7 @@ void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FStat
 
 	for (int i = 0; i < smf->modelsAmount; i++)
 	{
+		DPrintf(DMSG_WARNING, ">>> RenderFrameModels 22\n");
 		if (smf->modelIDs[i] != -1)
 		{
 			FModel * mdl = Models[smf->modelIDs[i]];
@@ -278,6 +282,8 @@ void FModelRenderer::RenderFrameModels(const FSpriteModelFrame *smf, const FStat
 			SetVertexBuffer(mdl->GetVertexBuffer(this));
 
 			mdl->PushSpriteMDLFrame(smf, i);
+
+			DPrintf(DMSG_WARNING, ">>> RenderFrameModels 11\n");
 
 			if (smfNext && smf->modelframes[i] != smfNext->modelframes[i])
 				mdl->RenderFrame(this, tex, smf->modelframes[i], smfNext->modelframes[i], inter, translation);
@@ -953,10 +959,13 @@ FSpriteModelFrame * FindModelFrame(const PClass * ti, int sprite, int frame, boo
 		while (hash>=0)
 		{
 			FSpriteModelFrame * smff = &SpriteModelFrames[hash];
+			DPrintf(DMSG_WARNING, ">>> FindModelFrame 55\n");
 			if (smff->type==ti && smff->sprite==sprite && smff->frame==frame) return smff;
 			hash=smff->hashnext;
 		}
 	}
+
+	DPrintf(DMSG_WARNING, ">>> FindModelFrame 22\n");
 
 	// Check for voxel replacements
 	if (r_drawvoxels)
@@ -969,10 +978,12 @@ FSpriteModelFrame * FindModelFrame(const PClass * ti, int sprite, int frame, boo
 			{
 				int index = sprframe->Voxel->VoxeldefIndex;
 				if (dropped && sprframe->Voxel->DroppedSpin !=sprframe->Voxel->PlacedSpin) index++;
+				DPrintf(DMSG_WARNING, ">>> FindModelFrame 33\n");
 				return &SpriteModelFrames[index];
 			}
 		}
 	}
+	DPrintf(DMSG_WARNING, ">>> FindModelFrame 44\n");
 	return nullptr;
 }
 
@@ -990,6 +1001,7 @@ bool IsHUDModelForPlayerAvailable (player_t * player)
 	// [MK] check that at least one psprite uses models
 	for (DPSprite *psp = player->psprites; psp != nullptr && psp->GetID() < PSP_TARGETCENTER; psp = psp->GetNext())
 	{
+		DPrintf(DMSG_WARNING, ">>> IsHUDModelForPlayerAvailable 11 psp->GetID(): %d\n", psp->GetID());
 		FSpriteModelFrame *smf = psp->Caller != nullptr ? FindModelFrame(psp->Caller->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
 		if ( smf != nullptr ) return true;
 	}

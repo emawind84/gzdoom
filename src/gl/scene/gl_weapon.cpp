@@ -72,9 +72,11 @@ void GLSceneDrawer::DrawPSprite (player_t * player,DPSprite *psp, float sx, floa
 	float			scalex;
 	float			ftexturemid;
 	
+	DPrintf(DMSG_WARNING, ">>> DrawPSprite 55\n");
 	// [BB] In the HUD model step we just render the model and break out. 
 	if ( hudModelStep )
 	{
+		DPrintf(DMSG_WARNING, ">>> DrawPSprite 66\n");
 		gl_RenderHUDModel(psp, sx, sy);
 		return;
 	}
