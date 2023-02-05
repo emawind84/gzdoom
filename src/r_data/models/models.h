@@ -452,10 +452,9 @@ struct FSpriteModelFrame
 	float rotationCenterX, rotationCenterY, rotationCenterZ;
 	float rotationSpeed;
 	unsigned int flags;
-	const PClass * type;
+	const PClass * type;  // data from type, sprite and frame up to hashnext are used for hashing, no other fields should be added between type and hashnext
 	short sprite;
 	short frame;
-	FState * state;	// for later!
 	int hashnext;
 	float angleoffset;
 	// added pithoffset, rolloffset.
