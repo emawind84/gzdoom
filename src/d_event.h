@@ -120,6 +120,8 @@ typedef enum
 
 	BT_OFFHANDATTACK    = 1<<26,
 	BT_OFFHANDALTATTACK = 1<<27,
+	BT_OFFHANDRELOAD    = 1<<28,
+	BT_MAINHANDRELOAD   = 1<<29,
 } buttoncode_t;
 
 // Called by IO functions when input is detected.
