@@ -420,16 +420,16 @@ class Weapon : StateProvider
 		}
 	}
 
-	static int GetButtonStateFlags(int flags)
+	static int GetButtonStateFlags(int flags, int hand = 0)
 	{
 		// Rewritten for efficiency and clarity
 		int outflags = 0;
-		if (flags & WRF_AllowZoom) outflags |= WF_WEAPONZOOMOK;
-		if (flags & WRF_AllowReload) outflags |= WF_WEAPONRELOADOK;
-		if (flags & WRF_AllowUser1) outflags |= WF_USER1OK;
-		if (flags & WRF_AllowUser2) outflags |= WF_USER2OK;
-		if (flags & WRF_AllowUser3) outflags |= WF_USER3OK;
-		if (flags & WRF_AllowUser4) outflags |= WF_USER4OK;
+		if (flags & WRF_AllowZoom) outflags |= hand ? WF_OFFHANDZOOMOK : WF_WEAPONZOOMOK;
+		if (flags & WRF_AllowReload) outflags |= hand ? WF_OFFHANDRELOADOK : WF_WEAPONRELOADOK;
+		if (flags & WRF_AllowUser1) outflags |= hand ? WF_OFFHANDUSER1OK : WF_USER1OK;
+		if (flags & WRF_AllowUser2) outflags |= hand ? WF_OFFHANDUSER2OK : WF_USER2OK;
+		if (flags & WRF_AllowUser3) outflags |= hand ? WF_OFFHANDUSER3OK : WF_USER3OK;
+		if (flags & WRF_AllowUser4) outflags |= hand ? WF_OFFHANDUSER4OK : WF_USER4OK;
 		return outflags;
 	}
 	
@@ -441,7 +441,7 @@ class Weapon : StateProvider
 		if ((flags & WRF_NoFire) != WRF_NoFire)			DoReadyWeaponToFire(player.mo, !(flags & WRF_NoPrimary), !(flags & WRF_NoSecondary), hand);
 		if (!(flags & WRF_NoBob))						DoReadyWeaponToBob(player, hand);
 
-		player.WeaponState |= GetButtonStateFlags(flags);														
+		player.WeaponState |= GetButtonStateFlags(flags, hand);														
 		DoReadyWeaponDisableSwitch(player, flags & WRF_DisableSwitch, hand);
 	}
 

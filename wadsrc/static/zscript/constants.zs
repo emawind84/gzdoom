@@ -1283,8 +1283,14 @@ enum EWeaponState
 	WF_OFFHANDREADYALT       = 1 << 14,
 	WF_OFFHANDSWITCHOK       = 1 << 15,
 	WF_OFFHANDDISABLESWITCH  = 1 << 16,
-	WF_OFFHANDREFIRESWITCHOK = 1 << 17,
-	WF_TWOHANDSTABILIZED     = 1 << 18,
+	WF_OFFHANDRELOADOK       = 1 << 17,
+	WF_OFFHANDZOOMOK         = 1 << 18,
+	WF_OFFHANDREFIRESWITCHOK = 1 << 19,
+	WF_OFFHANDUSER1OK        = 1 << 20,
+	WF_OFFHANDUSER2OK        = 1 << 21,
+	WF_OFFHANDUSER3OK        = 1 << 22,
+	WF_OFFHANDUSER4OK        = 1 << 23,
+	WF_TWOHANDSTABILIZED     = 1 << 24
 };
 
 // these flags are for filtering actor visibility based on certain conditions of the renderer's feature support.
