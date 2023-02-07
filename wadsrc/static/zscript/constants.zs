@@ -850,7 +850,7 @@ enum EButtons
 	BT_LOOKDOWN		= 1<<17,
 	BT_MOVEUP		= 1<<18,
 	BT_MOVEDOWN		= 1<<19,
-	BT_SHOWSCORES	= 1<<20,
+	BT_SHOWSCORES	= 0,  // replaced with BT_MAINHANDRELOAD
 
 	BT_USER1		= 1<<21,
 	BT_USER2		= 1<<22,
@@ -861,6 +861,8 @@ enum EButtons
 
 	BT_OFFHANDATTACK    = 1<<26,
 	BT_OFFHANDALTATTACK = 1<<27,
+	BT_OFFHANDRELOAD    = 1<<28,
+	BT_MAINHANDRELOAD   = 1<<20,
 };
 
 // Flags for GetAngle

@@ -104,12 +104,14 @@ static const FGenericButtons ButtonChecks[] =
 	{ 0, WRF_AllowUser2,	WF_USER2OK,			BT_USER2,	NAME_User2 },
 	{ 0, WRF_AllowUser3,	WF_USER3OK,			BT_USER3,	NAME_User3 },
 	{ 0, WRF_AllowUser4,	WF_USER4OK,			BT_USER4,	NAME_User4 },
+	{ 0, WRF_AllowReload,	WF_WEAPONRELOADOK,	BT_MAINHANDRELOAD,	NAME_Reload },
 	{ 1, WRF_AllowZoom,		WF_OFFHANDZOOMOK,	BT_ZOOM,	NAME_Zoom },
 	{ 1, WRF_AllowReload,	WF_OFFHANDRELOADOK,	BT_RELOAD,	NAME_Reload },
 	{ 1, WRF_AllowUser1,	WF_OFFHANDUSER1OK,	BT_USER1,	NAME_User1 },
 	{ 1, WRF_AllowUser2,	WF_OFFHANDUSER2OK,	BT_USER2,	NAME_User2 },
 	{ 1, WRF_AllowUser3,	WF_OFFHANDUSER3OK,	BT_USER3,	NAME_User3 },
 	{ 1, WRF_AllowUser4,	WF_OFFHANDUSER4OK,	BT_USER4,	NAME_User4 },
+	{ 1, WRF_AllowReload,	WF_OFFHANDRELOADOK,	BT_OFFHANDRELOAD,	NAME_Reload },
 };
 
 // CODE --------------------------------------------------------------------
