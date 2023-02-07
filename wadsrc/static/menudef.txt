@@ -585,6 +585,11 @@ OptionMenu "ActionControlsMenu" protected
 	Control    "$CNTRLMNU_RUN"              , "+speed"
 	Control    "$CNTRLMNU_TOGGLERUN"        , "toggle cl_run"
 	Control    "$CNTRLMNU_STRAFE"           , "+strafe"
+
+	StaticText ""
+	StaticText "Advanced reloading", gold
+	Control    "$CNTRLMNU_MAINHANDRELOAD"    , "+mh_reload"
+	Control    "$CNTRLMNU_OFFHANDRELOAD"     , "+oh_reload"
 }
 
 OptionMenu "ActionDoubleControlsMenu" protected
@@ -637,6 +642,11 @@ OptionMenu "ActionDoubleControlsMenu" protected
 	DoubleControl    "$CNTRLMNU_RUN"              , "+speed"
 	DoubleControl    "$CNTRLMNU_TOGGLERUN"        , "toggle cl_run"
 	DoubleControl    "$CNTRLMNU_STRAFE"           , "+strafe"
+
+	StaticText ""
+	StaticText "Advanced reloading", gold
+	DoubleControl    "$CNTRLMNU_MAINHANDRELOAD"    , "+mh_reload"
+	DoubleControl    "$CNTRLMNU_OFFHANDRELOAD"     , "+oh_reload"
 }
 
 OptionMenu "ChatControlsMenu" protected

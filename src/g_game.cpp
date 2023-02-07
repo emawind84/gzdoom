@@ -764,6 +764,8 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	if (Button_Crouch.bDown)		cmd->ucmd.buttons |= BT_CROUCH;
 	if (Button_Zoom.bDown)			cmd->ucmd.buttons |= BT_ZOOM;
 	if (Button_Reload.bDown)		cmd->ucmd.buttons |= BT_RELOAD;
+	if (Button_MH_Reload.bDown)		cmd->ucmd.buttons |= BT_MAINHANDRELOAD;
+	if (Button_OH_Reload.bDown)		cmd->ucmd.buttons |= BT_OFFHANDRELOAD;
 	if (Button_OH_Attack.bDown)		cmd->ucmd.buttons |= BT_OFFHANDATTACK;
 	if (Button_OH_AltAttack.bDown)	cmd->ucmd.buttons |= BT_OFFHANDALTATTACK;
 
