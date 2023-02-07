@@ -57,6 +57,7 @@
 
 struct FGenericButtons
 {
+	int Hand;
 	int ReadyFlag;			// Flag passed to A_WeaponReady
 	int StateFlag;			// Flag set in WeaponState
 	int ButtonFlag;			// Button to press
@@ -97,12 +98,18 @@ CVAR(Int, sv_fastweapons, false, CVAR_SERVERINFO);
 
 static const FGenericButtons ButtonChecks[] =
 {
-	{ WRF_AllowZoom,	WF_WEAPONZOOMOK,	BT_ZOOM,	NAME_Zoom },
-	{ WRF_AllowReload,	WF_WEAPONRELOADOK,	BT_RELOAD,	NAME_Reload },
-	{ WRF_AllowUser1,	WF_USER1OK,			BT_USER1,	NAME_User1 },
-	{ WRF_AllowUser2,	WF_USER2OK,			BT_USER2,	NAME_User2 },
-	{ WRF_AllowUser3,	WF_USER3OK,			BT_USER3,	NAME_User3 },
-	{ WRF_AllowUser4,	WF_USER4OK,			BT_USER4,	NAME_User4 },
+	{ 0, WRF_AllowZoom,		WF_WEAPONZOOMOK,	BT_ZOOM,	NAME_Zoom },
+	{ 0, WRF_AllowReload,	WF_WEAPONRELOADOK,	BT_RELOAD,	NAME_Reload },
+	{ 0, WRF_AllowUser1,	WF_USER1OK,			BT_USER1,	NAME_User1 },
+	{ 0, WRF_AllowUser2,	WF_USER2OK,			BT_USER2,	NAME_User2 },
+	{ 0, WRF_AllowUser3,	WF_USER3OK,			BT_USER3,	NAME_User3 },
+	{ 0, WRF_AllowUser4,	WF_USER4OK,			BT_USER4,	NAME_User4 },
+	{ 1, WRF_AllowZoom,		WF_OFFHANDZOOMOK,	BT_ZOOM,	NAME_Zoom },
+	{ 1, WRF_AllowReload,	WF_OFFHANDRELOADOK,	BT_RELOAD,	NAME_Reload },
+	{ 1, WRF_AllowUser1,	WF_OFFHANDUSER1OK,	BT_USER1,	NAME_User1 },
+	{ 1, WRF_AllowUser2,	WF_OFFHANDUSER2OK,	BT_USER2,	NAME_User2 },
+	{ 1, WRF_AllowUser3,	WF_OFFHANDUSER3OK,	BT_USER3,	NAME_User3 },
+	{ 1, WRF_AllowUser4,	WF_OFFHANDUSER4OK,	BT_USER4,	NAME_User4 },
 };
 
 // CODE --------------------------------------------------------------------
@@ -466,8 +473,8 @@ void DPSprite::SetState(FState *newstate, bool pending)
 	}
 	if (ID == PSP_OFFHANDWEAPON)
 	{
-		Owner->WeaponState &= ~(WF_OFFHANDREADY | WF_OFFHANDREADYALT | WF_OFFHANDBOBBING | WF_OFFHANDSWITCHOK | WF_WEAPONRELOADOK | WF_WEAPONZOOMOK |
-								WF_USER1OK | WF_USER2OK | WF_USER3OK | WF_USER4OK | WF_TWOHANDSTABILIZED);
+		Owner->WeaponState &= ~(WF_OFFHANDREADY | WF_OFFHANDREADYALT | WF_OFFHANDBOBBING | WF_OFFHANDSWITCHOK | WF_OFFHANDRELOADOK | WF_OFFHANDZOOMOK |
+								WF_OFFHANDUSER1OK | WF_OFFHANDUSER2OK | WF_OFFHANDUSER3OK | WF_OFFHANDUSER4OK | WF_TWOHANDSTABILIZED);
 	}
 
 	if (weaponStabilised)
@@ -663,7 +670,8 @@ static void P_CheckWeaponButtons (player_t *player, int hand = 0)
 	for (size_t i = 0; i < countof(ButtonChecks); ++i)
 	{
 		if ((player->WeaponState & ButtonChecks[i].StateFlag) &&
-			(player->cmd.ucmd.buttons & ButtonChecks[i].ButtonFlag))
+			(player->cmd.ucmd.buttons & ButtonChecks[i].ButtonFlag) &&
+			(hand == ButtonChecks[i].Hand))
 		{
 			FState *state = weapon->FindState(ButtonChecks[i].StateName);
 			// [XA] don't change state if still null, so if the modder
