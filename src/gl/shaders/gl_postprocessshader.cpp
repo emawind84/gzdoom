@@ -116,6 +116,15 @@ void PostProcessShaderInstance::Run()
 bool PostProcessShaderInstance::IsShaderSupported()
 {
 	int activeShaderVersion = (int)round(gl.glslversion * 10) * 10;
+	if (gl.es)
+	{
+		if (activeShaderVersion >= 200)
+			activeShaderVersion = 410;
+		if (activeShaderVersion >= 300)
+			activeShaderVersion = 430;
+		if (activeShaderVersion >= 310)
+			activeShaderVersion = 450;
+	}
 	return activeShaderVersion >= Desc->ShaderVersion;
 }
 
