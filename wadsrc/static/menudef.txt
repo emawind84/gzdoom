@@ -495,21 +495,30 @@ OptionMenu "CustomizeControls" protected
 {
 	Title "$CNTRLMNU_TITLE"
 
-	Submenu    "$CNTRLMNU_ACTION"      , "ActionControlsMenu"
-	Submenu    "$CNTRLMNU_WEAPONS"     , "WeaponsControlMenu"
-	Submenu    "$CNTRLMNU_INVENTORY"   , "InventoryControlsMenu"
-	Submenu    "$MAPCNTRLMNU_CONTROLS" , "MapControlsMenu"
-	Submenu    "$CNTRLMNU_OTHER"       , "OtherControlsMenu"
-	Submenu    "$CNTRLMNU_POPUPS"      , "PopupControlsMenu"
-	Submenu    "$MNU_MULTIPLAYER"      , "ChatControlsMenu"
+	Option "$CNTRLMNU_SHOWDBLBINDINGS" , "menu_showdoublebindings", "YesNo"
 	StaticText " "
-	StaticText "Double bindings", gold
-	Submenu    "$CNTRLMNU_ACTION"      , "ActionDoubleControlsMenu"
-	Submenu    "$CNTRLMNU_WEAPONS"     , "WeaponsDoubleControlMenu"
-	Submenu    "$CNTRLMNU_INVENTORY"   , "InventoryDoubleControlsMenu"
-	Submenu    "$CNTRLMNU_OTHER"       , "OtherDoubleControlsMenu"
-	Submenu    "$CNTRLMNU_POPUPS"      , "PopupDoubleControlsMenu"
-	Submenu    "$MNU_MULTIPLAYER"      , "ChatDoubleControlsMenu"
+	IfOption(DoubleBindingMenu)
+	{
+		StaticText "$CNTRLMNU_DOUBLEBINDINGS", gold
+		Submenu    "$CNTRLMNU_ACTION"      , "ActionDoubleControlsMenu"
+		Submenu    "$CNTRLMNU_WEAPONS"     , "WeaponsDoubleControlMenu"
+		Submenu    "$CNTRLMNU_INVENTORY"   , "InventoryDoubleControlsMenu"
+		Submenu    "$CNTRLMNU_OTHER"       , "OtherDoubleControlsMenu"
+		Submenu    "$CNTRLMNU_POPUPS"      , "PopupDoubleControlsMenu"
+		Submenu    "$MNU_MULTIPLAYER"      , "ChatDoubleControlsMenu"
+	}
+	else
+	{
+		StaticText "$CNTRLMNU_SINGLEBINDINGS", gold
+		Submenu    "$CNTRLMNU_ACTION"      , "ActionControlsMenu"
+		Submenu    "$CNTRLMNU_WEAPONS"     , "WeaponsControlMenu"
+		Submenu    "$CNTRLMNU_INVENTORY"   , "InventoryControlsMenu"
+		Submenu    "$CNTRLMNU_OTHER"       , "OtherControlsMenu"
+		Submenu    "$CNTRLMNU_POPUPS"      , "PopupControlsMenu"
+		Submenu    "$MNU_MULTIPLAYER"      , "ChatControlsMenu"
+		Submenu    "$MAPCNTRLMNU_CONTROLS" , "MapControlsMenu"
+	}
+	
 	StaticText " "
 	Option "$CNTRLMNU_LAYOUT",			"k_modern", "Layouts"
 	SafeCommand "$OPTMNU_DEFAULTS",		"resetb2defaults"

@@ -62,6 +62,13 @@
 
 
 CVAR(Bool, menu_hideextreme, false, CVAR_ARCHIVE)
+CUSTOM_CVAR(Bool, menu_showdoublebindings, false, CVAR_NOINITCALL)
+{
+	DeinitMenus();
+	M_Init();
+	M_StartControlPanel (true);
+	M_SetMenu(NAME_CustomizeControls, -1);
+}
 
 void ClearSaveGames();
 
@@ -233,6 +240,7 @@ static bool CheckSkipOptionBlock(FScanner &sc)
 		sc.MustGetString();
 		if (sc.Compare("ReadThis")) filter |= gameinfo.drawreadthis;
 		else if (sc.Compare("Swapmenu")) filter |= gameinfo.swapmenu;
+		else if (sc.Compare("DoubleBindingMenu")) filter |= menu_showdoublebindings;
 		else if (sc.Compare("Windows"))
 		{
 			#ifdef _WIN32

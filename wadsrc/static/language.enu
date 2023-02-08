@@ -1833,6 +1833,9 @@ CNTRLMNU_KEYS					= "Keys list";
 CNTRLMNU_STATS					= "Weapons/ammo/stats";
 CNTRLMNU_LAYOUT					= "Default Control Layout";
 CNTRLMNU_USEFLECHETTE			= "Use flechette";
+CNTRLMNU_SHOWDBLBINDINGS		= "Show double bindings";
+CNTRLMNU_DOUBLEBINDINGS			= "Double bindings";
+CNTRLMNU_SINGLEBINDINGS			= "Single bindings";
 
 // Mouse Menu
 

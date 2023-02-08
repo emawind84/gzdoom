@@ -352,6 +352,7 @@ DMenu *StartPickerMenu(DMenu *parent, const char *name, FColorCVar *cvar);
 void M_RefreshModesList ();
 void M_InitVideoModesMenu ();
 void M_MarkMenus();
+void DeinitMenus();
 
 
 struct IJoystickConfig;
