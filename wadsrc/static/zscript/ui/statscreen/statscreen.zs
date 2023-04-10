@@ -124,6 +124,11 @@ class StatusScreen abstract play version("2.5")
 
 	int 			player_deaths[MAXPLAYERS];
 	int  			sp_state;
+	
+	int cWidth, cHeight;	// size of the canvas
+	int scalemode;
+	int wrapwidth;	// size used to word wrap level names
+	int scaleFactorX, scaleFactorY;
 
 
 	//====================================================================
@@ -137,6 +142,30 @@ class StatusScreen abstract play version("2.5")
 		int width = fnt.GetCharWidth(charcode);
 		screen.DrawChar(fnt, translation, x, y, charcode, nomove ? DTA_CleanNoMove : DTA_Clean, true);
 		return x - width;
+	}
+		
+	//====================================================================
+	//
+	//
+	//
+	//====================================================================
+
+	void DrawTexture(TextureID tex, double x, double y, bool nomove = false)
+	{
+		if (scalemode == -1) screen.DrawTexture(tex, true, x, y, nomove ? DTA_CleanNoMove : DTA_Clean, true);
+		else screen.DrawTexture(tex, true, x, y, DTA_FullscreenScale, scalemode, DTA_VirtualWidth, cwidth, DTA_VirtualHeight, cheight);
+	}
+
+	//====================================================================
+	//
+	//
+	//
+	//====================================================================
+
+	void DrawText(Font fnt, int color, double x, double y, String str, bool nomove = false, bool shadow = false)
+	{
+		if (scalemode == -1) screen.DrawText(fnt, color, x, y, str, nomove ? DTA_CleanNoMove : DTA_Clean, true, DTA_Shadow, shadow);
+		else screen.DrawText(fnt, color, x, y, str, DTA_FullscreenScale, scalemode, DTA_VirtualWidth, cwidth, DTA_VirtualHeight, cheight, DTA_Shadow, shadow);
 	}
 
 	//====================================================================
@@ -795,6 +824,12 @@ class StatusScreen abstract play version("2.5")
 		bg = InterBackground.Create(wbs);
 		noautostartmap = bg.LoadBackground(false);
 		initStats();
+		
+		wrapwidth = cwidth = screen.GetWidth();
+		cheight = screen.GetHeight();
+		scalemode = -1;
+		scaleFactorX = CleanXfac;
+		scaleFactorY = CleanYfac;	
 	}
 	
 	
