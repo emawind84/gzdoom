@@ -2993,6 +2993,8 @@ OptionMenu "PostProcessMenu" protected
 	Slider "$GLPREFMNU_PALTONEMAPPOWER",		gl_paltonemap_powtable,			0.2, 3.0, 0.1, 1
 	Option "$GLPREFMNU_PALTONEMAPORDER",		gl_paltonemap_reverselookup,	"LookupOrder"
 	StaticText " "
+	Option "$GLPREFMNU_CUSTOMPOST",		 		gl_custompost,					"OnOff"
+	StaticText " "
 	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar gl_bloom gl_lens gl_ssao gl_ssao_portals gl_fxaa gl_dither_bpc gl_tonemap gl_paltonemap_powtable gl_paltonemap_reverselookup"
 }
 

@@ -38,7 +38,7 @@
 #include "textures/textures.h"
 #include "textures/bitmap.h"
 
-CVAR(Bool, gl_custompost, true, 0)
+CVAR(Bool, gl_custompost, true, CVAR_GLOBALCONFIG|CVAR_ARCHIVE)
 
 TArray<PostProcessShader> PostProcessShaders;
 
