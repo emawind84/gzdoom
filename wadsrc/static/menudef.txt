@@ -524,15 +524,7 @@ OptionMenu "CustomizeControls" protected
 		Submenu    "$MNU_MULTIPLAYER"      , "ChatControlsMenu"
 		Submenu    "$MAPCNTRLMNU_CONTROLS" , "MapControlsMenu"
 	}
-	
-	StaticText " "
-	StaticText "Double bindings", gold
-	Submenu    "$CNTRLMNU_ACTION"      , "ActionDoubleControlsMenu"
-	Submenu    "$CNTRLMNU_WEAPONS"     , "WeaponsDoubleControlMenu"
-	Submenu    "$CNTRLMNU_INVENTORY"   , "InventoryDoubleControlsMenu"
-	Submenu    "$CNTRLMNU_OTHER"       , "OtherDoubleControlsMenu"
-	Submenu    "$CNTRLMNU_POPUPS"      , "PopupDoubleControlsMenu"
-	Submenu    "$MNU_MULTIPLAYER"      , "ChatDoubleControlsMenu"
+
 	StaticText " "
 	Option "$CNTRLMNU_LAYOUT",			"k_modern", "Layouts"
 	SafeCommand "$OPTMNU_DEFAULTS",		"resetb2defaults"
@@ -946,55 +938,6 @@ OptionMenu "OtherDoubleControlsMenu" protected
 	StaticText ""
 	DoubleControl    "$CNTRLMNU_QUICKSAVE"       , "quicksave"
 	DoubleControl    "$CNTRLMNU_QUICKLOAD"       , "quickload"
-}
-
-OptionMenu "OtherDoubleControlsMenu" protected
-{
-	Title "$CNTRLMNU_OTHER_TITLE"
-	ScrollTop 2
-	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
-
-	StaticText ""
-	StaticText "$CNTRLMNU_DBLBINDTEXT_L1", brown
-	StaticText "$CNTRLMNU_DBLBINDTEXT_L2", brown
-	StaticText ""
-	DoubleControl    "$CNTRLMNU_AUTOMAP"         , "togglemap"
-
-	StaticText ""
-	DoubleControl    "$CNTRLMNU_CHASECAM"        , "chase"
-	DoubleControl    "$CNTRLMNU_COOPSPY"         , "spynext"
-
-	StaticText ""
-	DoubleControl    "$CNTRLMNU_SCREENSHOT"      , "screenshot"
-	DoubleControl    "$CNTRLMNU_CONSOLE"         , "toggleconsole"
-	DoubleControl    "$CNTRLMNU_PAUSE"           , "pause"
-
-	StaticText ""
-	DoubleControl    "$CNTRLMNU_DISPLAY_INC"     , "sizeup"
-	DoubleControl    "$CNTRLMNU_DISPLAY_DEC"     , "sizedown"
-	DoubleControl    "$CNTRLMNU_TOGGLE_MESSAGES" , "togglemessages"
-	DoubleControl    "$CNTRLMNU_ADJUST_GAMMA"    , "bumpgamma"
-
-	StaticText ""
-	DoubleControl    "$CNTRLMNU_OPEN_MAIN"       , "menu_main"
-	DoubleControl    "$CNTRLMNU_OPEN_HELP"       , "menu_help"
-	DoubleControl    "$CNTRLMNU_OPEN_SAVE"       , "menu_save"
-	DoubleControl    "$CNTRLMNU_OPEN_LOAD"       , "menu_load"
-	DoubleControl    "$CNTRLMNU_OPEN_OPTIONS"    , "menu_options"
-	DoubleControl    "$CNTRLMNU_OPEN_DISPLAY"    , "menu_display"
-	DoubleControl    "$CNTRLMNU_EXIT_TO_MAIN"    , "menu_endgame"
-	DoubleControl    "$CNTRLMNU_MENU_QUIT"       , "menu_quit"
-
-	StaticText ""
-	DoubleControl    "$CNTRLMNU_QUICKSAVE"       , "quicksave"
-	DoubleControl    "$CNTRLMNU_QUICKLOAD"       , "quickload"
-
-	StaticText ""
-	DoubleControl    "Toggle global fade"        , "fade_toggle"
-	DoubleControl    "Increase fade density"     , "fade_density_up"
-	DoubleControl    "Decrease fade density"     , "fade_density_down"
-	DoubleControl    "Increase fade gradient"    , "fade_gradient_up"
-	DoubleControl    "Decrease fade gradient"    , "fade_gradient_down"
 }
 
 OptionMenu "PopupControlsMenu" protected
