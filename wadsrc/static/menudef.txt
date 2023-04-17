@@ -3356,6 +3356,11 @@ OptionMenu QuickMenu protected
 	Option "$GMPLYMNU_ALLOWJUMP", "sv_jump", "JumpCrouchFreeLook"
 	StaticText "Gameplay option only intended", "Brown"
 	StaticText "for a specific session/playthrough.", "Brown"
+
+	StaticText " "
+	Option "$GLPREFMNU_CUSTOMPOST", gl_custompost, "OnOff"
+	StaticText "This option on can prevent some mods from running.", "Brown"
+	StaticText "Recommended to keep it on.", "Brown"
 }
 
 /*=======================================
