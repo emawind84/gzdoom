@@ -41,7 +41,7 @@ enum { VX, VZ, VY };
 #define MD3_MAGIC			0x33504449
 #define NUMVERTEXNORMALS	162
 #define MD3_MAX_SURFACES	32
-#define MIN_MODELS			4
+#define MIN_MODELS	4
 
 FTextureID LoadSkin(const char * path, const char * fn);
 
@@ -85,7 +85,7 @@ public:
 	virtual void DrawElements(int numIndices, size_t offset) = 0;
 
 private:
-	void RenderFrameModels(const FSpriteModelFrame *smf, const FState *curState, const int curTics, const PClass *ti, int translation);
+	void RenderFrameModels(const FSpriteModelFrame* smf, const FState* curState, const int curTics, const PClass* ti, int translation, AActor* actor);
 };
 
 struct FModelVertex
@@ -139,9 +139,9 @@ public:
 
 	virtual bool Load(const char * fn, int lumpnum, const char * buffer, int length) = 0;
 	virtual int FindFrame(const char * name) = 0;
-	virtual void RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame, int frame2, double inter, int translation=0) = 0;
+	virtual void RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame, int frame2, double inter, int translation, const FTextureID* surfaceskinids) = 0;
 	virtual void BuildVertexBuffer(FModelRenderer *renderer) = 0;
-	virtual void AddSkins(uint8_t *hitlist) = 0;
+	virtual void AddSkins(uint8_t *hitlist, const FTextureID* surfaceskinids) = 0;
 	virtual float getAspectFactor() { return 1.f; }
 
 	void SetVertexBuffer(FModelRenderer *renderer, IModelVertexBuffer *buffer) { mVBuf[renderer->GetType()] = buffer; }
@@ -266,9 +266,9 @@ public:
 
 	virtual bool Load(const char * fn, int lumpnum, const char * buffer, int length);
 	virtual int FindFrame(const char * name);
-	virtual void RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame, int frame2, double inter, int translation=0);
+	virtual void RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame, int frame2, double inter, int translation, const FTextureID* surfaceskinids);
 	virtual void LoadGeometry();
-	virtual void AddSkins(uint8_t *hitlist);
+	virtual void AddSkins(uint8_t *hitlist, const FTextureID* surfaceskinids);
 
 	void UnloadGeometry();
 	void BuildVertexBuffer(FModelRenderer *renderer);
@@ -352,10 +352,10 @@ public:
 
 	virtual bool Load(const char * fn, int lumpnum, const char * buffer, int length);
 	virtual int FindFrame(const char * name);
-	virtual void RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame, int frame2, double inter, int translation=0);
+	virtual void RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame, int frame2, double inter, int translation, const FTextureID* surfaceskinids);
 	void LoadGeometry();
 	void BuildVertexBuffer(FModelRenderer *renderer);
-	virtual void AddSkins(uint8_t *hitlist);
+	virtual void AddSkins(uint8_t *hitlist, const FTextureID* surfaceskinids);
 };
 
 struct FVoxelVertexHash
@@ -407,12 +407,13 @@ public:
 	bool Load(const char * fn, int lumpnum, const char * buffer, int length);
 	void Initialize();
 	virtual int FindFrame(const char * name);
-	virtual void RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame, int frame2, double inter, int translation=0);
-	virtual void AddSkins(uint8_t *hitlist);
+	virtual void RenderFrame(FModelRenderer *renderer, FTexture * skin, int frame, int frame2, double inter, int translation, const FTextureID*);
+	virtual void AddSkins(uint8_t *hitlist, const FTextureID* surfaceskinids);
 	FTextureID GetPaletteTexture() const { return mPalette; }
 	void BuildVertexBuffer(FModelRenderer *renderer);
 	float getAspectFactor();
 };
+
 
 
 
@@ -451,10 +452,9 @@ struct FSpriteModelFrame
 	float rotationCenterX, rotationCenterY, rotationCenterZ;
 	float rotationSpeed;
 	unsigned int flags;
-	const PClass * type;
+	const PClass * type;  // data from type, sprite and frame up to hashnext are used for hashing, no other fields should be added between type and hashnext
 	short sprite;
 	short frame;
-	FState * state;	// for later!
 	int hashnext;
 	float angleoffset;
 	// added pithoffset, rolloffset.
@@ -465,6 +465,9 @@ struct FSpriteModelFrame
 FSpriteModelFrame * FindModelFrame(const PClass * ti, int sprite, int frame, bool dropped);
 bool IsHUDModelForPlayerAvailable(player_t * player);
 void FlushModels();
+int ModelFrameHash(FSpriteModelFrame* smf);
+unsigned FindModel(const char* path, const char* modelfile);
+
 
 
 extern TDeletingArray<FModel*> Models;

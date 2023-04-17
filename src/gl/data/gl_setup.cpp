@@ -552,7 +552,7 @@ void gl_PreprocessLevel()
 	PrepareSegs();
 	PrepareSectorData();
 	InitVertexData();
-	TArray<int> checkmap(level.vertexes.Size());
+	TArray<int> checkmap(level.vertexes.Size(), true);
 	memset(checkmap.Data(), -1, sizeof(int)*level.vertexes.Size());
 	for(auto &sec : level.sectors) 
 	{

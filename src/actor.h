@@ -422,6 +422,12 @@ enum ActorFlag8
 	MF8_E4M6BOSS		= 0x00200000,	// MBF21 boss death.
 	MF8_MAP07BOSS1		= 0x00400000,	// MBF21 boss death.
 	MF8_MAP07BOSS2		= 0x00800000,	// MBF21 boss death.
+	MF8_AVOIDHAZARDS	= 0x01000000,	// MBF AI enhancement.
+	MF8_STAYONLIFT		= 0x02000000,	// MBF AI enhancement.
+	MF8_DONTFOLLOWPLAYERS	= 0x04000000,	// [inkoalawetrust] Friendly monster will not follow players.
+	MF8_SEEFRIENDLYMONSTERS	= 0X08000000,	// [inkoalawetrust] Hostile monster can see friendly monsters.
+	MF8_CROSSLINECHECK	= 0x10000000,	// [MC]Enables CanCrossLine virtual
+	MF8_MASTERNOSEE		= 0x20000000,	// Don't show object in first person if their master is the current camera.
 };
 
 // --- mobj.renderflags ---
@@ -645,6 +651,21 @@ struct FDropItem
 	FName Name;
 	int Probability;
 	int Amount;
+};
+
+class DActorModelData : public DObject
+{
+	DECLARE_CLASS(DActorModelData, DObject);
+public:
+	FName				modelDef;
+	bool				hasModel;
+	TArray<int>			modelIDs;
+	TArray<FTextureID>	skinIDs;
+	TArray<FTextureID>	surfaceSkinIDs;
+	TArray<int>			modelFrameGenerators;
+
+	DActorModelData() = default;
+	virtual void Serialize(FSerializer& arc) override;
 };
 
 const double MinVel = EQUAL_EPSILON;
@@ -1073,6 +1094,7 @@ public:
 	DVector2		SpriteOffset;
 	double			Speed;
 	double			FloatSpeed;
+	TObjPtr<DActorModelData*>		modelData;
 
 // interaction info
 	FBlockNode		*BlockNode;			// links in blocks (if needed)

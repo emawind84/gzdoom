@@ -59,6 +59,8 @@
 #include "g_levellocals.h"
 #include "vm.h"
 #include "actorinlines.h"
+#include "p_tags.h"
+#include "doomstat.h"
 
 #include "gi.h"
 
@@ -77,6 +79,8 @@ static FRandom pr_look3 ("IGotHooky");
 static FRandom pr_slook ("SlooK");
 static FRandom pr_dropoff ("Dropoff");
 static FRandom pr_defect ("Defect");
+static FRandom pr_avoidcrush("AvoidCrush");
+static FRandom pr_stayonlift("StayOnLift");
 
 static FRandom pr_skiptarget("SkipTarget");
 static FRandom pr_enemystrafe("EnemyStrafe");
@@ -422,13 +426,81 @@ int P_HitFriend(AActor * self)
 	return false;
 }
 
+/*
+ * P_IsOnLift
+ *
+ * killough 9/9/98:
+ *
+ * Returns true if the object is on a lift. Used for AI,
+ * since it may indicate the need for crowded conditions,
+ * or that a monster should stay on the lift for a while
+ * while it goes up or down.
+ */
+
+static bool P_IsOnLift(const AActor* actor)
+{
+	sector_t* sec = actor->Sector;
+
+	// Short-circuit: it's on a lift which is active.
+	DSectorEffect* e = sec->floordata;
+	if (e && e->IsKindOf(RUNTIME_CLASS(DPlat)))
+		return true;
+
+	// Check to see if it's in a sector which can be activated as a lift.
+	// This is a bit more restrictive than MBF as it only considers repeatable lifts moving from A->B->A and stop.
+	// Other types of movement are not easy to detect with the more complex map setup 
+	// and also do not really make sense in this context unless they are actually active
+	return !!(sec->MoreFlags & SECMF_LIFT);
+}
+
+/*
+ * P_IsUnderDamage
+ *
+ * killough 9/9/98:
+ *
+ * Returns nonzero if the object is under damage based on
+ * their current position. Returns 1 if the damage is moderate,
+ * -1 if it is serious. Used for AI.
+ */
+
+static int P_IsUnderDamage(AActor* actor)
+{
+	msecnode_t* seclist;
+	int dir = 0;
+	for (seclist = actor->touching_sectorlist; seclist; seclist = seclist->m_tnext)
+	{
+		DSectorEffect* e = seclist->m_sector->ceilingdata;
+		if (e && e->IsKindOf(RUNTIME_CLASS(DCeiling)))
+		{
+			auto cl = (DCeiling*)e;
+			if (cl->getCrush() > 0) // unlike MBF we need to consider non-crushing ceiling movers here.
+				dir |= cl->getDirection();
+		}
+		// Q: consider crushing 3D floors too?
+	}
+	return dir;
+}
+
+//
+// P_CheckTags
+// Checks if 2 sectors share the same primary activation tag
+//
+
+bool P_CheckTags(sector_t* sec1, sector_t* sec2)
+{
+	if (!tagManager.SectorHasTags(sec1) || !tagManager.SectorHasTags(sec2)) return sec1 == sec2;
+	if (tagManager.GetFirstSectorTag(sec1) == tagManager.GetFirstSectorTag(sec2)) return true;
+	// todo: check secondary tags as well.
+	return false;
+}
+
 //
 // P_Move
 // Move in the current direction,
 // returns false if the move is blocked.
 //
 
-int P_Move (AActor *actor)
+static int P_Move (AActor *actor)
 {
 
 	double tryx, tryy, deltax, deltay, origx, origy;
@@ -464,7 +536,7 @@ int P_Move (AActor *actor)
 	// and only if the target is immediately on the other side of the line.
 	AActor *target = actor->target;
 
-	if ((actor->flags6 & MF6_JUMPDOWN) && target &&
+	if ((actor->flags6 & MF6_JUMPDOWN) && target && !(actor->Level->flags3 & LEVEL3_NOJUMPDOWN) &&
 			!(target->IsFriend(actor)) &&
 			actor->Distance2D(target) < 144 &&
 			pr_dropoff() < 235)
@@ -661,6 +733,42 @@ int P_Move (AActor *actor)
 	return true; 
 }
 
+//
+// P_SmartMove
+//
+// killough 9/12/98: Same as P_Move, except smarter
+//
+
+int P_SmartMove(AActor* actor)
+{
+	AActor* target = actor->target;
+	int on_lift = false, dropoff = false, under_damage;
+	bool monster_avoid_hazards = (i_compatflags2 & COMPATF2_AVOID_HAZARDS) || (actor->flags8 & MF8_AVOIDHAZARDS);
+
+	  /* killough 9/12/98: Stay on a lift if target is on one */
+	on_lift = ((actor->flags8 & MF8_STAYONLIFT) || (i_compatflags2 & COMPATF2_STAYONLIFT))
+		&& target && target->health > 0 && P_IsOnLift(actor)
+		&& P_CheckTags(target->Sector, actor->Sector);
+
+	under_damage = monster_avoid_hazards && P_IsUnderDamage(actor) != 0;//e6y
+
+	if (!P_Move(actor))
+		return false;
+
+	// killough 9/9/98: avoid crushing ceilings or other damaging areas
+	if (
+		(on_lift && pr_stayonlift() < 230 &&      // Stay on lift
+			!P_IsOnLift(actor))
+		||
+		(monster_avoid_hazards && !under_damage &&	//e6y  // Get away from damage
+			(under_damage = P_IsUnderDamage(actor)) &&
+			(under_damage < 0 || pr_avoidcrush() < 200))
+		)
+		actor->movedir = DI_NODIR;    // avoid the area (most of the time anyway)
+
+	return true;
+}
+
 //=============================================================================
 //
 // TryWalk
@@ -677,7 +785,7 @@ int P_Move (AActor *actor)
 
 bool P_TryWalk (AActor *actor)
 {
-	if (!P_Move (actor))
+	if (!P_SmartMove (actor))
 	{
 		return false;
 	}
@@ -951,7 +1059,7 @@ void P_NewChaseDir(AActor * actor)
 	if (target->health > 0 && !actor->IsFriend(target) && target != actor->goal)
     {   // Live enemy target
 
-		if (actor->flags3 & MF3_AVOIDMELEE)
+		if ((actor->flags3 & MF3_AVOIDMELEE) || (actor->Level->flags3 & LEVEL3_AVOIDMELEE))
 		{
 			bool ismeleeattacker = false;
 			double dist = actor->Distance2D(target);
@@ -999,7 +1107,7 @@ void P_RandomChaseDir (AActor *actor)
 	int turndir;
 
 	// Friendly monsters like to head toward a player
-	if (actor->flags & MF_FRIENDLY)
+	if (actor->flags & MF_FRIENDLY && !(actor->flags8 & MF8_DONTFOLLOWPLAYERS))
 	{
 		AActor *player;
 		DVector2 delta;
@@ -1462,25 +1570,32 @@ AActor *LookForEnemiesInBlock (AActor *lookee, int index, void *extparam)
 			continue;
 
 		other = NULL;
-		if (link->flags & MF_FRIENDLY)
+		if (lookee->flags & MF_FRIENDLY)
 		{
-			if (!lookee->IsFriend(link))
+			if (link->flags & MF_FRIENDLY)
 			{
-				// This is somebody else's friend, so go after it
-				other = link;
-			}
-			else if (link->target != NULL && !(link->target->flags & MF_FRIENDLY))
-			{
-				other = link->target;
-				if (!(other->flags & MF_SHOOTABLE) ||
-					other->health <= 0 ||
-					(other->flags2 & MF2_DORMANT))
+				if (!lookee->IsFriend(link))
 				{
-					other = NULL;;
+					// This is somebody else's friend, so go after it
+					other = link;
+				}
+				else if (link->target != NULL && !(link->target->flags & MF_FRIENDLY))
+				{
+					other = link->target;
+					if (!(other->flags & MF_SHOOTABLE) ||
+						other->health <= 0 ||
+						(other->flags2 & MF2_DORMANT))
+					{
+						other = NULL;;
+					}
 				}
 			}
+			else
+			{
+				other = link;
+			}
 		}
-		else
+		else if (lookee->flags8 & MF8_SEEFRIENDLYMONSTERS && link->flags & MF_FRIENDLY)
 		{
 			other = link;
 		}
@@ -1524,7 +1639,7 @@ int P_LookForEnemies (AActor *actor, INTBOOL allaround, FLookExParams *params)
 {
 	AActor *other;
 
-	other = P_BlockmapSearch (actor, actor->friendlyseeblocks, LookForEnemiesInBlock, params);
+	other = P_BlockmapSearch(actor, actor->friendlyseeblocks, LookForEnemiesInBlock, params);
 
 	if (other != NULL)
 	{
@@ -1631,6 +1746,12 @@ int P_LookForPlayers (AActor *actor, INTBOOL allaround, FLookExParams *params)
 
 
 	}	// [SP] if false, and in deathmatch, intentional fall-through
+	else if (actor->flags8 & MF8_SEEFRIENDLYMONSTERS)
+	{
+		bool result = P_LookForEnemies (actor, allaround, params);
+
+		if (result) return true;
+	}
 
 	if (!(gameinfo.gametype & (GAME_DoomStrifeChex)) &&
 		!multiplayer &&
@@ -2129,7 +2250,7 @@ void A_Wander(AActor *self, int flags)
 		}
 	}
 
-	if ((--self->movecount < 0 && !(flags & CHF_NORANDOMTURN)) || (!P_Move(self) && !(flags & CHF_STOPIFBLOCKED)))
+	if ((--self->movecount < 0 && !(flags & CHF_NORANDOMTURN)) || (!P_SmartMove(self) && !(flags & CHF_STOPIFBLOCKED)))
 	{
 		P_RandomChaseDir(self);
 		self->movecount += 5;
@@ -2532,7 +2653,7 @@ void A_DoChase (AActor *actor, bool fastchase, FState *meleestate, FState *missi
 		FTextureID oldFloor = actor->floorpic;
 
 		// chase towards player
-		if ((--actor->movecount < 0 && !(flags & CHF_NORANDOMTURN)) || (!P_Move(actor) && !(flags & CHF_STOPIFBLOCKED)))
+		if ((--actor->movecount < 0 && !(flags & CHF_NORANDOMTURN)) || (!P_SmartMove(actor) && !(flags & CHF_STOPIFBLOCKED)))
 		{
 			P_NewChaseDir(actor);
 		}

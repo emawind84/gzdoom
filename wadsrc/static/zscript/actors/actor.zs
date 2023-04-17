@@ -494,6 +494,12 @@ class Actor : Thinker native
 		return true;
 	}
 
+	// Called by PIT_CheckLine to check if an actor can cross a line.
+	virtual bool CanCrossLine(Line crossing, Vector3 next)
+	{
+		return true;
+	}
+
 	// Called by revival/resurrection to check if one can resurrect the other.
 	// "other" can be null when not passive.
 	virtual bool CanResurrect(Actor other, bool passive)
@@ -1107,6 +1113,7 @@ class Actor : Thinker native
 	native void A_SetBlend(color color1, double alpha, int tics, color color2 = 0, double alpha2 = 0.);
 	deprecated("2.3", "Use 'b<FlagName> = [true/false]' instead") native void A_ChangeFlag(string flagname, bool value);
 	native void A_ChangeCountFlags(int kill = FLAG_NO_CHANGE, int item = FLAG_NO_CHANGE, int secret = FLAG_NO_CHANGE);
+	action native void A_ChangeModel(name modeldef, int modelindex = 0, string modelpath = "", name model = "", int skinindex = 0, string skinpath = "", name skin = "", int flags = 0, int generatorindex = -1);
 
 	void A_SetFriendly (bool set)
 	{

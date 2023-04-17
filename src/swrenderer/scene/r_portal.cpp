@@ -392,7 +392,7 @@ namespace swrenderer
 
 					if (dist1 + dist2 < distp + 1)
 					{
-						viewpoint.camera->renderflags |= RF_INVISIBLE;
+						viewpoint.camera->renderflags |= RF_MAYBEINVISIBLE;
 					}
 				}
 			}

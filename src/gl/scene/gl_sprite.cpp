@@ -705,6 +705,7 @@ void GLSprite::Process(AActor* thing, sector_t * sector, int thruportal, bool is
 {
 	sector_t rs;
 	sector_t * rendersector;
+	auto vp = r_viewpoint;
 
 	if (thing == nullptr)
 		return;
@@ -749,27 +750,35 @@ void GLSprite::Process(AActor* thing, sector_t * sector, int thruportal, bool is
 	DVector3 thingpos = thing->InterpolatedPosition(r_viewpoint.TicFrac);
 	if (thruportal == 1) thingpos += Displacements.getOffset(thing->Sector->PortalGroup, sector->PortalGroup);
 
-	// Some added checks if the camera actor is not supposed to be seen. It can happen that some portal setup has this actor in view in which case it may not be skipped here
-	if (thing == camera && !r_viewpoint.showviewer)
+	AActor *viewmaster = thing;
+	if ((thing->flags8 & MF8_MASTERNOSEE) && thing->master != nullptr)
 	{
-        DVector3 thingorigin = thing->Pos();
+		viewmaster = thing->master;
+	}
+
+	// Some added checks if the camera actor is not supposed to be seen. It can happen that some portal setup has this actor in view in which case it may not be skipped here
+	if (viewmaster == camera && !vp.showviewer)
+	{
+        DVector3 vieworigin = viewmaster->Pos();
 
         //If we get here, then we want to override the location of the camera actor
         if (s3d::Stereo3DMode::getCurrentMode().GetTeleportLocation(thingpos))
         {
-            thingorigin = thingpos;
+            vieworigin = thingpos;
 
             //Scale Doom Guy up a bit
             sprscale *= 1.2;
         }
 
-		if (thruportal == 1) thingorigin += Displacements.getOffset(thing->Sector->PortalGroup, sector->PortalGroup);
-		if (fabs(thingorigin.X - r_viewpoint.ActorPos.X) < 2 && fabs(thingorigin.Y - r_viewpoint.ActorPos.Y) < 2) return;
+		if (thruportal == 1) vieworigin += Displacements.getOffset(thing->Sector->PortalGroup, sector->PortalGroup);
+		if (fabs(vieworigin.X - r_viewpoint.ActorPos.X) < 2 && fabs(vieworigin.Y - r_viewpoint.ActorPos.Y) < 2) return;
 	}
 	// Thing is invisible if close to the camera.
-	if (thing->renderflags & RF_MAYBEINVISIBLE)
+	if (viewmaster->renderflags & RF_MAYBEINVISIBLE)
 	{
-		if (fabs(thingpos.X - r_viewpoint.CenterEyePos.X) < 32 && fabs(thingpos.Y - r_viewpoint.CenterEyePos.Y) < 32) return;
+		DVector3 viewpos = viewmaster->InterpolatedPosition(vp.TicFrac);
+		if (thruportal == 1) viewpos += Displacements.getOffset(viewmaster->Sector->PortalGroup, sector->PortalGroup);
+		if (fabs(viewpos.X - vp.CenterEyePos.X) < 32 && fabs(viewpos.Y - vp.CenterEyePos.Y) < 32) return;
 	}
 
 	// Too close to the camera. This doesn't look good if it is a sprite.
@@ -848,7 +857,7 @@ void GLSprite::Process(AActor* thing, sector_t * sector, int thruportal, bool is
 		z += fz;
 	}
 
-	modelframe = isPicnumOverride ? nullptr : FindModelFrame(thing->GetClass(), spritenum, thing->frame, !!(thing->flags & MF_DROPPED));
+	modelframe = isPicnumOverride ? nullptr : FindModelFrame(thing->modelData != nullptr ? thing->modelData->modelDef != NAME_None ? PClass::FindActor(thing->modelData->modelDef) : thing->GetClass() : thing->GetClass(), spritenum, thing->frame, !!(thing->flags & MF_DROPPED));
 
 	// don't bother drawing sprite shadows if this is a model (it will never look right)
 	if (modelframe && isSpriteShadow)
