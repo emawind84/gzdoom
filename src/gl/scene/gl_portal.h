@@ -179,6 +179,8 @@ public:
 	}
 
 	static bool isMirrored() { return !!((MirrorFlag ^ PlaneMirrorFlag) & 1); }
+	static bool GetMirrorFlag() { return MirrorFlag; }
+	static bool GetPlaneMirrorFlag() { return PlaneMirrorFlag; }
 
 	virtual int ClipSeg(seg_t *seg) { return PClip_Inside; }
 	virtual int ClipSubsector(subsector_t *sub) { return PClip_Inside; }

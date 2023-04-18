@@ -756,7 +756,7 @@ void GLSprite::Process(AActor* thing, sector_t * sector, int thruportal, bool is
 	}
 
 	// [Nash] filter visibility in mirrors
-	bool isInMirror = di->mCurrentPortal && (di->mCurrentPortal->mState->MirrorFlag > 0 || di->mCurrentPortal->mState->PlaneMirrorFlag > 0);
+	bool isInMirror = GLRenderer->mCurrentPortal && (GLRenderer->mCurrentPortal->GetMirrorFlag() > 0 || GLRenderer->mCurrentPortal->GetPlaneMirrorFlag() > 0);
 	if (thing->renderflags2 & RF2_INVISIBLEINMIRRORS && isInMirror)
 	{
 		return;
