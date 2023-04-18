@@ -72,6 +72,13 @@ CUSTOM_CVAR(Bool, menu_showexperimental, false, CVAR_ARCHIVE | CVAR_NOINITCALL)
 	M_SetMenu(NAME_Optionsmenu, -1);
 	Printf("Experimental menu has been %s\n", self ? "enabled" : "disabled");
 }
+CUSTOM_CVAR(Bool, menu_showdoublebindings, false, CVAR_NOINITCALL)
+{
+	DeinitMenus();
+	M_Init();
+	M_StartControlPanel (true);
+	M_SetMenu(NAME_CustomizeControls, -1);
+}
 
 void ClearSaveGames();
 
@@ -244,6 +251,7 @@ static bool CheckSkipOptionBlock(FScanner &sc)
 		if (sc.Compare("ReadThis")) filter |= gameinfo.drawreadthis;
 		else if (sc.Compare("Swapmenu")) filter |= gameinfo.swapmenu;
 		else if (sc.Compare("Experimental")) filter |= menu_showexperimental;
+		else if (sc.Compare("DoubleBindingMenu")) filter |= menu_showdoublebindings;
 		else if (sc.Compare("Windows"))
 		{
 			#ifdef _WIN32
