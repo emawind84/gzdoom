@@ -102,7 +102,6 @@
 #include "g_levellocals.h"
 #include "actorinlines.h"
 #include "gl/stereo3d/gl_stereo3d.h"
-#include <QzDoom/VrCommon.h>
 
 CVAR(Bool, cl_bloodsplats, true, CVAR_ARCHIVE)
 CVAR(Int, sv_smartaim, 0, CVAR_ARCHIVE | CVAR_SERVERINFO)
@@ -4502,7 +4501,6 @@ static ETraceStatus CheckForActor(FTraceResults &res, void *userdata)
 //
 //==========================================================================
 EXTERN_CVAR(Int, vr_control_scheme)
-extern bool weaponStabilised;
 
 AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 	DAngle pitch, int damage, FName damageType, PClassActor *pufftype, int flags, FTranslatedLineTarget*victim, int *actualdamage, 
@@ -4550,11 +4548,11 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
             long rightHanded = vr_control_scheme < 10;
 			rightHanded = (flags & LAF_ISOFFHAND) ? 1 - rightHanded : rightHanded;
             QzDoom_Vibrate(150, rightHanded ? 1 : 0, 0.8);
-			QzDoom_HapticEvent("fire_weapon", rightHanded ? 2 : 1, 100 * C_GetExternalHapticLevelValue("fire_weapon"), 0, 0);
+			VR_HapticEvent("fire_weapon", rightHanded ? 2 : 1, 100 * C_GetExternalHapticLevelValue("fire_weapon"), 0, 0);
 
             if (weaponStabilised) {
                 QzDoom_Vibrate(150, rightHanded ? 0 : 1, 0.6);
-				QzDoom_HapticEvent("fire_weapon", rightHanded ? 1 : 2, 100 * C_GetExternalHapticLevelValue("fire_weapon"), 0, 0);
+				VR_HapticEvent("fire_weapon", rightHanded ? 1 : 2, 100 * C_GetExternalHapticLevelValue("fire_weapon"), 0, 0);
 			}
         }
 	}

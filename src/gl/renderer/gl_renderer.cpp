@@ -74,7 +74,6 @@
 #include "gl/models/gl_models.h"
 #include "gl/dynlights/gl_lightbuffer.h"
 #include "r_videoscale.h"
-#include "QzDoom/VrCommon.h"
 
 EXTERN_CVAR(Int, screenblocks)
 
@@ -512,6 +511,13 @@ void FGLRenderer::GPUDropSync()
 
         syncBuff[VtxBuff] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     }
+}
+
+double GetTimeInMilliSeconds()
+{
+	struct timespec now;
+	clock_gettime( CLOCK_MONOTONIC, &now );
+	return ( now.tv_sec * 1e9 + now.tv_nsec ) * (double)(1e-6);
 }
 
 void FGLRenderer::GPUWaitSync()

@@ -52,6 +52,12 @@ extern EGameSpeed GameSpeed;
 extern	bool			devparm;		// DEBUG: launched with -devparm
 
 
+void VR_HapticEvent(const char* event, int position, int intensity, float angle, float yHeight );
+void QzDoom_GetScreenRes(uint32_t *width, uint32_t *height);
+void QzDoom_Vibrate(float duration, int channel, float intensity );
+
+
+extern bool weaponStabilised;
 
 // -----------------------------------------------------
 // Game Mode - identify IWAD as shareware, retail etc.
@@ -120,8 +126,7 @@ extern	EMenuState		menuactive; 	// Menu overlayed?
 extern	int				paused; 		// Game Pause?
 extern	bool			pauseext;
 
-extern "C" int getMenuState();
-
+int getMenuState();
 
 extern	bool			viewactive;
 

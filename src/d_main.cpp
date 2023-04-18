@@ -701,7 +701,7 @@ CVAR(Bool, vid_activeinbackground, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 //
 //==========================================================================
 
-extern "C" float QzDoom_GetFOV();
+float QzDoom_GetFOV();
 
 void D_Display ()
 {

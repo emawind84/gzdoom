@@ -60,7 +60,7 @@
 #include "gl/textures/gl_material.h"
 #include "gl/system/gl_cvars.h"
 
-#include <QzDoom/VrCommon.h>
+//#include <QzDoom/VrCommon.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -148,7 +148,7 @@ bool NoSDLGLVideo::NextMode (int *width, int *height, bool *letterbox)
 	return false;
 }
 
-extern "C" int QzDoom_GetRefresh();
+int TBXR_GetRefresh();
 
 DFrameBuffer *NoSDLGLVideo::CreateFrameBuffer (int width, int height, bool bgra, bool fullscreen, DFrameBuffer *old)
 {
@@ -171,7 +171,7 @@ DFrameBuffer *NoSDLGLVideo::CreateFrameBuffer (int width, int height, bool bgra,
 	NoSDLBaseFB *fb;
 
     Printf("HW buffers = %d\n", (int)gl_hardware_buffers);
-    fb = new OpenGLFrameBuffer(0, width, height, 32, QzDoom_GetRefresh(), true);
+    fb = new OpenGLFrameBuffer(0, width, height, 32, TBXR_GetRefresh(), true);
 
 	retry = 0;
 	return fb;
@@ -303,6 +303,8 @@ bool NoSDLGLFB::IsValid ()
 void NoSDLGLFB::SetVSync( bool vsync )
 {
 }
+
+int QzDoom_SetRefreshRate(int refreshRate);
 
 void NoSDLGLFB::NewRefreshRate ()
 {

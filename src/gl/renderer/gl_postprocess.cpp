@@ -66,8 +66,6 @@
 #include "gl/stereo3d/gl_stereo3d.h"
 #include "r_videoscale.h"
 
-#include <QzDoom/VrCommon.h>
-
 extern bool vid_hdr_active;
 
 //==========================================================================
@@ -792,6 +790,8 @@ void FGLRenderer::ApplyFXAA()
 // Copies the rendered screen to its final destination
 //
 //-----------------------------------------------------------------------------
+
+extern bool cinemamode;
 
 void FGLRenderer::Flush()
 {

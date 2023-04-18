@@ -130,7 +130,7 @@ int 			viewwindowy;
 int				viewwidth;
 int 			viewheight;
 
-extern "C" float QzDoom_GetFOV();
+float QzDoom_GetFOV();
 
 FRenderViewpoint::FRenderViewpoint()
 {
@@ -956,8 +956,8 @@ void R_SetupFrame (FRenderViewpoint &viewpoint, FViewWindow &viewwindow, AActor 
                 QzDoom_Vibrate(10, 0, (float)left); // left
                 QzDoom_Vibrate(10, 1, (float)right); // right
 
-                QzDoom_HapticEvent("rumble_front", 0, 100 * left * C_GetExternalHapticLevelValue("rumble"), 120, 0);
-                QzDoom_HapticEvent("rumble_back", 0, 100 * right * C_GetExternalHapticLevelValue("rumble"), 120, 0);
+                VR_HapticEvent("rumble_front", 0, 100 * left * C_GetExternalHapticLevelValue("rumble"), 120, 0);
+                VR_HapticEvent("rumble_back", 0, 100 * right * C_GetExternalHapticLevelValue("rumble"), 120, 0);
             }
 		}
 	}

@@ -45,7 +45,6 @@
 #include "video.h"
 #include "swrenderer/r_swrenderer.h"
 #include "version.h"
-#include <QzDoom/VrCommon.h>
 
 
 // MACROS ------------------------------------------------------------------

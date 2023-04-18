@@ -1373,19 +1373,19 @@ static int DamageMobj (AActor *target, AActor *inflictor, AActor *source, int da
             {
                 if (strcasestr(mod.GetChars(), "slime"))
                 {
-                    QzDoom_HapticEvent("slime", 0,
+                    VR_HapticEvent("slime", 0,
                                        100 * C_GetExternalHapticLevelValue("poison"),
                                        0, 0);
                 }
                 else if (strcasestr(mod.GetChars(), "fire"))
                 {
-                    QzDoom_HapticEvent("fire", 0,
+                    VR_HapticEvent("fire", 0,
                                        100 * C_GetExternalHapticLevelValue("poison"),
                                        0, 0);
                 }
                 else {
                     //No source - just use poison
-                    QzDoom_HapticEvent("poison", 0,
+                    VR_HapticEvent("poison", 0,
                                        100 * C_GetExternalHapticLevelValue("poison"),
                                        0, 0);
                 }
@@ -1400,29 +1400,29 @@ static int DamageMobj (AActor *target, AActor *inflictor, AActor *source, int da
                         strcasestr(mod.GetChars(), "slice") ||
                         strcasestr(mod.GetChars(), "claw"))
                 {
-                    QzDoom_HapticEvent("melee", 0,
+                    VR_HapticEvent("melee", 0,
                                        100 * C_GetExternalHapticLevelValue("damage_projectile"),
                                        attackAngle.Normalized360().Degrees, 0);
                 }
                 else if (strcasestr(mod.GetChars(), "burn") ||
                         strcasestr(mod.GetChars(), "flame"))
                 {
-                    QzDoom_HapticEvent("fireball", 0,
+                    VR_HapticEvent("fireball", 0,
                                        100 * C_GetExternalHapticLevelValue("damage_projectile"),
                                        attackAngle.Normalized360().Degrees, 0);
                 }
                 else  // Just pick on based on damage intensity
                 {
                     if (damage >= 20) {
-                        QzDoom_HapticEvent("fireball", 0,
+                        VR_HapticEvent("fireball", 0,
                                            100 * C_GetExternalHapticLevelValue("damage_projectile"),
                                            attackAngle.Normalized360().Degrees, 0);
                     } else if (damage >= 10) {
-                        QzDoom_HapticEvent("shotgun", 0,
+                        VR_HapticEvent("shotgun", 0,
                                            100 * C_GetExternalHapticLevelValue("damage_projectile"),
                                            attackAngle.Normalized360().Degrees, 0);
                     } else {
-                        QzDoom_HapticEvent("bullet", 0,
+                        VR_HapticEvent("bullet", 0,
                                            100 * C_GetExternalHapticLevelValue("damage_projectile"),
                                            attackAngle.Normalized360().Degrees, 0);
                     }
@@ -1844,7 +1844,7 @@ void P_PoisonDamage (player_t *player, AActor *source, int damage, bool playPain
 		QzDoom_Vibrate(500, 0, level); // left
 		QzDoom_Vibrate(500, 1, level); // right
 
-		QzDoom_HapticEvent(player->poisontype, 0, 100 * C_GetExternalHapticLevelValue("poison"), 0, 0);
+		VR_HapticEvent(player->poisontype, 0, 100 * C_GetExternalHapticLevelValue("poison"), 0, 0);
 	}
 
 	if (player->health < 50 && !deathmatch)

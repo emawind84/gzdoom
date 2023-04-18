@@ -31,22 +31,17 @@
 #include "gl_stereo3d.h"
 #include "gl_stereo_leftright.h"
 
-extern "C" {
-#include <VrApi.h>
-#include <VrApi_Types.h>
-#include <VrApi_Helpers.h>
-}
 
 /* stereoscopic 3D API */
 namespace s3d {
 
-class OculusQuestEyePose : public ShiftedEyePose
+class OpenXRDeviceEyePose : public ShiftedEyePose
 {
 public:
-	friend class OculusQuestMode;
+	friend class OpenXRDeviceMode;
 
-	OculusQuestEyePose(int eye);
-	virtual ~OculusQuestEyePose() override;
+	OpenXRDeviceEyePose(int eye);
+	virtual ~OpenXRDeviceEyePose() override;
 	virtual VSMatrix GetProjection(FLOATTYPE fov, FLOATTYPE aspectRatio, FLOATTYPE fovRatio) const override;
 	void GetViewShift(FLOATTYPE yaw, FLOATTYPE outViewShift[3]) const override;
 	virtual void AdjustHud() const override;
@@ -63,13 +58,13 @@ protected:
 	mutable VSMatrix projection;
 };
 
-class OculusQuestMode : public Stereo3DMode
+class OpenXRDeviceMode : public Stereo3DMode
 {
 public:
-	friend class OculusQuestEyePose;
+	friend class OpenXRDeviceEyePose;
 	static const Stereo3DMode& getInstance(); // Might return Mono mode, if no HMD available
 
-	virtual ~OculusQuestMode() override;
+	virtual ~OpenXRDeviceMode() override;
 	virtual void SetUp() const override; // called immediately before rendering a scene frame
 	virtual void TearDown() const override; // called immediately after rendering a scene frame
 	virtual void Present() const override;
@@ -84,15 +79,16 @@ public:
 	virtual bool GetTeleportLocation(DVector3 &out) const override;
 
 protected:
-	OculusQuestMode();
+	OpenXRDeviceMode();
 
 	void updateHmdPose() const;
 
-	OculusQuestEyePose leftEyeView;
-	OculusQuestEyePose rightEyeView;
+	OpenXRDeviceEyePose leftEyeView;
+	OpenXRDeviceEyePose rightEyeView;
 
 	mutable int cachedScreenBlocks;
-	mutable ovrTracking2 tracking;
+
+	mutable bool isSetup;
 
 private:
 	typedef Stereo3DMode super;

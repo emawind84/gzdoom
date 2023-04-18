@@ -50,8 +50,6 @@
 #include "gl/renderer/gl_quaddrawer.h"
 #include "gl/stereo3d/gl_stereo3d.h"
 
-#include <QzDoom/VrCommon.h>
-
 EXTERN_CVAR (Bool, r_drawplayersprites)
 EXTERN_CVAR(Float, transsouls)
 EXTERN_CVAR(Int, gl_fuzztype)

@@ -655,7 +655,7 @@ static inline int joyint(double val)
 }
 
 
-extern "C" void VR_GetMove( float *joy_forward, float *joy_side, float *hmd_forward, float *hmd_side, float *up, float *yaw, float *pitch, float *roll );
+void VR_GetMove( float *joy_forward, float *joy_side, float *hmd_forward, float *hmd_side, float *up, float *yaw, float *pitch, float *roll );
 
 static int mAngleFromRadians(double radians)
 {

@@ -2,6 +2,9 @@
 #include "v_video.h"
 #include "glvideo.h"
 
+void QzDoom_GetScreenRes(uint32_t *width, uint32_t *height);
+void QzDoom_Vibrate(float duration, int channel, float intensity );
+
 class NoSDLFB : public NoSDLBaseFB
 {
 	typedef NoSDLBaseFB Super;
