@@ -2813,7 +2813,7 @@ void AActor::FallAndSink(double grav, double oldfloorz)
 				}
 				if (Vel.Z < sinkspeed)
 				{ // Dropping too fast, so slow down toward sinkspeed.
-					Vel.Z -= max(sinkspeed * 2, -8.);
+					Vel.Z -= MAX(sinkspeed * 2, -8.);
 					if (Vel.Z > sinkspeed)
 					{
 						Vel.Z = sinkspeed;
@@ -2821,7 +2821,7 @@ void AActor::FallAndSink(double grav, double oldfloorz)
 				}
 				else if (Vel.Z > sinkspeed)
 				{ // Dropping too slow/going up, so trend toward sinkspeed.
-					Vel.Z = startvelz + max(sinkspeed / 3, -8.);
+					Vel.Z = startvelz + MAX(sinkspeed / 3, -8.);
 					if (Vel.Z < sinkspeed)
 					{
 						Vel.Z = sinkspeed;
