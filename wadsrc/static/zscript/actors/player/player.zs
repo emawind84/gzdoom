@@ -2137,9 +2137,11 @@ class PlayerPawn : Actor
 		{
 			return player.ReadyWeapon;
 		}
+		Console.Printf("### 111");
 		let ReadyWeapon = player.ReadyWeapon;
 		if (ReadyWeapon != null)
 		{
+			Console.Printf("### 222");
 			for (i = 0; i < Size; i++)
 			{
 				let weapontype = player.weapons.GetWeapon(slot, i);
@@ -2155,6 +2157,7 @@ class PlayerPawn : Actor
 
 						if (weap != null)
 						{
+							Console.Printf("### 444");
 							if (!checkammo || weap.CheckAmmo(Weapon.EitherFire, false))
 							{
 								return weap;
@@ -2171,6 +2174,7 @@ class PlayerPawn : Actor
 
 			if (weap != null)
 			{
+				Console.Printf("### 333");
 				if (!checkammo || weap.CheckAmmo(Weapon.EitherFire, false))
 				{
 					return weap;

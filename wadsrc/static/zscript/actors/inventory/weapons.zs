@@ -921,6 +921,8 @@ class Weapon : StateProvider
 		int enough, enoughmask;
 		int lAmmoUse1;
 
+		Console.Printf("picknewweapon #333");
+
 		if (sv_infiniteammo || (Owner.FindInventory ('PowerInfiniteAmmo', true) != null))
 		{
 			return true;
@@ -930,6 +932,7 @@ class Weapon : StateProvider
 			bool gotSome = CheckAmmo (PrimaryFire, false) || CheckAmmo (AltFire, false);
 			if (!gotSome && autoSwitch)
 			{
+				Console.Printf("picknewweapon #111");
 				PlayerPawn(Owner).PickNewWeapon (null);
 			}
 			return gotSome;
@@ -978,6 +981,7 @@ class Weapon : StateProvider
 		// out of ammo, pick a weapon to change to
 		if (autoSwitch)
 		{
+			Console.Printf("picknewweapon #222");
 			PlayerPawn(Owner).PickNewWeapon (null);
 		}
 		return false;
