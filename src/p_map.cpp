@@ -106,6 +106,7 @@
 CVAR(Bool, cl_bloodsplats, true, CVAR_ARCHIVE)
 CVAR(Int, sv_smartaim, 0, CVAR_ARCHIVE | CVAR_SERVERINFO)
 CVAR(Bool, cl_doautoaim, false, CVAR_ARCHIVE)
+CVAR(Int, use_mode, 0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
 
 EXTERN_CVAR (Bool, use_action_spawn_yzoffset)
 
@@ -5822,16 +5823,44 @@ bool P_NoWayTraverse(AActor *usething, const DVector2 &start, const DVector2 &en
 void P_UseLines(player_t *player)
 {
 	bool foundline = false;
-
+	bool used = false;
 	// If the player is transitioning a portal, use the group that is at its vertical center.
 	DVector2 start = player->mo->GetPortalTransition(player->mo->Height / 2);
 	// [NS] Now queries the Player's UseRange.
 	DVector2 end = start + player->mo->Angles.Yaw.ToVector(player->mo->FloatVar(NAME_UseRange));
 
+	if (use_mode == 0 || use_mode == 2)
+	{
+		used |= P_UseTraverse(player->mo, start, end, foundline);
+	}
+
+	if (player->mo->OverrideAttackPosDir && use_mode > 0)
+	{
+		DAngle aimAngle;
+		float useRange;
+		if (!used)
+		{
+			start = player->mo->AttackPos.XY();
+			aimAngle = player->mo->AttackAngle + 90;
+			useRange = player->ReadyWeapon != nullptr ? player->ReadyWeapon->FloatVar(NAME_UseRange) : 48;
+			end = start + aimAngle.ToVector(useRange);
+			used = P_UseTraverse(player->mo, start, end, foundline);
+		}
+
+		if (!used)
+		{
+			start = player->mo->OffhandPos.XY();
+			aimAngle = player->mo->OffhandAngle + 90;
+			useRange = player->OffhandWeapon != nullptr ? player->OffhandWeapon->FloatVar(NAME_UseRange) : 48;
+			end = start + aimAngle.ToVector(useRange);
+			used = P_UseTraverse(player->mo, start, end, foundline);
+		}
+	}
+
 	// old code:
 	// This added test makes the "oof" sound work on 2s lines -- killough:
 
-	if (!P_UseTraverse(player->mo, start, end, foundline))
+	if (!used)
 	{ // [RH] Give sector a chance to eat the use
 		sector_t *sec = player->mo->Sector;
 		int spac = SECSPAC_Use;
@@ -5852,22 +5881,9 @@ void P_UseLines(player_t *player)
 //
 //==========================================================================
 
-int P_UsePuzzleItem(AActor *PuzzleItemUser, int PuzzleItemType)
+int P_UsePuzzleItem(AActor *PuzzleItemUser, int PuzzleItemType, double x1, double y1, double x2, double y2)
 {
-	DVector2 start;
-	DVector2 end;
-	double usedist;
-
-	// [NS] If it's a Player, get their UseRange.
-	if (PuzzleItemUser->player)
-		usedist = PuzzleItemUser->player->mo->FloatVar(NAME_UseRange);
-	else
-		usedist = USERANGE;
-
-	start = PuzzleItemUser->GetPortalTransition(PuzzleItemUser->Height / 2);
-	end = PuzzleItemUser->Angles.Yaw.ToVector(usedist);
-
-	FPathTraverse it(start.X, start.Y, end.X, end.Y, PT_DELTA | PT_ADDLINES | PT_ADDTHINGS);
+	FPathTraverse it(x1, y1, x2, y2, PT_DELTA | PT_ADDLINES | PT_ADDTHINGS);
 	intercept_t *in;
 
 	while ((in = it.Next()))
@@ -5915,6 +5931,54 @@ int P_UsePuzzleItem(AActor *PuzzleItemUser, int PuzzleItemType)
 		return true;
 	}
 	return false;
+}
+
+int P_UsePuzzleItem(AActor *PuzzleItemUser, int PuzzleItemType)
+{
+	DVector2 start;
+	DVector2 end;
+	double usedist;
+	bool used = false;
+
+	// [NS] If it's a Player, get their UseRange.
+	player_t *player = PuzzleItemUser->player;
+	if (player != nullptr)
+		usedist = player->mo->FloatVar(NAME_UseRange);
+	else
+		usedist = USERANGE;
+
+	start = PuzzleItemUser->GetPortalTransition(PuzzleItemUser->Height / 2);
+	end = PuzzleItemUser->Angles.Yaw.ToVector(usedist);
+
+	if (use_mode == 0 || use_mode == 2)
+	{
+		used |= P_UsePuzzleItem(PuzzleItemUser, PuzzleItemType, start.X, start.Y, end.X, end.Y);
+	}
+
+	if (player != nullptr && player->mo->OverrideAttackPosDir && use_mode > 0)
+	{
+		DAngle aimAngle;
+		float useRange;
+		if (!used)
+		{
+			start = player->mo->AttackPos.XY();
+			aimAngle = player->mo->AttackAngle + 90;
+			useRange = player->ReadyWeapon != nullptr ? player->ReadyWeapon->FloatVar(NAME_UseRange) : 48;
+			end = aimAngle.ToVector(useRange);
+			used |= P_UsePuzzleItem(PuzzleItemUser, PuzzleItemType, start.X, start.Y, end.X, end.Y);
+		}
+
+		if (!used)
+		{
+			start = player->mo->OffhandPos.XY();
+			aimAngle = player->mo->OffhandAngle + 90;
+			useRange = player->OffhandWeapon != nullptr ? player->OffhandWeapon->FloatVar(NAME_UseRange) : 48;
+			end = aimAngle.ToVector(useRange);
+			used |= P_UsePuzzleItem(PuzzleItemUser, PuzzleItemType, start.X, start.Y, end.X, end.Y);
+		}
+	}
+	
+	return used;
 }
 
 //==========================================================================

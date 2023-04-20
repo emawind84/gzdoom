@@ -32,6 +32,7 @@ class Weapon : StateProvider
 	int Crosshair;							// 0 to use player's crosshair
 	bool GivenAsMorphWeapon;
 	bool bAltFire;							// Set when this weapon's alternate fire is used.
+	double UseRange;						// [NS] Distance at which player can +use
 	readonly bool bDehAmmo;					// Uses Doom's original amount of ammo for the respective attack functions so that old DEHACKED patches work as intended.
 											// AmmoUse1 will be set to the first attack's ammo use so that checking for empty weapons still works
 	meta int SlotNumber;
@@ -60,6 +61,7 @@ class Weapon : StateProvider
 	property SlotNumber: SlotNumber;
 	property SlotPriority: SlotPriority;
 	property LookScale: LookScale;
+	property UseRange: UseRange;
 
 	flagdef NoAutoFire: WeaponFlags, 0;			// weapon does not autofire
 	flagdef ReadySndHalf: WeaponFlags, 1;		// ready sound is played ~1/2 the time
@@ -101,6 +103,7 @@ class Weapon : StateProvider
 		Weapon.BobRangeY 1.0;
 		Weapon.SlotNumber -1;
 		Weapon.SlotPriority 32767;
+		Weapon.UseRange 48;
 		+WEAPONSPAWN
 		DefaultStateUsage SUF_ACTOR|SUF_OVERLAY|SUF_WEAPON;
 	}

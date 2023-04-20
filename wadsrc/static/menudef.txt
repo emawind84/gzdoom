@@ -3465,6 +3465,13 @@ OptionMenu "QuestZDoomCredits"
 	StaticText	"CLOSED BETA TESTERS!"
 }
 
+OptionValue "UseModes"
+{
+	0, "Head"
+	1, "Hands"
+	2, "Head and hands"
+}
+
 OptionMenu "ExperimentalMenu"
 {
 	Title "Experimental"
@@ -3488,4 +3495,7 @@ OptionMenu "ExperimentalMenu"
 	CommandInput "Type in console"
 	StaticText "Use the character input grid to type in console.", "Brown"
 	StaticText "We can finally type in console without a keyboard!", "Brown"
+	StaticText " "
+	Option "Activate (use) mode", "use_mode", UseModes
+	StaticText "Choose how to activate objects", "Brown"
 }
