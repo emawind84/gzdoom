@@ -87,6 +87,16 @@ CUSTOM_CVAR(Int, con_buffersize, -1, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 	if (self >= 0 && self < 128) self = 128;
 }
 
+double NotifyFontScale = 1;
+
+DEFINE_GLOBAL(NotifyFontScale)
+
+void C_SetNotifyFontScale(double scale)
+{
+	NotifyFontScale = scale;
+}
+
+
 FConsoleBuffer *conbuffer;
 
 static void C_TabComplete (bool goForward);
