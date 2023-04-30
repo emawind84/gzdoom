@@ -192,6 +192,8 @@ enum DrawTextureTags
 
 	DTA_CleanTop,			// Like DTA_Clean but aligns to the top of the screen instead of the center.
 
+	DTA_ScaleX,
+	DTA_ScaleY,
 };
 
 class Shape2DTransform : Object native

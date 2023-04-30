@@ -428,6 +428,8 @@ bool DCanvas::SetTextureParms(DrawParms *parms, FTexture *img, double xx, double
 		{
 			parms->destheight = img->GetScaledHeightDouble();
 		}
+		parms->destwidth *= parms->patchscalex;
+		parms->destheight *= parms->patchscaley;
 
 		switch (parms->cleanmode)
 		{
@@ -654,6 +656,7 @@ bool DCanvas::ParseDrawTextureTags(FTexture *img, double x, double y, uint32_t t
 	parms->monospace = EMonospacing::MOff;
 	parms->spacing = 0;
 	parms->fsscalemode = -1;
+	parms->patchscalex = parms->patchscaley = 1;
 
 	// Parse the tag list for attributes. (For floating point attributes,
 	// consider that the C ABI dictates that all floats be promoted to
@@ -987,6 +990,14 @@ bool DCanvas::ParseDrawTextureTags(FTexture *img, double x, double y, uint32_t t
 			{
 				//parms->shadowAlpha = 0;
 			}
+			break;
+
+		case DTA_ScaleX:
+			parms->patchscalex = ListGetDouble(tags);
+			break;
+
+		case DTA_ScaleY:
+			parms->patchscaley = ListGetDouble(tags);
 			break;
 
 		case DTA_Masked:

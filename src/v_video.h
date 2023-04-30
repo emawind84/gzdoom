@@ -164,6 +164,8 @@ enum
 
 	DTA_CleanTop,			// Like DTA_Clean but aligns to the top of the screen instead of the center.
 
+	DTA_ScaleX,
+	DTA_ScaleY,
 };
 
 enum EMonospacing : int
@@ -230,6 +232,7 @@ struct DrawParms
 	bool virtBottom;
 	double srcx, srcy;
 	double srcwidth, srcheight;
+	double patchscalex, patchscaley;
 	bool burn;
 	int8_t fsscalemode;
 };
