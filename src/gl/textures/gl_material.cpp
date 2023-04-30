@@ -422,23 +422,13 @@ FMaterial::FMaterial(FTexture * tx, bool expanded)
 			mTextureLayers.Push({ tx->gl_info.Brightmap, false });
 			mLayerFlags |= TEXF_Brightmap;
 		}
-		else	
-		{ 
-			ValidateSysTexture(TexMan.ByIndex(1), expanded);
-			mTextureLayers.Push({ TexMan.ByIndex(1), false });
-		}
-		if (tx->gl_info.Detailmap)
+		else if (tx->gl_info.Detailmap)
 		{
 			ValidateSysTexture(tx->gl_info.Detailmap, expanded);
 			mTextureLayers.Push({ tx->gl_info.Detailmap, false });
 			mLayerFlags |= TEXF_Detailmap;
 		}
-		else
-		{
-			ValidateSysTexture(TexMan.ByIndex(1), expanded);
-			mTextureLayers.Push({ TexMan.ByIndex(1), false });
-		}
-		if (tx->gl_info.Glowmap)
+		else if (tx->gl_info.Glowmap)
 		{
 			ValidateSysTexture(tx->gl_info.Glowmap, expanded);
 			mTextureLayers.Push({ tx->gl_info.Glowmap, false });
