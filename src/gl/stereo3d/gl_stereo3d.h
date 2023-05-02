@@ -63,6 +63,7 @@ public:
 
 	static int flatVerticesPerEye;
 	static int wallVerticesPerEye;
+	static int portalsPerEye;
 };
 
 

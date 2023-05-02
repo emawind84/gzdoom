@@ -56,6 +56,7 @@
 #include "gl/stereo3d/scoped_color_mask.h"
 #include "gl/textures/gl_material.h"
 #include "gl/utility/gl_templates.h"
+#include "gl/stereo3d/gl_stereo3d.h"
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -182,11 +183,12 @@ void GLPortal::DrawPortalStencil(int pass)
 
 bool GLPortal::Start(bool usestencil, bool doquery)
 {
-	if (rendered_portals >= gl_max_portals && !this->IsSky())
+	if (s3d::EyePose::portalsPerEye >= gl_max_portals && !this->IsSky())
 	{
 		return false;
 	}
 	rendered_portals++;
+	s3d::EyePose::portalsPerEye++;
 	if (usestencil)
 	{
 		if (!gl_portals) 
