@@ -47,6 +47,9 @@
 #include "gl/utility/gl_clock.h"
 #include "gl/utility/gl_templates.h"
 #include "gl/renderer/gl_quaddrawer.h"
+#include "gl/stereo3d/gl_stereo3d.h"
+
+EXTERN_CVAR(Int, gl_max_vertices)
 
 //==========================================================================
 //
@@ -199,6 +202,11 @@ void GLWall::RenderWall(int textured)
 {
 	gl_RenderState.Apply();
 	gl_RenderState.ApplyLightIndex(dynlightindex);
+
+	if (s3d::EyePose::wallVerticesPerEye >= gl_max_vertices) {
+		return;
+	}
+
 	if (gl.buffermethod != BM_DEFERRED)
 	{
 		MakeVertices(!!(textured&RWF_NOSPLIT));
@@ -214,10 +222,12 @@ void GLWall::RenderWall(int textured)
 		qd.Set(3, glseg.x2, zbottom[1], glseg.y2, tcs[LORGT].u, tcs[LORGT].v);
 		qd.Render(GL_TRIANGLE_FAN);
 		vertexcount += 4;
+		s3d::EyePose::wallVerticesPerEye += 4;
 		return;
 	}
 	GLRenderer->mVBO->RenderArray(GL_TRIANGLE_FAN, vertindex, vertcount);
 	vertexcount += vertcount;
+	s3d::EyePose::wallVerticesPerEye += vertcount;
 }
 
 //==========================================================================

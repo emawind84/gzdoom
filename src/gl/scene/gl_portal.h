@@ -344,7 +344,7 @@ protected:
 	virtual ~GLSectorStackPortal();
 	virtual void DrawContents();
 	virtual void * GetSource() const { return origin; }
-	virtual bool IsSky() { return true; }	// although this isn't a real sky it can be handled as one.
+	virtual bool IsSky() { return false; }	// although this isn't a real sky it can be handled as one.
 	virtual const char *GetName();
 	FPortal *origin;
 

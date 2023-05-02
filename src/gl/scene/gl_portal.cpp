@@ -67,6 +67,8 @@
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
+CVAR(Int, gl_max_portals, 20, CVAR_ARCHIVE);
+
 EXTERN_CVAR(Bool, gl_portals)
 EXTERN_CVAR(Bool, gl_noquery)
 EXTERN_CVAR(Int, r_mirror_recursions)
@@ -180,6 +182,10 @@ void GLPortal::DrawPortalStencil(int pass)
 
 bool GLPortal::Start(bool usestencil, bool doquery)
 {
+	if (rendered_portals >= gl_max_portals && !this->IsSky())
+	{
+		return false;
+	}
 	rendered_portals++;
 	if (usestencil)
 	{

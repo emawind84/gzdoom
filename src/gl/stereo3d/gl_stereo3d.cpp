@@ -33,6 +33,9 @@
 
 namespace s3d {
 
+// Initialize static member
+int EyePose::wallVerticesPerEye = 0;
+int EyePose::flatVerticesPerEye = 0;
 
 /* virtual */
 VSMatrix EyePose::GetProjection(float fov, float aspectRatio, float fovRatio) const
@@ -62,6 +65,11 @@ void EyePose::GetViewShift(float yaw, float outViewShift[3]) const
 	outViewShift[2] = 0;
 }
 
+void EyePose::SetUp() const
+{
+	EyePose::flatVerticesPerEye = 0;
+	EyePose::wallVerticesPerEye = 0;
+}
 
 Stereo3DMode::Stereo3DMode()
 {

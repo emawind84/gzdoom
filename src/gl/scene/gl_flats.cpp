@@ -55,10 +55,14 @@
 #include "gl/utility/gl_clock.h"
 #include "gl/utility/gl_templates.h"
 #include "gl/renderer/gl_quaddrawer.h"
+#include "gl/stereo3d/gl_stereo3d.h"
 
 #ifdef _DEBUG
 CVAR(Int, gl_breaksec, -1, 0)
 #endif
+
+CVAR(Int, gl_max_vertices, 40000, CVAR_ARCHIVE)
+
 //==========================================================================
 //
 // Sets the texture matrix according to the plane's texture positioning
@@ -166,6 +170,11 @@ void GLFlat::SetupSubsectorLights(int pass, subsector_t * sub, int *dli)
 
 void GLFlat::DrawSubsector(subsector_t * sub)
 {
+	if (s3d::EyePose::flatVerticesPerEye + sub->numlines >= gl_max_vertices)
+	{
+		return;
+	}
+	
 	if (gl.buffermethod != BM_DEFERRED)
 	{
 		FFlatVertex *ptr = GLRenderer->mVBO->GetBuffer();
@@ -204,6 +213,7 @@ void GLFlat::DrawSubsector(subsector_t * sub)
 		}
 	}
 
+	s3d::EyePose::flatVerticesPerEye += sub->numlines;
 	flatvertices += sub->numlines;
 	flatprimitives++;
 }
@@ -262,6 +272,10 @@ void GLFlat::DrawSubsectors(int pass, bool processlights, bool istrans)
 		for (int i=0; i<sector->subsectorcount; i++)
 		{
 			subsector_t * sub = sector->subsectors[i];
+			if (s3d::EyePose::flatVerticesPerEye + sub->numlines >= gl_max_vertices)
+			{
+				continue;
+			}
 				
 			if (gl_drawinfo->ss_renderflags[sub->Index()]&renderflags || istrans)
 			{
@@ -269,6 +283,7 @@ void GLFlat::DrawSubsectors(int pass, bool processlights, bool istrans)
 				drawcalls.Clock();
 				glDrawArrays(GL_TRIANGLE_FAN, index, sub->numlines);
 				drawcalls.Unclock();
+				s3d::EyePose::flatVerticesPerEye += sub->numlines;
 				flatvertices += sub->numlines;
 				flatprimitives++;
 			}
@@ -318,7 +333,11 @@ void GLFlat::DrawSubsectors(int pass, bool processlights, bool istrans)
 
 void GLFlat::DrawSkyboxSector(int pass, bool processlights)
 {
-
+	if (s3d::EyePose::flatVerticesPerEye + 4 >= gl_max_vertices)
+	{
+		return;
+	}
+	
 	float minx = FLT_MAX, miny = FLT_MAX;
 	float maxx = -FLT_MAX, maxy = -FLT_MAX;
 
@@ -351,6 +370,7 @@ void GLFlat::DrawSkyboxSector(int pass, bool processlights)
 	qd.Set(3, maxx, z, miny, uvals[(rot + 3) & 3], vvals[(rot + 3) & 3]);
 	qd.Render(GL_TRIANGLE_FAN);
 
+	s3d::EyePose::flatVerticesPerEye += 4;
 	flatvertices += 4;
 	flatprimitives++;
 }
