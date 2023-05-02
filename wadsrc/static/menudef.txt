@@ -3138,7 +3138,7 @@ OptionMenu "OpenGLOptions" protected
 	Option "$GLPREFMNU_FOGMODE",				gl_fogmode,						"FogMode"
 	Option "$GLPREFMNU_FOGFORCEFULLBRIGHT",		gl_brightfog,					"YesNo"
 	Slider "$GLPREFMNU_WPNLIGHTSTR",			gl_weaponlight,					0,32, 2
-	Option "$GLPREFMNU_PLANEREFLECTION",	    gl_plane_reflection,			"OnOff"
+	Option "$GLPREFMNU_PLANEREFLECTION",		gl_plane_reflection,			"OnOff"
 	Option "$GLPREFMNU_ENV",					gl_enhanced_nightvision,		"OnOff"
 	Option "$GLPREFMNU_ENVSTEALTH",				gl_enhanced_nv_stealth,			"EnhancedStealth"
 	Option "$GLPREFMNU_SPRCLIP",				gl_spriteclip,					"SpriteclipModes"
@@ -3159,7 +3159,7 @@ OptionMenu "OpenGLOptions" protected
 	Slider "Global fade gradient",				gl_global_fade_gradient, 0.1, 2, 0.1, 1
 	ColorPicker "Global fade color",			gl_global_fade_color
 	StaticText " "
-	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar gl_lightmode gl_bandedswlight gl_fogmode gl_brightfog gl_weaponlight gl_enhanced_nightvision gl_enhanced_nv_stealth gl_spriteclip gl_sprite_blend gl_fuzztype gl_billboard_mode gl_billboard_faces_camera gl_particles_style gl_render_precise gl_skydome gl_menu_blur gl_multisample gl_global_fade gl_global_fade_density gl_global_fade_gradient gl_global_fade_color"
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar gl_lightmode gl_bandedswlight gl_fogmode gl_brightfog gl_weaponlight gl_plane_reflection gl_enhanced_nightvision gl_enhanced_nv_stealth gl_spriteclip gl_sprite_blend gl_fuzztype gl_billboard_mode gl_billboard_faces_camera gl_particles_style gl_render_precise gl_skydome gl_menu_blur gl_multisample gl_global_fade gl_global_fade_density gl_global_fade_gradient gl_global_fade_color"
 	StaticText " "
 	StaticText "Advanced Options", gold
 	ScaleSlider "$DSPLYMNU_SPRITECULL",			gl_sprite_distance_cull, 0.0, 8000.0, 100.0, "Culling disabled"
