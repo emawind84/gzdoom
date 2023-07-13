@@ -1338,7 +1338,7 @@ class PlayerPawn : Actor
 			Speed = Default.Speed;
 		}
 
-		if (abs(vel.x) < 1 && abs(vel.y) < 1)
+		if (abs(vel.x) < 0.1 && abs(vel.y) < 0.1)
 		{
 			player.keepmomentum = false;
 		}
