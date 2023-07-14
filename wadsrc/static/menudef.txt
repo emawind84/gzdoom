@@ -3502,4 +3502,8 @@ OptionMenu "ExperimentalMenu"
 	StaticText " "
 	Option "Activate (use) mode", "use_mode", UseModes
 	StaticText "Choose how to activate objects", "Brown"
+	StaticText " "
+	Slider "Keep momentum threshold",   "vr_momentum_threshold", 0.1, 2, 0.1
+	StaticText "Small recoil require smaller threshold to move the player", "Brown"
+	StaticText "A value under one fix the motorcycle handling in Ashes 2063", "Brown"
 }
