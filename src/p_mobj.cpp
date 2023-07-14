@@ -3485,6 +3485,10 @@ void AActor::SetAngle(DAngle ang, int fflags)
 		{
 			player->cheats |= CF_INTERPVIEW;
 		}
+		if (player != nullptr)
+		{
+			resetDoomYaw = true;
+		}
 	}
 	
 }
