@@ -1088,9 +1088,9 @@ class PlayerPawn : Actor
 			{
 				cmd.buttons &= BT_USE;
 			}
-			cmd.pitch = 0;
-			cmd.yaw = 0;
-			cmd.roll = 0;
+			//cmd.pitch = 0;
+			//cmd.yaw = 0;
+			//cmd.roll = 0;
 			cmd.forwardmove = 0;
 			cmd.sidemove = 0;
 			cmd.upmove = 0;
