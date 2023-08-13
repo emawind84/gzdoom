@@ -2728,26 +2728,32 @@ OptionMenu VRWeaponOptions protected
 	Title "VR Weapon Options"
 	
 	StaticText ""
-	StaticText "Weapon", gold
+	StaticText "Global options", gold
 	Option "Recoil",		        "vr_recoil", "OnOff"
 	Slider "Pitch Adjust",			"vr_weaponRotate", -45, 45, 5, 2
 	Slider "Sprite/Model Scale",	"vr_weaponScale", 0.1, 3.0, 0.1, 2
-	Option "Sprite 3D",				"r_PlayerSprites3DMode", "Sprites3DMode"
-	Slider "Fat Item Width",		"gl_fatItemWidth", 0.1, 1.0, 0.1, 2
-	Slider "$DSPLYMNU_WEAPOFSX",	"vr_weaponOffsetX", -1, 1, 0.01, 2
-	Slider "$DSPLYMNU_WEAPOFSY",	"vr_weaponOffsetY", -1, 1, 0.01, 2
-	Slider "$DSPLYMNU_WEAPOFSZ",	"vr_weaponOffsetZ", -1, 1, 0.01, 2
 	StaticText " "
-	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar vr_recoil vr_weaponRotate vr_weaponScale r_PlayerSprites3DMode gl_fatItemWidth vr_weaponOffsetX vr_weaponOffsetY vr_weaponOffsetZ"
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar vr_recoil vr_weaponRotate vr_weaponScale"
 
 	StaticText " "
-	StaticText "Weapon (sprite only)", gold
-	StaticText "Options retained only for the current session", "Brown"
-	Slider "$DSPLYMNU_WEAPHPOS",			"r_weaphpos", 0, 100, 1, 0
-	Slider "$DSPLYMNU_WEAPVPOS",			"r_weapvpos", 0, 100, 1, 0
-	Slider "$DSPLYMNU_WEAPSCALE",			"r_weapscale", 0, 2.0, 0.1, 1
+	StaticText "3d model options", gold
+	Slider "$DSPLYMNU_WEAPOFSX",	"vr_3dweaponOffsetX", -10, 10, 0.1, 2
+	Slider "$DSPLYMNU_WEAPOFSY",	"vr_3dweaponOffsetY", -10, 10, 0.1, 2
+	Slider "$DSPLYMNU_WEAPOFSZ",	"vr_3dweaponOffsetZ", -10, 10, 0.1, 2
 	StaticText " "
-	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar r_weaphpos r_weapvpos r_weapscale"
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar vr_3dweaponOffsetX vr_3dweaponOffsetY vr_3dweaponOffsetZ"
+
+	StaticText " "
+	StaticText "Sprite options", gold
+	Option "Sprite 3D",				"r_PlayerSprites3DMode", "Sprites3DMode"
+	Slider "Fat Item Width",		"gl_fatItemWidth", 0.1, 1.0, 0.1, 2
+	Slider "$DSPLYMNU_WEAPOFSX",	"vr_2dweaponOffsetX", -10, 10, 0.1, 2
+	Slider "$DSPLYMNU_WEAPOFSY",	"vr_2dweaponOffsetY", -10, 10, 0.1, 2
+	Slider "$DSPLYMNU_WEAPOFSZ",	"vr_2dweaponOffsetZ", -10, 10, 0.1, 2
+	Slider "$DSPLYMNU_WEAPSCALE",	"vr_2dweaponScale", 0, 2.0, 0.1, 1
+
+	StaticText " "
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar r_PlayerSprites3DMode gl_fatItemWidth vr_2dweaponOffsetX vr_2dweaponOffsetY vr_2dweaponOffsetZ vr_2dweaponScale"
 }
 
 OptionMenu VROptionsMenu protected

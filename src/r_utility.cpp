@@ -100,9 +100,6 @@ CVAR (Int, r_clearbuffer, 0, 0)
 CVAR (Bool, r_drawvoxels, true, 0)
 CVAR (Bool, r_drawplayersprites, true, 0)	// [RH] Draw player sprites?
 CVAR(Int, r_PlayerSprites3DMode, 1, CVAR_ARCHIVE); // Back only as default
-CVAR(Int, r_weaphpos , 50, 0);
-CVAR(Int, r_weapvpos , 50, 0);
-CVAR(Float, r_weapscale, 1.0f, 0);
 CVAR(Float, gl_fatItemWidth, 0.5f, CVAR_ARCHIVE);
 CUSTOM_CVAR(Float, r_quakeintensity, 0.0f, CVAR_ARCHIVE | CVAR_GLOBALCONFIG) // Defaulted to 0 for VR
 {

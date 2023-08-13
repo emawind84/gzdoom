@@ -56,8 +56,6 @@ EXTERN_CVAR(Int, gl_fuzztype)
 EXTERN_CVAR (Bool, r_deathcamera)
 EXTERN_CVAR(Int, r_PlayerSprites3DMode)
 EXTERN_CVAR(Float, gl_fatItemWidth)
-EXTERN_CVAR(Int, r_weaphpos)
-EXTERN_CVAR(Int, r_weapvpos)
 
 enum PlayerSprites3DMode
 {
@@ -667,11 +665,6 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector)
 
 			auto *smf = psp->GetCaller() ? FindModelFrame(psp->GetCaller()->GetClass(), psp->GetSprite(), psp->GetFrame(), false) : nullptr;
 			bool hudModelStep = smf != nullptr;
-			if (!hudModelStep)
-			{
-				sx += r_weaphpos - 50;
-				sy += r_weapvpos - 50;
-			}
 			if (!hudModelStep) s3d::Stereo3DMode::getCurrentMode().AdjustPlayerSprites(psp->GetCaller() == player->OffhandWeapon);
 			DrawPSprite(player, psp, sx, sy, hudModelStep, OverrideShader, !!(RenderStyle.Flags & STYLEF_RedIsAlpha), r_viewpoint.TicFrac);
 			if (!hudModelStep) s3d::Stereo3DMode::getCurrentMode().UnAdjustPlayerSprites();

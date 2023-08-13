@@ -56,7 +56,6 @@
 EXTERN_CVAR(Bool, puristmode);
 EXTERN_CVAR(Int, screenblocks);
 EXTERN_CVAR(Float, movebob);
-EXTERN_CVAR(Float, r_weapscale);
 EXTERN_CVAR(Bool, cl_noprediction)
 EXTERN_CVAR(Bool, gl_billboard_faces_camera);
 EXTERN_CVAR(Int, gl_multisample);
@@ -66,9 +65,6 @@ EXTERN_CVAR(Float, vr_height_adjust)
 EXTERN_CVAR(Int, vr_control_scheme)
 EXTERN_CVAR(Bool, vr_move_use_offhand)
 EXTERN_CVAR(Float, vr_weaponRotate);
-EXTERN_CVAR(Float, vr_weaponOffsetX);
-EXTERN_CVAR(Float, vr_weaponOffsetY);
-EXTERN_CVAR(Float, vr_weaponOffsetZ);
 EXTERN_CVAR(Float, vr_snapTurn);
 EXTERN_CVAR(Float, vr_ipd);
 EXTERN_CVAR(Float, vr_weaponScale);
@@ -77,6 +73,10 @@ EXTERN_CVAR(Bool, vr_switch_sticks);
 EXTERN_CVAR(Bool, vr_secondary_button_mappings);
 EXTERN_CVAR(Bool, vr_two_handed_weapons);
 EXTERN_CVAR(Bool, vr_crouch_use_button);
+EXTERN_CVAR(Float, vr_2dweaponScale)
+EXTERN_CVAR(Float, vr_2dweaponOffsetX);
+EXTERN_CVAR(Float, vr_2dweaponOffsetY);
+EXTERN_CVAR(Float, vr_2dweaponOffsetZ);
 
 //HUD control
 EXTERN_CVAR(Float, vr_hud_scale);
@@ -343,9 +343,12 @@ namespace s3d
     {
         if (GetWeaponTransform(&gl_RenderState.mModelMatrix, hand))
         {
-            float scale = 0.000625f * vr_weaponScale * r_weapscale;
+            float scale = 0.000625f * vr_weaponScale * vr_2dweaponScale;
             gl_RenderState.mModelMatrix.scale(scale, -scale, scale);
             gl_RenderState.mModelMatrix.translate(-viewwidth / 2, -viewheight * 3 / 4, 0.0f); // What dis?!
+
+            float offsetFactor = 40.f;
+            gl_RenderState.mModelMatrix.translate(vr_2dweaponOffsetX * offsetFactor, -vr_2dweaponOffsetY * offsetFactor, vr_2dweaponOffsetZ * offsetFactor);
         }
         gl_RenderState.EnableModelMatrix(true);
     }
