@@ -5,7 +5,12 @@
 #include "profiledef.h"
 #include <algorithm>
 
-CVAR(String, cmdlineprofile, "", CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
+extern bool wantToRestart;
+
+CUSTOM_CVAR(String, cmdlineprofile, "", CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL)
+{
+	wantToRestart = true;
+}
 
 ProfileManager profileManager;
 

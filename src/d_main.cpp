@@ -2490,6 +2490,25 @@ static void FixUnityStatusBar()
 	}
 }
 
+static void InitShutdown()
+{
+	D_Cleanup();
+	CloseNetwork();
+	GC::FinalGC = true;
+	GC::FullGC();
+	GC::DelSoftRootHead();	// the soft root head will not be collected by a GC so we have to do it explicitly
+	C_DeinitConsole();
+	R_DeinitColormaps();
+	R_Shutdown();
+	I_DeleteRenderer();
+	I_ShutdownGraphics();
+	//I_ShutdownInput();
+	M_SaveDefaultsFinal();
+	DeleteStartupScreen();
+	delete Args;
+	Args = nullptr;
+}
+
 //==========================================================================
 //
 // D_DoomMain
@@ -2983,13 +3002,11 @@ static int D_DoomMain_Internal (void)
 //			I_SetWindowTitle(DoomStartupInfo.Name.GetChars());
 
 		D_DoomLoop ();		// this only returns if a 'restart' CCMD is given.
-		// 
-		// Clean up after a restart
-		//
 
-		D_Cleanup();
-
-		gamestate = GS_STARTUP;
+		// We replace the vanilla zdoom restart with a complete Android application restart instead
+		// all the arguments passed are retained since we read the commandline file again.
+		InitShutdown();
+		QzDoom_Restart();
 	}
 	while (1);
 }
@@ -3016,21 +3033,7 @@ int D_DoomMain()
 	// Unless something really bad happened, the game should only exit through this single point in the code.
 	// No more 'exit', please.
 	// Todo: Move all engine cleanup here instead of using exit handlers and replace the scattered 'exit' calls with a special exception.
-	D_Cleanup();
-	CloseNetwork();
-	GC::FinalGC = true;
-	GC::FullGC();
-	GC::DelSoftRootHead();	// the soft root head will not be collected by a GC so we have to do it explicitly
-	C_DeinitConsole();
-	R_DeinitColormaps();
-	R_Shutdown();
-	I_DeleteRenderer();
-	I_ShutdownGraphics();
-	//I_ShutdownInput();
-	M_SaveDefaultsFinal();
-	DeleteStartupScreen();
-	delete Args;
-	Args = nullptr;
+	InitShutdown();
 	return ret;
 }
 
@@ -3153,7 +3156,7 @@ UNSAFE_CCMD(restart)
 
 CCMD(qzd_restart)
 {
-	D_Cleanup();
+	InitShutdown();
 	QzDoom_Restart();
 }
 
