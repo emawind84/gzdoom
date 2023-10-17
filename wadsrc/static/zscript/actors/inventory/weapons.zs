@@ -35,6 +35,7 @@ class Weapon : StateProvider
 	double UseRange;						// [NS] Distance at which player can +use
 	readonly bool bDehAmmo;					// Uses Doom's original amount of ammo for the respective attack functions so that old DEHACKED patches work as intended.
 											// AmmoUse1 will be set to the first attack's ammo use so that checking for empty weapons still works
+	readonly bool bStabilised;				// Set when the weapon is held with two hands										
 	meta int SlotNumber;
 	meta double SlotPriority;
 	
@@ -87,6 +88,8 @@ class Weapon : StateProvider
 	flagdef NoHandSwitch: WeaponFlags, 21;		// weapon cannot be moved from one hand to another
 	flagdef TwoHanded: WeaponFlags, 22;			// two handed weapon
 	flagdef NoAutoReverse: WeaponFlags, 23;		// prevent auto reverse of model and sprite when switching to offhand
+	flagdef TwoHandedMode: WeaponFlags, 24;		// force the two handed mode if the hands are close enough
+	flagdef NoAutoHide: WeaponFlags, 25;		// Show the weapon even when it should not be visible (offhand during two handed mode)
 
 	// no-op flags
 	flagdef NoLMS: none, 0;

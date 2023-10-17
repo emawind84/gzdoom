@@ -1048,6 +1048,7 @@ xx(Crosshair)
 xx(WeaponFlags)
 xx(DropTime)
 xx(PickupSound)
+xx(bStabilised)
 
 // PlayerPawn member fields
 xx(ColorRangeStart)

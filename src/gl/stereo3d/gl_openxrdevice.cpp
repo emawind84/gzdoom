@@ -113,6 +113,7 @@ extern bool trigger_teleport;
 extern bool shutdown;
 extern bool resetDoomYaw;
 extern bool resetPreviousPitch;
+extern bool twoHandedMode;
 extern float previousPitch;
 
 bool TBXR_FrameSetup();
@@ -674,6 +675,13 @@ namespace s3d
                     player->mo->SetZ(oldZ);
                 }
                 player->mo->Vel = vel;
+
+                auto weapon = player->ReadyWeapon;
+                if (weapon != nullptr)
+                {
+                    player->ReadyWeapon->BoolVar(NAME_bStabilised) = weaponStabilised;
+                    twoHandedMode = player->ReadyWeapon->IntVar(NAME_WeaponFlags) & WIF_TWOHANDEDMODE;
+                }
             }
             updateHmdPose();
         }

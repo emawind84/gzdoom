@@ -497,7 +497,9 @@ void GLSceneDrawer::DrawPlayerSprites(sector_t * viewsector)
 
 	for(DPSprite *psp = player->psprites; psp != nullptr && psp->GetID() < PSP_TARGETCENTER; psp = psp->GetNext())
 	{
-		if (weaponStabilised && psp->GetCaller() == player->OffhandWeapon)
+		if (weaponStabilised 
+		&& psp->GetCaller() != nullptr & psp->GetCaller() == player->OffhandWeapon 
+		&& !!(player->OffhandWeapon->IntVar(NAME_WeaponFlags) & ~WIF_NO_AUTO_HIDE))
 		{
 			continue;
 		}
