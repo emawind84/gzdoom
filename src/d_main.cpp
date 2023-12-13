@@ -2623,9 +2623,6 @@ static int D_DoomMain_Internal (void)
 		// Load zdoom.pk3 alone so that we can get access to the internal gameinfos before 
 		// the IWAD is known.
 
-		// adding snow mod just for christmas season, I will remove it!
-		D_AddWildFile(pwads, "merrychristmas.pk3");
-
 		GetCmdLineFiles(pwads);
 		FString iwad = CheckGameInfo(pwads);
 
