@@ -442,8 +442,8 @@ public:
 	virtual void TextureFilterChanged() {}
 	virtual void ResetFixedColormap() {}
 
-	virtual int GetClientWidth() { return 320; };
-	virtual int GetClientHeight() { return 200; };
+	virtual int GetClientWidth();
+	virtual int GetClientHeight();
 
 	// Begin 2D drawing operations.
 	// Returns true if hardware-accelerated 2D has been entered, false if not.
