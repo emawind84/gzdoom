@@ -876,6 +876,43 @@ void DFrameBuffer::NewRefreshRate ()
 
 //==========================================================================
 //
+// DFrameBuffer :: SetBlendingRect
+//
+// Defines the area of the screen containing the 3D view.
+//
+//==========================================================================
+
+void DFrameBuffer::SetBlendingRect (int x1, int y1, int x2, int y2)
+{
+}
+
+//==========================================================================
+//
+// DFrameBuffer :: Begin2D
+//
+// Signal that 3D rendering is complete, and the rest of the operations on
+// the canvas until Unlock() will be 2D ones.
+//
+//==========================================================================
+
+void DFrameBuffer::Begin2D (bool copy3d)
+{
+	isIn2D = true;
+	ClearClipRect();
+}
+
+int DFrameBuffer::GetClientWidth()
+{
+	return 320;
+}
+
+int DFrameBuffer::GetClientHeight()
+{
+	return 200;
+}
+
+//==========================================================================
+//
 // DFrameBuffer :: WipeStartScreen
 //
 // Grabs a copy of the screen currently displayed to serve as the initial

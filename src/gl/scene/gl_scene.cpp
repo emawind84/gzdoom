@@ -138,7 +138,7 @@ void GLSceneDrawer::Reset3DViewport()
 
 void GLSceneDrawer::Set3DViewport(bool mainview)
 {
-	if (mainview && GLRenderer->buffersActive)
+	if (mainview && GLRenderer->mBuffers->Setup(GLRenderer->mScreenViewport.width, GLRenderer->mScreenViewport.height, GLRenderer->mSceneViewport.width, GLRenderer->mSceneViewport.height))
 	{
 		bool useSSAO = (gl_ssao != 0);
 		GLRenderer->mBuffers->BindSceneFB(useSSAO);
@@ -534,6 +534,8 @@ void GLSceneDrawer::EndDrawScene(sector_t * viewsector)
 	}
 
 	glDisable(GL_STENCIL_TEST);
+
+	GLRenderer->framebuffer->Begin2D(false);
 
 	Reset3DViewport();
 
