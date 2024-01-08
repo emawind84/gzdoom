@@ -245,15 +245,17 @@ void FGLRenderer::SetupLevel()
 
 void FGLRenderer::Begin2D()
 {
-	if (mBuffers->Setup(mScreenViewport.width, mScreenViewport.height, mSceneViewport.width, mSceneViewport.height))
+	if (screen == nullptr)
+		return;
+	if (mBuffers->Setup(screen->mScreenViewport.width, screen->mScreenViewport.height, screen->mSceneViewport.width, screen->mSceneViewport.height))
 	{
 		if (mDrawingScene2D)
 			mBuffers->BindSceneFB(false);
 		else
 			mBuffers->BindCurrentFB();
 	}
-	glViewport(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height);
-	glScissor(mScreenViewport.left, mScreenViewport.top, mScreenViewport.width, mScreenViewport.height);
+	glViewport(screen->mScreenViewport.left, screen->mScreenViewport.top, screen->mScreenViewport.width, screen->mScreenViewport.height);
+	glScissor(screen->mScreenViewport.left, screen->mScreenViewport.top, screen->mScreenViewport.width, screen->mScreenViewport.height);
 
 	gl_RenderState.EnableFog(false);
 }
