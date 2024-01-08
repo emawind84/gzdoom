@@ -804,15 +804,13 @@ void D_Display ()
 		screen->FrameTime = I_msTimeFS();
 		TexMan.UpdateAnimations(screen->FrameTime);
 		R_UpdateSky(screen->FrameTime);
-		screen->BeginFrame();
-		screen->ClearClipRect();
 		switch (gamestate)
 		{
 		case GS_FULLCONSOLE:
+			screen->SetBlendingRect(0,0,0,0);
 			screen->Begin2D(false);
 			C_DrawConsole ();
 			M_Drawer ();
-			screen->End2D();
 			screen->Update ();
 			return;
 
@@ -835,9 +833,7 @@ void D_Display ()
 			}
 			else level.HasDynamicLights = false;	// lights are off so effectively we have none.
 
-			viewsec = screen->RenderView(&players[consoleplayer]);
-			screen->Begin2D(false);
-			screen->DrawBlend(viewsec);
+			screen->RenderView(&players[consoleplayer]);
 			// returns with 2S mode set.
 			if (automapactive)
 			{
@@ -883,18 +879,21 @@ void D_Display ()
 			break;
 
 		case GS_INTERMISSION:
+			screen->SetBlendingRect(0,0,0,0);
 			screen->Begin2D(false);
 			WI_Drawer ();
 			CT_Drawer ();
 			break;
 
 		case GS_FINALE:
+			screen->SetBlendingRect(0,0,0,0);
 			screen->Begin2D(false);
 			F_Drawer ();
 			CT_Drawer ();
 			break;
 
 		case GS_DEMOSCREEN:
+			screen->SetBlendingRect(0,0,0,0);
 			screen->Begin2D(false);
 			D_PageDrawer ();
 			CT_Drawer ();

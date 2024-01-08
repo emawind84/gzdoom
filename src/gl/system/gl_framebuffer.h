@@ -27,6 +27,7 @@ public:
 
 	void CleanForRestart() override;
 	void UpdatePalette() override;
+	void Begin2D(bool copy3d) override;
 	void InitForLevel() override;
 	void SetClearColor(int color) override;
 	uint32_t GetCaps() override;
@@ -40,7 +41,6 @@ public:
 	void FlushTextures() override;
 	void TextureFilterChanged() override;
 	void ResetFixedColormap() override;
-	void BeginFrame() override;
 	bool RenderBuffersEnabled() override;
 	void SetViewportRects(IntRect *bounds) override;
 	void BlurScene(float amount) override;

@@ -113,7 +113,7 @@ void GLSceneDrawer::Reset3DViewport()
 
 void GLSceneDrawer::Set3DViewport(bool mainview)
 {
-	if (mainview && GLRenderer->buffersActive)
+	if (mainview && GLRenderer->mBuffers->Setup(screen->mScreenViewport.width, screen->mScreenViewport.height, screen->mSceneViewport.width, screen->mSceneViewport.height))
 	{
 		bool useSSAO = (gl_ssao != 0);
 		GLRenderer->mBuffers->BindSceneFB(useSSAO);
@@ -501,6 +501,8 @@ void GLSceneDrawer::EndDrawScene(FDrawInfo *di, sector_t * viewsector)
 
 	glDisable(GL_STENCIL_TEST);
 
+	GLRenderer->framebuffer->Begin2D(false);
+
 	Reset3DViewport();
 
 	// Delay drawing psprites until after bloom has been applied, if enabled.
@@ -745,6 +747,7 @@ void GLSceneDrawer::WriteSavePic (player_t *player, FileWriter *file, int width,
 	glDisable(GL_STENCIL_TEST);
 	gl_RenderState.SetFixedColormap(CM_DEFAULT);
 	gl_RenderState.SetSoftLightLevel(-1);
+	screen->Begin2D(false);
 	if (!FGLRenderBuffers::IsEnabled())
 	{
 		// Since this doesn't do any of the 2D rendering it needs to draw the screen blend itself before extracting the image.
