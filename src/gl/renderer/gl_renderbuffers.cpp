@@ -560,7 +560,7 @@ void FGLRenderBuffers::BindEyeFB(int eye, bool readBuffer)
 
 void FGLRenderBuffers::BindDitherTexture(int texunit)
 {
-	if (!mDitherTexture.handle)
+	if (!mDitherTexture)
 	{
 		static const float data[64] =
 		{

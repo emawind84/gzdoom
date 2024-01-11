@@ -243,7 +243,6 @@ static void append(std::vector<int> &list1, std::initializer_list<int> list2)
 
 bool Win32GLVideo::SetupPixelFormat(int multisample)
 {
-	int i;
 	int colorDepth;
 	HDC deskDC;
 	std::vector<int> attributes;
@@ -258,7 +257,7 @@ bool Win32GLVideo::SetupPixelFormat(int multisample)
 	if (myWglChoosePixelFormatARB)
 	{
 	again:
-			append(attributes, { WGL_DEPTH_BITS_ARB, 24 });
+		append(attributes, { WGL_DEPTH_BITS_ARB, 24 });
 		append(attributes, { WGL_STENCIL_BITS_ARB, 8 });
 
 		//required to be true
