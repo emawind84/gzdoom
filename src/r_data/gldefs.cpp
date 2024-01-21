@@ -1627,9 +1627,9 @@ class GLDefsParser
 			switch (desc.shaderType)
 			{
 			default:
-			case SHADER_Default: firstUserTexture = 3; break;
-			case SHADER_Specular: firstUserTexture = 5; break;
-			case SHADER_PBR: firstUserTexture = 7; break;
+			case SHADER_Default: firstUserTexture = 5; break;
+			case SHADER_Specular: firstUserTexture = 7; break;
+			case SHADER_PBR: firstUserTexture = 9; break;
 			}
 
 			for (unsigned int i = 0; i < texNameList.Size(); i++)
