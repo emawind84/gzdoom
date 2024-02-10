@@ -670,9 +670,10 @@ void main()
 			fogfactor = exp2 (uFogDensity * fogdist);
 		}
 		
-		if (uTextureMode != 7)
+		if ((uTextureMode & 0xffff) != 7)
 		{
 			frag = getLightColor(material, fogdist, fogfactor);
+
 			//
 			// colored fog
 			//
@@ -689,7 +690,7 @@ void main()
 	}
 	else // simple 2D (uses the fog color to add a color overlay)
 	{
-		if (uTextureMode == 7)
+		if ((uTextureMode & 0xffff) == 7)
 		{
 			float gray = grayscale(frag);
 			vec4 cm = (uObjectColor + gray * (uAddColor - uObjectColor)) * 2.0;

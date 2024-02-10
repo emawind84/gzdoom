@@ -577,6 +577,16 @@ void HWDrawInfo::RenderPortal(HWPortal *p, FRenderState &state, bool usestencil)
 
 void HWDrawInfo::EndDrawScene(sector_t * viewsector, FRenderState &state)
 {
+	state.ResetFadeColor();
+	HWSkyInfo skyinfo;
+	skyinfo.init(this, viewsector->sky, viewsector->Colormap.FadeColor);
+	if (skyinfo.texture[0])
+	{
+		PalEntry pe = skyinfo.texture[0]->tex->GetSkyCapColor(false);
+		state.SetSceneColor(pe);
+	}
+	state.InitSceneClearColor();
+
 	state.EnableFog(false);
 
 	auto vrmode = VRMode::GetVRMode(true);

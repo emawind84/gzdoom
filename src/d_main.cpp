@@ -132,9 +132,6 @@ void P_Shutdown();
 void M_SaveDefaultsFinal();
 void R_Shutdown();
 //void I_ShutdownInput();
-#ifdef _WIN32
-void StopFPSLimit();
-#endif
 
 const FIWADInfo *D_FindIWAD(TArray<FString> &wadfiles, const char *iwad, const char *basewad);
 
@@ -2984,9 +2981,6 @@ void D_Cleanup()
 	AM_ClearColorsets();
 	DeinitSWColorMaps();
 	FreeSBarInfoScript();
-#ifdef _WIN32
-	StopFPSLimit();
-#endif
 
 	// clean up game state
 	D_ErrorCleanup ();

@@ -37,6 +37,11 @@ struct PushConstants
 	float uLightFactor;
 	float uLightDist;
 	int uFogEnabled;
+	int uGlobalFade;
+	int uGlobalFadeMode;
+	float uGlobalFadeDensity;
+	float uGlobalFadeGradient;
+	int uLightRangeLimit;
 
 	// dynamic lights
 	int uLightIndex;

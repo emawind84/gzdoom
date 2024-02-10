@@ -69,10 +69,10 @@ VkShaderProgram *VkShaderManager::GetEffect(int effect)
 
 VkShaderProgram *VkShaderManager::Get(unsigned int eff, bool alphateston, EPassType passType)
 {
-	// indices 0-2 match the warping modes, 3 is brightmap, 4 no texture, the following are custom
-	if (!alphateston && eff <= 3)
+	// indices 0-2 match the warping modes, 3 no texture, the following are custom
+	if (!alphateston && eff <= 2)
 	{
-		return &mMaterialShadersNAT[passType][eff];	// Non-alphatest shaders are only created for default, warp1+2 and brightmap. The rest won't get used anyway
+		return &mMaterialShadersNAT[passType][eff];	// Non-alphatest shaders are only created for default, warp1+2. The rest won't get used anyway
 	}
 	else if (eff < (unsigned int)mMaterialShaders[passType].size())
 	{
@@ -119,6 +119,7 @@ static const char *shaderBindings = R"(
 		vec4 uDynLightColor;
 		vec4 uAddColor;
 		vec4 uFogColor;
+		vec4 uGlobalFadeColor;
 		float uDesaturationFactor;
 		float uInterpolationFactor;
 		float timer; // timer data for material shaders
@@ -136,6 +137,8 @@ static const char *shaderBindings = R"(
 
 		vec4 uSplitTopPlane;
 		vec4 uSplitBottomPlane;
+
+		vec4 uDetailParms;
 	};
 
 	layout(set = 0, binding = 3, std140) uniform StreamUBO {
@@ -151,6 +154,8 @@ static const char *shaderBindings = R"(
 	layout(set = 1, binding = 3) uniform sampler2D texture4;
 	layout(set = 1, binding = 4) uniform sampler2D texture5;
 	layout(set = 1, binding = 5) uniform sampler2D texture6;
+	layout(set = 1, binding = 6) uniform sampler2D texture7;
+	layout(set = 1, binding = 7) uniform sampler2D texture8;
 
 	// This must match the PushConstants struct
 	layout(push_constant) uniform PushConstants
@@ -165,6 +170,11 @@ static const char *shaderBindings = R"(
 		float uLightFactor;
 		float uLightDist;
 		int uFogEnabled;
+		int uGlobalFade;
+		int uGlobalFadeMode;
+		float uGlobalFadeDensity;
+		float uGlobalFadeGradient;
+		int uLightRangeLimit;
 
 		// dynamic lights
 		int uLightIndex;
@@ -181,14 +191,20 @@ static const char *shaderBindings = R"(
 	#define normaltexture texture2
 	#define speculartexture texture3
 	#define brighttexture texture4
+	#define detailtexture texture5
+	#define glowtexture texture6
 	#elif defined(PBR)
 	#define normaltexture texture2
 	#define metallictexture texture3
 	#define roughnesstexture texture4
 	#define aotexture texture5
 	#define brighttexture texture6
+	#define detailtexture texture7
+	#define glowtexture texture8
 	#else
 	#define brighttexture texture2
+	#define detailtexture texture3
+	#define glowtexture texture4
 	#endif
 
 	#define uObjectColor data[uDataIndex].uObjectColor
@@ -196,6 +212,7 @@ static const char *shaderBindings = R"(
 	#define uDynLightColor data[uDataIndex].uDynLightColor
 	#define uAddColor data[uDataIndex].uAddColor
 	#define uFogColor data[uDataIndex].uFogColor
+	#define uGlobalFadeColor data[uDataIndex].uGlobalFadeColor
 	#define uDesaturationFactor data[uDataIndex].uDesaturationFactor
 	#define uInterpolationFactor data[uDataIndex].uInterpolationFactor
 	#define timer data[uDataIndex].timer
@@ -210,6 +227,7 @@ static const char *shaderBindings = R"(
 	#define uGradientBottomPlane data[uDataIndex].uGradientBottomPlane
 	#define uSplitTopPlane data[uDataIndex].uSplitTopPlane
 	#define uSplitBottomPlane data[uDataIndex].uSplitBottomPlane
+	#define uDetailParms data[uDataIndex].uDetailParms
 
 	#define SUPPORTS_SHADOWMAPS
 	#define VULKAN_COORDINATE_SYSTEM
@@ -247,18 +265,25 @@ std::unique_ptr<VulkanShader> VkShaderManager::LoadFragShader(FString shadername
 		{
 			FString pp_code = LoadPublicShaderLump(material_lump);
 
-			if (pp_code.IndexOf("ProcessMaterial") < 0)
+			if (pp_code.IndexOf("ProcessMaterial") < 0 && pp_code.IndexOf("SetupMaterial") < 0)
 			{
 				// this looks like an old custom hardware shader.
 				// add ProcessMaterial function that calls the older ProcessTexel function
-				code << "\n" << LoadPrivateShaderLump("shaders/glsl/func_defaultmat.fp").GetChars() << "\n";
 
-				if (pp_code.IndexOf("ProcessTexel") < 0)
+				if (pp_code.IndexOf("GetTexCoord") >= 0)
 				{
-					// this looks like an even older custom hardware shader.
-					// We need to replace the ProcessTexel call to make it work.
+					code << "\n" << LoadPrivateShaderLump("shaders/glsl/func_defaultmat2.fp").GetChars() << "\n";
+				}
+				else
+				{
+					code << "\n" << LoadPrivateShaderLump("shaders/glsl/func_defaultmat.fp").GetChars() << "\n";
+					if (pp_code.IndexOf("ProcessTexel") < 0)
+					{
+						// this looks like an even older custom hardware shader.
+						// We need to replace the ProcessTexel call to make it work.
 
-					code.Substitute("material.Base = ProcessTexel();", "material.Base = Process(vec4(1.0));");
+						code.Substitute("material.Base = ProcessTexel();", "material.Base = Process(vec4(1.0));");
+					}
 				}
 
 				if (pp_code.IndexOf("ProcessLight") >= 0)
@@ -276,6 +301,13 @@ std::unique_ptr<VulkanShader> VkShaderManager::LoadFragShader(FString shadername
 			if (pp_code.IndexOf("ProcessLight") < 0)
 			{
 				code << "\n" << LoadPrivateShaderLump("shaders/glsl/func_defaultlight.fp").GetChars() << "\n";
+			}
+
+			// ProcessMaterial must be considered broken because it requires the user to fill in data they possibly cannot know all about.
+			if (pp_code.IndexOf("ProcessMaterial") >= 0 && pp_code.IndexOf("SetupMaterial") < 0)
+			{
+				// This reactivates the old logic and disables all features that cannot be supported with that method.
+				code.Insert(0, "#define LEGACY_USER_SHADER\n");
 			}
 		}
 		else

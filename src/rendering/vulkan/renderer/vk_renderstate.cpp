@@ -363,13 +363,21 @@ void VkRenderState::ApplyPushConstants()
 		tempTM = TM_OPAQUE;
 
 	mPushConstants.uFogEnabled = fogset;
-	mPushConstants.uTextureMode = mTextureMode == TM_NORMAL && tempTM == TM_OPAQUE ? TM_OPAQUE : mTextureMode;
+	int f = mTextureModeFlags;
+	if (!mBrightmapEnabled) f &= TEXF_Detailmap;
+	mPushConstants.uTextureMode = (mTextureMode == TM_NORMAL && tempTM == TM_OPAQUE ? TM_OPAQUE : mTextureMode) | f;
 	mPushConstants.uLightDist = mLightParms[0];
 	mPushConstants.uLightFactor = mLightParms[1];
 	mPushConstants.uFogDensity = mLightParms[2];
 	mPushConstants.uLightLevel = mLightParms[3];
 	mPushConstants.uAlphaThreshold = mAlphaThreshold;
 	mPushConstants.uClipSplit = { mClipSplit[0], mClipSplit[1] };
+
+	mPushConstants.uGlobalFade = gl_global_fade ? 1 : 0;
+	mPushConstants.uGlobalFadeMode = gl_global_fade_debug ? 2 : -1;
+	mPushConstants.uGlobalFadeDensity = gl_global_fade_density;
+	mPushConstants.uGlobalFadeGradient = gl_global_fade_gradient;
+	mPushConstants.uLightRangeLimit = gl_light_range_limit;
 
 	if (mMaterial.mMaterial && mMaterial.mMaterial->tex)
 		mPushConstants.uSpecularMaterial = { mMaterial.mMaterial->tex->Glossiness, mMaterial.mMaterial->tex->SpecularLevel };

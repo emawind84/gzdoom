@@ -27,6 +27,10 @@ EXTERN_CVAR (Int, gl_light_wall_max_lights);
 EXTERN_CVAR (Int, gl_light_range_limit);
 
 EXTERN_CVAR(Bool, gl_global_fade);
+EXTERN_CVAR(Bool, gl_global_fade_debug);
+EXTERN_CVAR(Color, gl_global_fade_color);
+EXTERN_CVAR(Float, gl_global_fade_gradient);
+EXTERN_CVAR(Float, gl_global_fade_density);
 
 EXTERN_CVAR(Int, gl_fogmode)
 EXTERN_CVAR(Int, gl_lightmode)

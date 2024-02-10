@@ -44,5 +44,5 @@ vec4 ApplyHdrMode(vec4 c)
 
 void main()
 {
-	FragColor = Dither(ApplyGamma(texture(InputTexture, UVOffset + TexCoord * UVScale)));
+	FragColor = Dither(ApplyHdrMode(ApplyGamma(texture(InputTexture, UVOffset + TexCoord * UVScale))));
 }

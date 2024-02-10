@@ -43,32 +43,10 @@
 #include "hwrenderer/utility/hw_clock.h"
 #include "hwrenderer/data/hw_viewpointbuffer.h"
 
-CVAR(Bool, gl_global_fade, false, CVAR_ARCHIVE)
-
 namespace OpenGLRenderer
 {
 
 FGLRenderState gl_RenderState;
-
-CUSTOM_CVAR(Float, gl_global_fade_density, 0.001f, CVAR_ARCHIVE)
-{
-	if (self < 0.0001f) self = 0.0001f;
-	if (self > 0.005f) self = 0.005f;
-}
-CUSTOM_CVAR(Float, gl_global_fade_gradient, 1.5f, CVAR_ARCHIVE)
-{
-	if (self < 0.1f) self = 0.1f;
-	if (self > 2.f) self = 2.f;
-}
-CUSTOM_CVAR(Color, gl_global_fade_color, 0x3f3f3f, CVAR_ARCHIVE | CVAR_NOINITCALL)
-{
-	gl_RenderState.ResetFadeColor();
-}
-CUSTOM_CVAR(Bool, gl_global_fade_debug, false, 0)
-{
-	if (self) gl_RenderState.SetGlobalFadeMode(2);
-	else gl_RenderState.SetGlobalFadeMode(-1);
-}
 
 static VSMatrix identityMatrix(1);
 
@@ -100,8 +78,6 @@ void FGLRenderState::Reset()
 
 	mEffectState = 0;
 	activeShader = nullptr;
-	mGlobalFadeMode = -1;
-	ResetFadeColor();
 
 	mCurrentVertexBuffer = nullptr;
 	mCurrentVertexOffsets[0] = mVertexOffsets[0] = 0;
@@ -166,12 +142,12 @@ bool FGLRenderState::ApplyShader()
 	activeShader->muClipSplit.Set(mClipSplit);
 	activeShader->muSpecularMaterial.Set(mGlossiness, mSpecularLevel);
 	activeShader->muAddColor.Set(mStreamData.uAddColor);
-	activeShader->muDetailParms.Set(mDetailParms.vec);
-	activeShader->muGlobalFadeMode.Set(mGlobalFadeMode);
+	activeShader->muDetailParms.Set(&mStreamData.uDetailParms.X);
+	activeShader->muGlobalFadeMode.Set(gl_global_fade_debug ? 2 : -1);
 	activeShader->muGlobalFade.Set(gl_global_fade ? 1 : 0);
 	activeShader->muGlobalFadeDensity.Set(gl_global_fade_density);
 	activeShader->muGlobalFadeGradient.Set(gl_global_fade_gradient);
-	activeShader->muGlobalFadeColor.Set(mFadeColor);
+	activeShader->muGlobalFadeColor.Set(mStreamData.uGlobalFadeColor);
 	activeShader->muLightRangeLimit.Set(gl_light_range_limit);
 
 	if (mGlowEnabled || activeShader->currentglowstate)

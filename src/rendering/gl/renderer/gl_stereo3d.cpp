@@ -172,7 +172,7 @@ void FGLRenderer::prepareInterleavedPresent(FPresentShaderBase& shader)
 		shader.Uniforms->GrayFormula = static_cast<int>(gl_satformula);
 	}
 	shader.Uniforms->HdrMode = 0;
-	shader.Uniforms->ColorScale = (static_cast<float>((gl_dither_bpc == -1) ? 255.0f : (float)((1 << gl_dither_bpc) - 1)));
+	shader.Uniforms->ColorScale = (gl_dither_bpc == -1) ? 255.0f : (float)((1 << gl_dither_bpc) - 1);
 	shader.Uniforms->Scale = {
 		screen->mScreenViewport.width / (float)mBuffers->GetWidth(),
 		screen->mScreenViewport.height / (float)mBuffers->GetHeight()

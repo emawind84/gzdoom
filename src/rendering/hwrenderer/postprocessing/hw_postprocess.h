@@ -608,6 +608,9 @@ struct SSAOUniforms
 	float Padding0, Padding1;
 	FVector2 Scale;
 	FVector2 Offset;
+	int GlobalFade;
+	float GlobalFadeDensity;
+	float GlobalFadeGradient;
 
 	static std::vector<UniformFieldDesc> Desc()
 	{
@@ -626,6 +629,9 @@ struct SSAOUniforms
 			{ "Padding1", UniformType::Float, offsetof(SSAOUniforms, Padding1) },
 			{ "Scale", UniformType::Vec2, offsetof(SSAOUniforms, Scale) },
 			{ "Offset", UniformType::Vec2, offsetof(SSAOUniforms, Offset) },
+			{ "GlobalFade", UniformType::Int, offsetof(SSAOUniforms, GlobalFade) },
+			{ "GlobalFadeDensity", UniformType::Float, offsetof(SSAOUniforms, GlobalFadeDensity) },
+			{ "GlobalFadeGradient", UniformType::Float, offsetof(SSAOUniforms, GlobalFadeGradient) },
 		};
 	}
 };
@@ -723,7 +729,7 @@ struct PresentUniforms
 	FVector2 Scale;
 	FVector2 Offset;
 	float ColorScale;
-	float Padding;
+	int HdrMode;
 
 	static std::vector<UniformFieldDesc> Desc()
 	{
@@ -738,6 +744,7 @@ struct PresentUniforms
 			{ "UVScale", UniformType::Vec2, offsetof(PresentUniforms, Scale) },
 			{ "UVOffset", UniformType::Vec2, offsetof(PresentUniforms, Offset) },
 			{ "ColorScale", UniformType::Float, offsetof(PresentUniforms, ColorScale) },
+			{ "HdrMode", UniformType::Int, offsetof(PresentUniforms, HdrMode) }
 		};
 	}
 };

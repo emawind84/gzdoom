@@ -160,9 +160,8 @@ void FGLRenderer::DrawScene(HWDrawInfo *di, int drawmode)
 
 sector_t * FGLRenderer::RenderViewpoint (FRenderViewpoint &mainvp, AActor * camera, IntRect * bounds, float fov, float ratio, float fovratio, bool mainview, bool toscreen)
 {
-	gl_RenderState.InitSceneClearColor();
 	R_SetupFrame (mainvp, r_viewwindow, camera);
-	
+
 	if (mainview && toscreen)
 		UpdateShadowMap();
 
@@ -217,15 +216,6 @@ sector_t * FGLRenderer::RenderViewpoint (FRenderViewpoint &mainvp, AActor * came
 		if (mainview)
 		{
 			PostProcess.Clock();
-
-			GLSkyInfo skyinfo;
-			skyinfo.init(di, mainvp.sector->sky, mainvp.sector->Colormap.FadeColor);
-			if (skyinfo.texture[0])
-			{
-				PalEntry pe = skyinfo.texture[0]->tex->GetSkyCapColor(false);
-				gl_RenderState.SetSceneColor(pe);
-			}
-			
 			if (toscreen) di->EndDrawScene(mainvp.sector, gl_RenderState); // do not call this for camera textures.
 
 			if (gl_RenderState.GetPassType() == GBUFFER_PASS) // Turn off ssao draw buffers

@@ -33,14 +33,9 @@
 #include "r_defs.h"
 #include "r_data/r_translate.h"
 #include "g_levellocals.h"
-#include "v_video.h"
-
-EXTERN_CVAR(Bool, gl_global_fade)
 
 namespace OpenGLRenderer
 {
-
-EXTERN_CVAR(Color, gl_global_fade_color)
 
 class FShader;
 struct HWSectorPlane;
@@ -49,7 +44,6 @@ class FGLRenderState : public FRenderState
 {
 	uint8_t mLastDepthClamp : 1;
 
-	int mGlobalFadeMode;
 	float mGlossiness, mSpecularLevel;
 	float mShaderTimer;
 
@@ -107,35 +101,10 @@ public:
 		mCurrentIndexBuffer = nullptr;
 	}
 
-	int SetGlobalFadeMode(int fadeMode)
-	{
-		int fademode = mGlobalFadeMode;
-		mGlobalFadeMode = fadeMode;
-		return fademode;
-	}
-
 	void SetSpecular(float glossiness, float specularLevel)
 	{
 		mGlossiness = glossiness;
 		mSpecularLevel = specularLevel;
-	}
-
-	void InitSceneClearColor()
-	{
-		float r, g, b;
-		if (gl_global_fade)
-		{
-			mSceneColor = mFadeColor;
-		}
-		r = g = b = 1.f;
-		screen->mSceneClearColor[0] = mSceneColor.r * r / 255.f;
-		screen->mSceneClearColor[1] = mSceneColor.g * g / 255.f;
-		screen->mSceneClearColor[2] = mSceneColor.b * b / 255.f;
-	}
-
-	void ResetFadeColor()
-	{
-		mFadeColor = gl_global_fade_color;
 	}
 
 	void EnableDrawBuffers(int count) override

@@ -165,3 +165,22 @@ void FRenderState::CheckTimer(uint64_t ShaderStartTime)
 	if ((firstFrame == 0) || (screen->FrameTime - firstFrame >= 1 << 24) || ShaderStartTime >= firstFrame)
 		firstFrame = screen->FrameTime;
 }
+
+void FRenderState::ResetFadeColor()
+{
+	mFadeColor = gl_global_fade_color;
+	mStreamData.uGlobalFadeColor = mFadeColor;
+}
+
+void FRenderState::InitSceneClearColor()
+{
+	float r, g, b;
+	if (gl_global_fade)
+	{
+		mSceneColor = mFadeColor;
+	}
+	r = g = b = 1.f;
+	screen->mSceneClearColor[0] = mSceneColor.r * r / 255.f;
+	screen->mSceneClearColor[1] = mSceneColor.g * g / 255.f;
+	screen->mSceneClearColor[2] = mSceneColor.b * b / 255.f;
+}

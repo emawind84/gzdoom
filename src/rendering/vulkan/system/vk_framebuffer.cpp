@@ -350,7 +350,7 @@ sector_t *VulkanFrameBuffer::RenderView(player_t *player)
 
 		iter_dlightf = iter_dlight = draw_dlight = draw_dlightf = 0;
 
-		checkBenchActive();
+		CheckBenchActive();
 
 		// reset statistics counters
 		ResetProfilingData();

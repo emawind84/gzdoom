@@ -115,3 +115,18 @@ CUSTOM_CVAR(Int, gl_shadowmap_filter, 1, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 {
 	if (self < 0 || self > 8) self = 1;
 }
+
+CVAR(Bool, gl_global_fade, false, CVAR_ARCHIVE)
+
+CUSTOM_CVAR(Float, gl_global_fade_density, 0.001f, CVAR_ARCHIVE)
+{
+	if (self < 0.0001f) self = 0.0001f;
+	if (self > 0.005f) self = 0.005f;
+}
+CUSTOM_CVAR(Float, gl_global_fade_gradient, 1.5f, CVAR_ARCHIVE)
+{
+	if (self < 0.1f) self = 0.1f;
+	if (self > 2.f) self = 2.f;
+}
+CVAR(Color, gl_global_fade_color, 0x3f3f3f, CVAR_ARCHIVE | CVAR_NOINITCALL)
+CVAR(Bool, gl_global_fade_debug, false, 0)

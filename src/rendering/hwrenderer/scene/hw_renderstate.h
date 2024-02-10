@@ -159,6 +159,7 @@ struct StreamData
 	FVector4 uDynLightColor;
 	FVector4PalEntry uAddColor;
 	FVector4PalEntry uFogColor;
+	FVector4PalEntry uGlobalFadeColor;
 	float uDesaturationFactor;
 	float uInterpolationFactor;
 	float timer;
@@ -176,6 +177,8 @@ struct StreamData
 
 	FVector4 uSplitTopPlane;
 	FVector4 uSplitBottomPlane;
+
+	FVector4 uDetailParms;
 };
 
 class FRenderState
@@ -185,10 +188,10 @@ protected:
 	uint8_t mTextureEnabled:1;
 	uint8_t mGlowEnabled : 1;
 	uint8_t mGradientEnabled : 1;
-	uint8_t mBrightmapEnabled : 1;
 	uint8_t mModelMatrixEnabled : 1;
 	uint8_t mTextureMatrixEnabled : 1;
 	uint8_t mSplitEnabled : 1;
+	uint8_t mBrightmapEnabled : 1;
 
 	int mLightIndex;
 	int mSpecialEffect;
@@ -227,7 +230,7 @@ public:
 	void Reset()
 	{
 		mTextureEnabled = true;
-		mGradientEnabled = mBrightmapEnabled = mFogEnabled = mGlowEnabled = false;
+		mBrightmapEnabled = mGradientEnabled = mFogEnabled = mGlowEnabled = false;
 		mFogColor = 0xffffffff;
 		mStreamData.uFogColor = mFogColor;
 		mTextureMode = -1;
@@ -264,11 +267,13 @@ public:
 		mStreamData.uSplitTopPlane = { 0.0f, 0.0f, 0.0f, 0.0f };
 		mStreamData.uSplitBottomPlane = { 0.0f, 0.0f, 0.0f, 0.0f };
 		mStreamData.uDynLightColor = { 0.0f, 0.0f, 0.0f, 0.0f };
-		mDetailParms.Set(0.0f, 0.0f, 0.0f, 0.0f);
+		mStreamData.uDetailParms = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 		mModelMatrix.loadIdentity();
 		mTextureMatrix.loadIdentity();
 		ClearClipSplit();
+
+		ResetFadeColor();
 	}
 
 	void SetNormal(FVector3 norm)
@@ -431,7 +436,7 @@ public:
 
 	void SetDetailParms(float xscale, float yscale, float bias)
 	{
-		mDetailParms.Set(xscale, yscale, bias, 0);
+		mStreamData.uDetailParms = { xscale, yscale, bias, 0 };
 	}
 
 	void SetDynLight(float r, float g, float b)
@@ -634,6 +639,9 @@ public:
 	{
 		SetColorMask(on, on, on, on);
 	}
+
+	void ResetFadeColor();
+	void InitSceneClearColor();
 
 };
 

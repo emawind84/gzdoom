@@ -643,7 +643,7 @@ void F2DDrawer::AddColorOnlyQuad(int x1, int y1, int w, int h, PalEntry color, F
 //
 //==========================================================================
 
-void F2DDrawer::AddLine(int x1, int y1, int x2, int y2, int palcolor, uint32_t color, uint8_t alpha)
+void F2DDrawer::AddLine(double x1, double y1, double x2, double y2, int palcolor, uint32_t color, uint8_t alpha)
 {
 	PalEntry p = color ? (PalEntry)color : GPalette.BaseColors[palcolor];
 	p.a = alpha;
