@@ -116,7 +116,7 @@ void main()
 	}
 	else
 	{
-		ClipDistance0 = 1;
+		ClipDistance0 = 1.0;
 	}
 
 	// clip planes used for translucency splitting

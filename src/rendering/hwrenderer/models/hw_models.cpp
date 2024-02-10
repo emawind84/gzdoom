@@ -45,6 +45,8 @@
 
 CVAR(Bool, gl_light_models, true, CVAR_ARCHIVE)
 
+float gldepthmin, gldepthmax;
+
 VSMatrix FHWModelRenderer::GetViewToWorldMatrix()
 {
 	VSMatrix objectToWorldMatrix;

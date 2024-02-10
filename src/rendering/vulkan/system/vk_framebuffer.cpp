@@ -59,7 +59,7 @@
 #include "vulkan/system/vk_swapchain.h"
 #include "doomerrors.h"
 
-void Draw2D(F2DDrawer *drawer, FRenderState &state);
+void Draw2D(F2DDrawer *drawer, FRenderState &state, bool outside2D = false);
 void DoWriteSavePic(FileWriter *file, ESSType ssformat, uint8_t *scr, int width, int height, sector_t *viewsector, bool upsidedown);
 
 EXTERN_CVAR(Bool, r_drawvoxels)
@@ -314,7 +314,7 @@ void VulkanFrameBuffer::WriteSavePic(player_t *player, FileWriter *file, int wid
 
 		// This shouldn't overwrite the global viewpoint even for a short time.
 		FRenderViewpoint savevp;
-		sector_t *viewsector = RenderViewpoint(savevp, players[consoleplayer].camera, &bounds, r_viewpoint.FieldOfView.Degrees, 1.6f, 1.6f, true, false);
+		sector_t *viewsector = RenderViewpoint(savevp, players[consoleplayer].camera, &bounds, r_viewpoint.FieldOfView().Degrees, 1.6f, 1.6f, true, false);
 		GetRenderState()->EnableStencil(false);
 		GetRenderState()->SetNoSoftLightLevel();
 
@@ -393,7 +393,7 @@ sector_t *VulkanFrameBuffer::RenderView(player_t *player)
 
 		mPostprocess->ImageTransitionScene(true); // This is the only line that differs compared to FGLRenderer::RenderView
 
-		retsec = RenderViewpoint(r_viewpoint, player->camera, NULL, r_viewpoint.FieldOfView.Degrees, ratio, fovratio, true, true);
+		retsec = RenderViewpoint(r_viewpoint, player->camera, NULL, r_viewpoint.FieldOfView().Degrees, ratio, fovratio, true, true);
 	}
 	All.Unclock();
 	return retsec;
@@ -434,12 +434,12 @@ sector_t *VulkanFrameBuffer::RenderViewpoint(FRenderViewpoint &mainvp, AActor * 
 		di->Set3DViewport(*GetRenderState());
 		di->SetViewArea();
 		auto cm = di->SetFullbrightFlags(mainview ? vp.camera->player : nullptr);
-		di->Viewpoint.FieldOfView = fov;	// Set the real FOV for the current scene (it's not necessarily the same as the global setting in r_viewpoint)
+		//di->Viewpoint.FieldOfView = fov;	// Set the real FOV for the current scene (it's not necessarily the same as the global setting in r_viewpoint)
 
 		// Stereo mode specific perspective projection
-		di->VPUniforms.mProjectionMatrix = eye.GetProjection(fov, ratio, fovratio);
+		di->VPUniforms.mProjectionMatrix = eye->GetProjection(fov, ratio, fovratio);
 		// Stereo mode specific viewpoint adjustment
-		vp.Pos += eye.GetViewShift(vp.HWAngles.Yaw.Degrees);
+		vp.Pos += eye->GetViewShift(vp);
 		di->SetupView(*GetRenderState(), vp.Pos.X, vp.Pos.Y, vp.Pos.Z, false, false);
 
 		// std::function until this can be done better in a cross-API fashion.
@@ -784,9 +784,9 @@ void VulkanFrameBuffer::BeginFrame()
 	mRenderPassManager->UpdateDynamicSet();
 }
 
-void VulkanFrameBuffer::Draw2D()
+void VulkanFrameBuffer::Draw2D(bool outside2D)
 {
-	::Draw2D(&m2DDrawer, *mRenderState);
+	::Draw2D(&m2DDrawer, *mRenderState, outside2D);
 }
 
 VulkanCommandBuffer *VulkanFrameBuffer::GetTransferCommands()

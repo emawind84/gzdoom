@@ -98,7 +98,7 @@ public:
 
 	void SetVSync(bool vsync) override;
 
-	void Draw2D() override;
+	void Draw2D(bool outside2D = false) override;
 
 	void WaitForCommands(bool finish);
 

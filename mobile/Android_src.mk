@@ -39,6 +39,7 @@ LOCAL_C_INCLUDES := \
 	$(GZDOOM_TOP_PATH)/src/utility/nodebuilder \
 	$(GZDOOM_TOP_PATH)/src/scripting \
 	$(GZDOOM_TOP_PATH)/src/scripting/vm \
+	$(GZDOOM_TOP_PATH)/src/rendering/vulkan/thirdparty \
 	$(GZDOOM_TOP_PATH)/src/../libraries/gdtoa \
     $(GZDOOM_TOP_PATH)/src/../libraries/bzip2 \
 	$(GZDOOM_TOP_PATH)/src/../libraries/game-music-emu/ \
@@ -261,7 +262,6 @@ PCH_SOURCES = \
 	rendering/gl/renderer/gl_scene.cpp \
 	rendering/gl/shaders/gl_shader.cpp \
 	rendering/gl/shaders/gl_shaderprogram.cpp \
-	rendering/gl/shaders/gl_postprocessshader.cpp \
 	gl/stereo3d/gl_openxrdevice.cpp \
 	rendering/gl_load/gl_interface.cpp \
 	rendering/gl/system/gl_framebuffer.cpp \
@@ -282,9 +282,6 @@ PCH_SOURCES = \
 	rendering/hwrenderer/postprocessing/hw_postprocess.cpp \
 	rendering/hwrenderer/postprocessing/hw_postprocess_cvars.cpp \
 	rendering/hwrenderer/postprocessing/hw_postprocessshader.cpp \
-	rendering/hwrenderer/postprocessing/hw_shadowmapshader.cpp \
-	rendering/hwrenderer/postprocessing/hw_presentshader.cpp \
-	rendering/hwrenderer/postprocessing/hw_present3dRowshader.cpp \
 	rendering/hwrenderer/textures/hw_material.cpp \
 	rendering/hwrenderer/textures/hw_precache.cpp \
 	rendering/hwrenderer/utility/hw_clock.cpp \
