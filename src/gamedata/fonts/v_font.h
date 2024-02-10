@@ -130,6 +130,8 @@ public:
 	virtual void SetDefaultTranslation(uint32_t *colors);
 	void CheckCase();
 
+
+
 protected:
 	FFont (int lump);
 

@@ -134,7 +134,7 @@ void HWDrawInfo::WorkerThread()
 
 		case RenderJob::WallJob:
 		{
-			GLWall wall;
+			HWWall wall;
 			SetupWall.Clock();
 			wall.sub = job->sub;
 
@@ -161,7 +161,7 @@ void HWDrawInfo::WorkerThread()
 
 		case RenderJob::FlatJob:
 		{
-			GLFlat flat;
+			HWFlat flat;
 			SetupFlat.Clock();
 			flat.section = job->sub->section;
 			front = hw_FakeFlat(job->sub->render_sector, in_area, false);
@@ -354,7 +354,7 @@ void HWDrawInfo::AddLine (seg_t *seg, bool portalclip)
 			}
 			else
 			{
-				GLWall wall;
+				HWWall wall;
 				SetupWall.Clock();
 				wall.sub = seg->Subsector;
 				wall.Process(this, seg, currentsector, backsector);
@@ -555,12 +555,12 @@ void HWDrawInfo::RenderThings(subsector_t * sub, sector_t * sector)
 		// If this thing is in a map section that's not in view it can't possibly be visible
 		if (CurrentMapSections[thing->subsector->mapsection])
 		{
-			GLSprite sprite;
+			HWSprite sprite;
 
 			// [Nash] draw sprite shadow
 			if (R_ShouldDrawSpriteShadow(thing))
 			{
-				double dist = (thing->Pos() - r_viewpoint.Pos).LengthSquared();
+				double dist = (thing->Pos() - vp.Pos).LengthSquared();
 				double check = r_actorspriteshadowdist;
 				if (dist <= check * check)
 				{
@@ -586,12 +586,12 @@ void HWDrawInfo::RenderThings(subsector_t * sub, sector_t * sector)
 			}
 		}
 
-		GLSprite sprite;
+		HWSprite sprite;
 
 		// [Nash] draw sprite shadow
 		if (R_ShouldDrawSpriteShadow(thing))
 		{
-			double dist = (thing->Pos() - r_viewpoint.Pos).LengthSquared();
+			double dist = (thing->Pos() - vp.Pos).LengthSquared();
 			double check = r_actorspriteshadowdist;
 			if (dist <= check * check)
 			{
@@ -614,7 +614,7 @@ void HWDrawInfo::RenderParticles(subsector_t *sub, sector_t *front)
 			if (clipres == PClip_InFront) continue;
 		}
 
-		GLSprite sprite;
+		HWSprite sprite;
 		sprite.ProcessParticle(this, &Level->Particles[i], front);
 	}
 	SetupSprite.Unclock();
@@ -749,7 +749,7 @@ void HWDrawInfo::DoSubsector(subsector_t * sub)
 					}
 					else
 					{
-						GLFlat flat;
+						HWFlat flat;
 						flat.section = sub->section;
 						SetupFlat.Clock();
 						flat.ProcessSector(this, fakesector);

@@ -67,7 +67,7 @@ FLightBuffer::FLightBuffer()
 		mByteSize += screen->maxuniformblock;	// to avoid mapping beyond the end of the buffer.
 	}
 
-	mBuffer = screen->CreateDataBuffer(LIGHTBUF_BINDINGPOINT, mBufferType);
+	mBuffer = screen->CreateDataBuffer(LIGHTBUF_BINDINGPOINT, mBufferType, false);
 	mBuffer->SetData(mByteSize, nullptr, false);
 
 	Clear();

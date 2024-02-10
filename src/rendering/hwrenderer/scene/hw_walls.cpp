@@ -53,7 +53,7 @@ extern int wallVerticesPerEye;
 //
 //==========================================================================
 
-void GLWall::RenderWall(HWDrawInfo *di, FRenderState &state, int textured)
+void HWWall::RenderWall(HWDrawInfo *di, FRenderState &state, int textured)
 {
 	assert(vertcount > 0);
 	state.SetLightIndex(dynlightindex);
@@ -73,7 +73,7 @@ void GLWall::RenderWall(HWDrawInfo *di, FRenderState &state, int textured)
 //
 //==========================================================================
 
-void GLWall::RenderFogBoundary(HWDrawInfo *di, FRenderState &state)
+void HWWall::RenderFogBoundary(HWDrawInfo *di, FRenderState &state)
 {
 	if (gl_fogmode && !di->isFullbrightScene())
 	{
@@ -83,7 +83,7 @@ void GLWall::RenderFogBoundary(HWDrawInfo *di, FRenderState &state)
 		state.SetEffect(EFF_FOGBOUNDARY);
 		state.AlphaFunc(Alpha_GEqual, 0.f);
 		state.SetDepthBias(-1, -128);
-		RenderWall(di, state, GLWall::RWF_BLANK);
+		RenderWall(di, state, HWWall::RWF_BLANK);
 		state.ClearDepthBias();
 		state.SetEffect(EFF_NONE);
 		state.EnableDrawBufferAttachments(true);
@@ -96,7 +96,7 @@ void GLWall::RenderFogBoundary(HWDrawInfo *di, FRenderState &state)
 // 
 //
 //==========================================================================
-void GLWall::RenderMirrorSurface(HWDrawInfo *di, FRenderState &state)
+void HWWall::RenderMirrorSurface(HWDrawInfo *di, FRenderState &state)
 {
 	if (!TexMan.mirrorTexture.isValid()) return;
 
@@ -115,8 +115,8 @@ void GLWall::RenderMirrorSurface(HWDrawInfo *di, FRenderState &state)
 	FMaterial * pat = FMaterial::ValidateTexture(TexMan.mirrorTexture, false, false);
 	state.SetMaterial(pat, CLAMP_NONE, 0, -1);
 
-	flags &= ~GLWall::GLWF_GLOW;
-	RenderWall(di, state, GLWall::RWF_BLANK);
+	flags &= ~HWWall::HWF_GLOW;
+	RenderWall(di, state, HWWall::RWF_BLANK);
 
 	state.EnableTextureMatrix(false);
 	state.SetEffect(EFF_NONE);
@@ -154,12 +154,12 @@ static const uint8_t renderwalltotier[] =
 	side_t::mid,
 };
 
-void GLWall::RenderTexturedWall(HWDrawInfo *di, FRenderState &state, int rflags)
+void HWWall::RenderTexturedWall(HWDrawInfo *di, FRenderState &state, int rflags)
 {
 	int tmode = state.GetTextureMode();
 	int rel = rellight + getExtraLight();
 
-	if (flags & GLWall::GLWF_GLOW)
+	if (flags & HWWall::HWF_GLOW)
 	{
 		state.EnableGlow(true);
 		state.SetGlowParams(topglowcolor, bottomglowcolor);
@@ -167,7 +167,7 @@ void GLWall::RenderTexturedWall(HWDrawInfo *di, FRenderState &state, int rflags)
 	}
 	state.SetMaterial(gltexture, flags & 3, 0, -1);
 
-	if (flags & GLWall::GLWF_CLAMPY && (type == RENDERWALL_M2S || type == RENDERWALL_M2SNF))
+	if (flags & HWWall::GLWF_CLAMPY && (type == RENDERWALL_M2S || type == RENDERWALL_M2SNF))
 	{
 		state.SetTextureMode(tmode | TM_CLAMPY);
 	}
@@ -184,7 +184,7 @@ void GLWall::RenderTexturedWall(HWDrawInfo *di, FRenderState &state, int rflags)
 		PalEntry color1 = side->GetSpecialColor(tierndx, side_t::walltop, frontsector);
 		PalEntry color2 = side->GetSpecialColor(tierndx, side_t::wallbottom, frontsector);
 		state.SetObjectColor(color1);
-		state.SetObjectColor2(color2);
+		state.SetObjectColor2((color1 != color2) ? color2 : 0);
 		state.SetAddColor(side->GetAdditiveColor(tierndx, frontsector));
 		if (color1 != color2)
 		{
@@ -227,7 +227,7 @@ void GLWall::RenderTexturedWall(HWDrawInfo *di, FRenderState &state, int rflags)
 		for (unsigned i = 0; i < lightlist->Size(); i++)
 		{
 			secplane_t &lowplane = i == (*lightlist).Size() - 1 ? frontsector->floorplane : (*lightlist)[i + 1].plane;
-			// this must use the exact same calculation method as GLWall::Process etc.
+			// this must use the exact same calculation method as HWWall::Process etc.
 			float low1 = lowplane.ZatPoint(vertexes[0]);
 			float low2 = lowplane.ZatPoint(vertexes[1]);
 
@@ -262,14 +262,14 @@ void GLWall::RenderTexturedWall(HWDrawInfo *di, FRenderState &state, int rflags)
 //
 //==========================================================================
 
-void GLWall::RenderTranslucentWall(HWDrawInfo *di, FRenderState &state)
+void HWWall::RenderTranslucentWall(HWDrawInfo *di, FRenderState &state)
 {
 	state.SetRenderStyle(RenderStyle);
 	if (gltexture)
 	{
 		if (!gltexture->tex->GetTranslucency()) state.AlphaFunc(Alpha_GEqual, gl_mask_threshold);
 		else state.AlphaFunc(Alpha_GEqual, 0.f);
-		RenderTexturedWall(di, state, GLWall::RWF_TEXTURED | GLWall::RWF_NOSPLIT);
+		RenderTexturedWall(di, state, HWWall::RWF_TEXTURED | HWWall::RWF_NOSPLIT);
 	}
 	else
 	{
@@ -277,7 +277,7 @@ void GLWall::RenderTranslucentWall(HWDrawInfo *di, FRenderState &state)
 		di->SetColor(state, lightlevel, 0, false, Colormap, fabsf(alpha));
 		di->SetFog(state, lightlevel, 0, false, &Colormap, RenderStyle == STYLE_Add);
 		state.EnableTexture(false);
-		RenderWall(di, state, GLWall::RWF_NOSPLIT);
+		RenderWall(di, state, HWWall::RWF_NOSPLIT);
 		state.EnableTexture(true);
 	}
 	state.SetRenderStyle(STYLE_Translucent);
@@ -288,7 +288,7 @@ void GLWall::RenderTranslucentWall(HWDrawInfo *di, FRenderState &state)
 // 
 //
 //==========================================================================
-void GLWall::DrawWall(HWDrawInfo *di, FRenderState &state, bool translucent)
+void HWWall::DrawWall(HWDrawInfo *di, FRenderState &state, bool translucent)
 {
 	if (screen->BuffersArePersistent())
 	{
@@ -296,13 +296,13 @@ void GLWall::DrawWall(HWDrawInfo *di, FRenderState &state, bool translucent)
 		{
 			SetupLights(di, lightdata);
 		}
-		MakeVertices(di, !!(flags & GLWall::GLWF_TRANSLUCENT));
+		MakeVertices(di, !!(flags & HWWall::HWF_TRANSLUCENT));
 	}
 
 	state.SetNormal(glseg.Normal());
 	if (!translucent)
 	{
-		RenderTexturedWall(di, state, GLWall::RWF_TEXTURED);
+		RenderTexturedWall(di, state, HWWall::RWF_TEXTURED);
 	}
 	else
 	{
@@ -329,7 +329,7 @@ void GLWall::DrawWall(HWDrawInfo *di, FRenderState &state, bool translucent)
 //
 //==========================================================================
 
-void GLWall::SetupLights(HWDrawInfo *di, FDynLightData &lightdata)
+void HWWall::SetupLights(HWDrawInfo *di, FDynLightData &lightdata)
 {
 	lightdata.Clear();
 
@@ -425,7 +425,7 @@ void GLWall::SetupLights(HWDrawInfo *di, FDynLightData &lightdata)
 }
 
 
-const char GLWall::passflag[] = {
+const char HWWall::passflag[] = {
 	0,		//RENDERWALL_NONE,             
 	1,		//RENDERWALL_TOP,              // unmasked
 	1,		//RENDERWALL_M1S,              // unmasked
@@ -443,7 +443,7 @@ const char GLWall::passflag[] = {
 // 
 //
 //==========================================================================
-void GLWall::PutWall(HWDrawInfo *di, bool translucent)
+void HWWall::PutWall(HWDrawInfo *di, bool translucent)
 {
 	if (gltexture && gltexture->tex->GetTranslucency() && passflag[type] == 2)
 	{
@@ -451,7 +451,7 @@ void GLWall::PutWall(HWDrawInfo *di, bool translucent)
 	}
 	if (translucent)
 	{
-		flags |= GLWF_TRANSLUCENT;
+		flags |= HWF_TRANSLUCENT;
 		ViewDistance = (di->Viewpoint.Pos - (seg->linedef->v1->fPos() + seg->linedef->Delta() / 2)).XY().LengthSquared();
 	}
 	
@@ -463,7 +463,7 @@ void GLWall::PutWall(HWDrawInfo *di, bool translucent)
 	}
     
     if (di->isFullbrightScene() || (Colormap.LightColor.isWhite() && lightlevel == 255))
-        flags &= ~GLWF_GLOW;
+        flags &= ~HWF_GLOW;
     
 	if (!screen->BuffersArePersistent())
 	{
@@ -487,7 +487,7 @@ void GLWall::PutWall(HWDrawInfo *di, bool translucent)
 	// make sure that following parts of the same linedef do not get this one's vertex and lighting info.
 	vertcount = 0;	
 	dynlightindex = -1;
-	flags &= ~GLWF_TRANSLUCENT;
+	flags &= ~HWF_TRANSLUCENT;
 }
 
 //==========================================================================
@@ -496,7 +496,7 @@ void GLWall::PutWall(HWDrawInfo *di, bool translucent)
 //
 //==========================================================================
 
-void GLWall::PutPortal(HWDrawInfo *di, int ptype, int plane)
+void HWWall::PutPortal(HWDrawInfo *di, int ptype, int plane)
 {
 	auto pstate = screen->mPortalState;
 	HWPortal * portal = nullptr;
@@ -613,7 +613,7 @@ void GLWall::PutPortal(HWDrawInfo *di, int ptype, int plane)
 //
 //==========================================================================
 
-void GLWall::Put3DWall(HWDrawInfo *di, lightlist_t * lightlist, bool translucent)
+void HWWall::Put3DWall(HWDrawInfo *di, lightlist_t * lightlist, bool translucent)
 {
 	// only modify the light di->Level-> if it doesn't originate from the seg's frontsector. This is to account for light transferring effects
 	if (lightlist->p_lightlevel != &seg->sidedef->sector->lightlevel)
@@ -633,7 +633,7 @@ void GLWall::Put3DWall(HWDrawInfo *di, lightlist_t * lightlist, bool translucent
 //
 //==========================================================================
 
-bool GLWall::SplitWallComplex(HWDrawInfo *di, sector_t * frontsector, bool translucent, float& maplightbottomleft, float& maplightbottomright)
+bool HWWall::SplitWallComplex(HWDrawInfo *di, sector_t * frontsector, bool translucent, float& maplightbottomleft, float& maplightbottomright)
 {
 	// check for an intersection with the upper plane
 	if ((maplightbottomleft<ztop[0] && maplightbottomright>ztop[1]) ||
@@ -657,7 +657,7 @@ bool GLWall::SplitWallComplex(HWDrawInfo *di, sector_t * frontsector, bool trans
 		else
 		{
 			// split the wall in two at the intersection and recursively split both halves
-			GLWall copyWall1 = *this, copyWall2 = *this;
+			HWWall copyWall1 = *this, copyWall2 = *this;
 
 			copyWall1.glseg.x2 = copyWall2.glseg.x1 = glseg.x1 + coeff * (glseg.x2 - glseg.x1);
 			copyWall1.glseg.y2 = copyWall2.glseg.y1 = glseg.y1 + coeff * (glseg.y2 - glseg.y1);
@@ -698,7 +698,7 @@ bool GLWall::SplitWallComplex(HWDrawInfo *di, sector_t * frontsector, bool trans
 		else
 		{
 			// split the wall in two at the intersection and recursively split both halves
-			GLWall copyWall1 = *this, copyWall2 = *this;
+			HWWall copyWall1 = *this, copyWall2 = *this;
 
 			copyWall1.glseg.x2 = copyWall2.glseg.x1 = glseg.x1 + coeff * (glseg.x2 - glseg.x1);
 			copyWall1.glseg.y2 = copyWall2.glseg.y1 = glseg.y1 + coeff * (glseg.y2 - glseg.y1);
@@ -719,7 +719,7 @@ bool GLWall::SplitWallComplex(HWDrawInfo *di, sector_t * frontsector, bool trans
 	return false;
 }
 
-void GLWall::SplitWall(HWDrawInfo *di, sector_t * frontsector, bool translucent)
+void HWWall::SplitWall(HWDrawInfo *di, sector_t * frontsector, bool translucent)
 {
 	float maplightbottomleft;
 	float maplightbottomright;
@@ -794,10 +794,10 @@ void GLWall::SplitWall(HWDrawInfo *di, sector_t * frontsector, bool translucent)
 			if (maplightbottomleft<=ztop[0] && maplightbottomright<=ztop[1] &&
 				(maplightbottomleft!=ztop[0] || maplightbottomright!=ztop[1]))
 			{
-				GLWall copyWall1 = *this;
+				HWWall copyWall1 = *this;
 
-				copyWall1.flags |= GLWF_NOSPLITLOWER;
-				flags |= GLWF_NOSPLITUPPER;
+				copyWall1.flags |= HWF_NOSPLITLOWER;
+				flags |= HWF_NOSPLITUPPER;
 				ztop[0]=copyWall1.zbottom[0]=maplightbottomleft;
 				ztop[1]=copyWall1.zbottom[1]=maplightbottomright;
 				tcs[UPLFT].v=copyWall1.tcs[LOLFT].v=copyWall1.tcs[UPLFT].v+ 
@@ -819,7 +819,7 @@ void GLWall::SplitWall(HWDrawInfo *di, sector_t * frontsector, bool translucent)
 out:
 	lightlevel=origlight;
 	Colormap=origcm;
-	flags &= ~GLWF_NOSPLITUPPER;
+	flags &= ~HWF_NOSPLITUPPER;
 	this->lightlist = NULL;
 	//::SplitWall.Unclock();
 }
@@ -830,9 +830,9 @@ out:
 // 
 //
 //==========================================================================
-bool GLWall::DoHorizon(HWDrawInfo *di, seg_t * seg,sector_t * fs, vertex_t * v1,vertex_t * v2)
+bool HWWall::DoHorizon(HWDrawInfo *di, seg_t * seg,sector_t * fs, vertex_t * v1,vertex_t * v2)
 {
-	GLHorizonInfo hi;
+	HWHorizonInfo hi;
 	lightlist_t * light;
 
 	// ZDoom doesn't support slopes in a horizon sector so I won't either!
@@ -906,7 +906,7 @@ bool GLWall::DoHorizon(HWDrawInfo *di, seg_t * seg,sector_t * fs, vertex_t * v1,
 // 
 //
 //==========================================================================
-bool GLWall::SetWallCoordinates(seg_t * seg, FTexCoordInfo *tci, float texturetop,
+bool HWWall::SetWallCoordinates(seg_t * seg, FTexCoordInfo *tci, float texturetop,
 	float topleft, float topright, float bottomleft, float bottomright, float t_ofs)
 {
 	//
@@ -1014,7 +1014,7 @@ bool GLWall::SetWallCoordinates(seg_t * seg, FTexCoordInfo *tci, float textureto
 	{
 		bool normalize = false;
 		if (gltexture->tex->isHardwareCanvas()) normalize = true;
-		else if (flags & GLWF_CLAMPY)
+		else if (flags & HWF_CLAMPY)
 		{
 			// for negative scales we can get negative coordinates here.
 			normalize = (tcs[UPLFT].v > tcs[LOLFT].v || tcs[UPRGT].v > tcs[LORGT].v);
@@ -1038,7 +1038,7 @@ bool GLWall::SetWallCoordinates(seg_t * seg, FTexCoordInfo *tci, float textureto
 //
 //==========================================================================
 
-void GLWall::CheckTexturePosition(FTexCoordInfo *tci)
+void HWWall::CheckTexturePosition(FTexCoordInfo *tci)
 {
 	float sub;
 
@@ -1064,7 +1064,7 @@ void GLWall::CheckTexturePosition(FTexCoordInfo *tci)
 		if ((tcs[UPLFT].v == 0.f && tcs[UPRGT].v == 0.f && tcs[LOLFT].v <= 1.f && tcs[LORGT].v <= 1.f) ||
 			(tcs[UPLFT].v >= 0.f && tcs[UPRGT].v >= 0.f && tcs[LOLFT].v == 1.f && tcs[LORGT].v == 1.f))
 		{
-			flags |= GLWF_CLAMPY;
+			flags |= HWF_CLAMPY;
 		}
 	}
 	else
@@ -1085,7 +1085,7 @@ void GLWall::CheckTexturePosition(FTexCoordInfo *tci)
 		if ((tcs[LOLFT].v == 0.f && tcs[LORGT].v == 0.f && tcs[UPLFT].v <= 1.f && tcs[UPRGT].v <= 1.f) ||
 			(tcs[LOLFT].v >= 0.f && tcs[LORGT].v >= 0.f && tcs[UPLFT].v == 1.f && tcs[UPRGT].v == 1.f))
 		{
-			flags |= GLWF_CLAMPY;
+			flags |= HWF_CLAMPY;
 		}
 	}
 
@@ -1101,7 +1101,7 @@ void GLWall::CheckTexturePosition(FTexCoordInfo *tci)
 		if ((tcs[UPLFT].u == 0.f && tcs[LOLFT].u == 0.f && tcs[UPRGT].u <= 1.f && tcs[LORGT].u <= 1.f) ||
 			(tcs[UPLFT].u >= 0.f && tcs[LOLFT].u >= 0.f && tcs[UPRGT].u == 1.f && tcs[LORGT].u == 1.f))
 		{
-			flags |= GLWF_CLAMPX;
+			flags |= HWF_CLAMPX;
 		}
 	}
 }
@@ -1117,7 +1117,7 @@ static void GetTexCoordInfo(FMaterial *tex, FTexCoordInfo *tci, side_t *side, in
 //  Handle one sided walls, upper and lower texture
 //
 //==========================================================================
-void GLWall::DoTexture(HWDrawInfo *di, int _type,seg_t * seg, int peg,
+void HWWall::DoTexture(HWDrawInfo *di, int _type,seg_t * seg, int peg,
 					   float ceilingrefheight,float floorrefheight,
 					   float topleft,float topright,
 					   float bottomleft,float bottomright,
@@ -1126,7 +1126,7 @@ void GLWall::DoTexture(HWDrawInfo *di, int _type,seg_t * seg, int peg,
 	if (topleft<=bottomleft && topright<=bottomright) return;
 
 	// The Vertex values can be destroyed in this function and must be restored aferward!
-	GLSeg glsave=glseg;
+	HWSeg glsave=glseg;
 	float flh=ceilingrefheight-floorrefheight;
 	int texpos;
 	uint8_t savedflags = flags;
@@ -1182,7 +1182,7 @@ void GLWall::DoTexture(HWDrawInfo *di, int _type,seg_t * seg, int peg,
 //
 //==========================================================================
 
-void GLWall::DoMidTexture(HWDrawInfo *di, seg_t * seg, bool drawfogboundary,
+void HWWall::DoMidTexture(HWDrawInfo *di, seg_t * seg, bool drawfogboundary,
 						  sector_t * front, sector_t * back,
 						  sector_t * realfront, sector_t * realback,
 						  float fch1, float fch2, float ffh1, float ffh2,
@@ -1191,7 +1191,7 @@ void GLWall::DoMidTexture(HWDrawInfo *di, seg_t * seg, bool drawfogboundary,
 {
 	FTexCoordInfo tci;
 	float topleft,bottomleft,topright,bottomright;
-	GLSeg glsave=glseg;
+	HWSeg glsave=glseg;
 	float texturetop, texturebottom;
 	bool wrap = (seg->linedef->flags&ML_WRAP_MIDTEX) || (seg->sidedef->Flags&WALLF_WRAP_MIDTEX);
 	bool mirrory = false;
@@ -1361,15 +1361,15 @@ void GLWall::DoMidTexture(HWDrawInfo *di, seg_t * seg, bool drawfogboundary,
 		if ((textureoffset == 0 && righttex <= tci.mRenderWidth) ||
 			(textureoffset >= 0 && righttex == tci.mRenderWidth))
 		{
-			flags |= GLWF_CLAMPX;
+			flags |= HWF_CLAMPX;
 		}
 		else
 		{
-			flags &= ~GLWF_CLAMPX;
+			flags &= ~HWF_CLAMPX;
 		}
 		if (!wrap)
 		{
-			flags |= GLWF_CLAMPY;
+			flags |= HWF_CLAMPY;
 		}
 	}
 	if (mirrory)
@@ -1387,14 +1387,14 @@ void GLWall::DoMidTexture(HWDrawInfo *di, seg_t * seg, bool drawfogboundary,
 	// 
 	if (drawfogboundary)
 	{
-		flags |= GLWF_NOSPLITUPPER|GLWF_NOSPLITLOWER;
+		flags |= HWF_NOSPLITUPPER|HWF_NOSPLITLOWER;
 		type=RENDERWALL_FOGBOUNDARY;
 		FMaterial *savetex = gltexture;
 		gltexture = NULL;
 		PutWall(di, true);
 		if (!savetex) 
 		{
-			flags &= ~(GLWF_NOSPLITUPPER|GLWF_NOSPLITLOWER);
+			flags &= ~(HWF_NOSPLITUPPER|HWF_NOSPLITLOWER);
 			return;
 		}
 		gltexture = savetex;
@@ -1436,7 +1436,7 @@ void GLWall::DoMidTexture(HWDrawInfo *di, seg_t * seg, bool drawfogboundary,
 		//
 		FloatRect *splitrect;
 		int v = gltexture->GetAreas(&splitrect);
-		if (seg->frontsector == seg->backsector) flags |= GLWF_NOSPLIT;	// we don't need to do vertex splits if a line has both sides in the same sector
+		if (seg->frontsector == seg->backsector) flags |= HWF_NOSPLIT;	// we don't need to do vertex splits if a line has both sides in the same sector
 		if (v>0 && !drawfogboundary && !(seg->linedef->flags & ML_WRAP_MIDTEX) && !(flags & GLWF_NOSLICE))
 		{
 			// split the poly!
@@ -1458,7 +1458,7 @@ void GLWall::DoMidTexture(HWDrawInfo *di, seg_t * seg, bool drawfogboundary,
 				// the current segment is above the top line of the splittable area
 				if (splitbot<=splittopv) continue;
 
-				GLWall split = *this;
+				HWWall split = *this;
 
 				// the top line of the current segment is inside the splittable area
 				// use the splitrect's top as top of this segment
@@ -1502,7 +1502,7 @@ void GLWall::DoMidTexture(HWDrawInfo *di, seg_t * seg, bool drawfogboundary,
 	}
 	// restore some values that have been altered in this function
 	glseg=glsave;
-	flags&=~(GLWF_CLAMPX|GLWF_CLAMPY|GLWF_NOSPLITUPPER|GLWF_NOSPLITLOWER);
+	flags&=~(HWF_CLAMPX|HWF_CLAMPY|HWF_NOSPLITUPPER|HWF_NOSPLITLOWER);
 	RenderStyle = STYLE_Normal;
 }
 
@@ -1512,7 +1512,7 @@ void GLWall::DoMidTexture(HWDrawInfo *di, seg_t * seg, bool drawfogboundary,
 // 
 //
 //==========================================================================
-void GLWall::BuildFFBlock(HWDrawInfo *di, seg_t * seg, F3DFloor * rover,
+void HWWall::BuildFFBlock(HWDrawInfo *di, seg_t * seg, F3DFloor * rover,
 	float ff_topleft, float ff_topright,
 	float ff_bottomleft, float ff_bottomright)
 {
@@ -1613,7 +1613,7 @@ void GLWall::BuildFFBlock(HWDrawInfo *di, seg_t * seg, F3DFloor * rover,
 	alpha = 1.0f;
 	lightlevel = savelight;
 	Colormap = savecolor;
-	flags &= ~GLWF_CLAMPY;
+	flags &= ~HWF_CLAMPY;
 	RenderStyle = STYLE_Normal;
 }
 
@@ -1624,7 +1624,7 @@ void GLWall::BuildFFBlock(HWDrawInfo *di, seg_t * seg, F3DFloor * rover,
 //
 //==========================================================================
 
-__forceinline void GLWall::GetPlanePos(F3DFloor::planeref *planeref, float &left, float &right)
+__forceinline void HWWall::GetPlanePos(F3DFloor::planeref *planeref, float &left, float &right)
 {
 	left=planeref->plane->ZatPoint(vertexes[0]);
 	right=planeref->plane->ZatPoint(vertexes[1]);
@@ -1635,7 +1635,7 @@ __forceinline void GLWall::GetPlanePos(F3DFloor::planeref *planeref, float &left
 // 
 //
 //==========================================================================
-void GLWall::InverseFloors(HWDrawInfo *di, seg_t * seg, sector_t * frontsector,
+void HWWall::InverseFloors(HWDrawInfo *di, seg_t * seg, sector_t * frontsector,
 	float topleft, float topright,
 	float bottomleft, float bottomright)
 {
@@ -1686,7 +1686,7 @@ void GLWall::InverseFloors(HWDrawInfo *di, seg_t * seg, sector_t * frontsector,
 // 
 //
 //==========================================================================
-void GLWall::ClipFFloors(HWDrawInfo *di, seg_t * seg, F3DFloor * ffloor, sector_t * frontsector,
+void HWWall::ClipFFloors(HWDrawInfo *di, seg_t * seg, F3DFloor * ffloor, sector_t * frontsector,
 	float topleft, float topright,
 	float bottomleft, float bottomright)
 {
@@ -1760,7 +1760,7 @@ done:
 // 
 //
 //==========================================================================
-void GLWall::DoFFloorBlocks(HWDrawInfo *di, seg_t * seg, sector_t * frontsector, sector_t * backsector,
+void HWWall::DoFFloorBlocks(HWDrawInfo *di, seg_t * seg, sector_t * frontsector, sector_t * backsector,
 	float fch1, float fch2, float ffh1, float ffh2,
 	float bch1, float bch2, float bfh1, float bfh2)
 
@@ -1849,7 +1849,7 @@ void GLWall::DoFFloorBlocks(HWDrawInfo *di, seg_t * seg, sector_t * frontsector,
 // 
 //
 //==========================================================================
-void GLWall::Process(HWDrawInfo *di, seg_t *seg, sector_t * frontsector, sector_t * backsector, bool isculled)
+void HWWall::Process(HWDrawInfo *di, seg_t *seg, sector_t * frontsector, sector_t * backsector, bool isculled)
 {
 	vertex_t * v1, *v2;
 	float fch1;
@@ -1929,7 +1929,7 @@ void GLWall::Process(HWDrawInfo *di, seg_t *seg, sector_t * frontsector, sector_
 		}
 		v1 = seg->v1;
 		v2 = seg->v2;
-		flags |= GLWF_NOSPLITUPPER | GLWF_NOSPLITLOWER;	// seg-splitting not needed for single segs.
+		flags |= HWF_NOSPLITUPPER | HWF_NOSPLITLOWER;	// seg-splitting not needed for single segs.
 	}
 
 
@@ -1967,7 +1967,7 @@ void GLWall::Process(HWDrawInfo *di, seg_t *seg, sector_t * frontsector, sector_
 	gltexture = NULL;
 
 
-	if (frontsector->GetWallGlow(topglowcolor, bottomglowcolor)) flags |= GLWF_GLOW;
+	if (frontsector->GetWallGlow(topglowcolor, bottomglowcolor)) flags |= HWF_GLOW;
 
 	zfloor[0] = ffh1 = segfront->floorplane.ZatPoint(v1);
 	zfloor[1] = ffh2 = segfront->floorplane.ZatPoint(v2);
@@ -2183,7 +2183,7 @@ void GLWall::Process(HWDrawInfo *di, seg_t *seg, sector_t * frontsector, sector_
 // 
 //
 //==========================================================================
-void GLWall::ProcessLowerMiniseg(HWDrawInfo *di, seg_t *seg, sector_t * frontsector, sector_t * backsector)
+void HWWall::ProcessLowerMiniseg(HWDrawInfo *di, seg_t *seg, sector_t * frontsector, sector_t * backsector)
 {
 	if (frontsector->GetTexture(sector_t::floor) == skyflatnum) return;
 	lightlist = NULL;
@@ -2222,7 +2222,7 @@ void GLWall::ProcessLowerMiniseg(HWDrawInfo *di, seg_t *seg, sector_t * frontsec
 		RenderStyle = STYLE_Normal;
 		Colormap = frontsector->Colormap;
 
-		if (frontsector->GetWallGlow(topglowcolor, bottomglowcolor)) flags |= GLWF_GLOW;
+		if (frontsector->GetWallGlow(topglowcolor, bottomglowcolor)) flags |= HWF_GLOW;
 		dynlightindex = -1;
 
 		zfloor[0] = zfloor[1] = ffh;

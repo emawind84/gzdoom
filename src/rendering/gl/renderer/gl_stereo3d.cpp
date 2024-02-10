@@ -32,8 +32,7 @@
 #include "gl/system/gl_framebuffer.h"
 #include "gl/renderer/gl_postprocessstate.h"
 #include "gl/system/gl_framebuffer.h"
-#include "hwrenderer/postprocessing/hw_presentshader.h"
-#include "hwrenderer/postprocessing/hw_present3dRowshader.h"
+#include "gl/shaders/gl_shaderprogram.h"
 #include "menu/menu.h"
 
 EXTERN_CVAR(Int, vr_mode)
@@ -155,7 +154,7 @@ void FGLRenderer::prepareInterleavedPresent(FPresentShaderBase& shader)
 	const IntRect& box = screen->mOutputLetterbox;
 	glViewport(box.left, box.top, box.width, box.height);
 
-	shader.Bind(NOQUEUE);
+	shader.Bind();
 
 	if (framebuffer->IsHWGammaActive())
 	{
@@ -178,6 +177,7 @@ void FGLRenderer::prepareInterleavedPresent(FPresentShaderBase& shader)
 		screen->mScreenViewport.width / (float)mBuffers->GetWidth(),
 		screen->mScreenViewport.height / (float)mBuffers->GetHeight()
 	};
+	shader.Uniforms->Offset = { 0.0f, 0.0f };
 	shader.Uniforms.Set();
 }
 

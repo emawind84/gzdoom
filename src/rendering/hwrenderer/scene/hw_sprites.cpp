@@ -73,7 +73,7 @@ EXTERN_CVAR(Float, transsouls)
 //
 //==========================================================================
 
-void GLSprite::DrawSprite(HWDrawInfo *di, FRenderState &state, bool translucent)
+void HWSprite::DrawSprite(HWDrawInfo *di, FRenderState &state, bool translucent)
 {
 	bool additivefog = false;
 	bool foglayer = false;
@@ -270,7 +270,7 @@ void GLSprite::DrawSprite(HWDrawInfo *di, FRenderState &state, bool translucent)
 		}
 		else
 		{
-			FGLModelRenderer renderer(di, state, dynlightindex);
+			FHWModelRenderer renderer(di, state, dynlightindex);
 			renderer.RenderModel(x, y, z, modelframe, actor, di->Viewpoint.TicFrac);
 			state.SetVertexBuffer(screen->mVertexData);
 		}
@@ -308,7 +308,7 @@ void GLSprite::DrawSprite(HWDrawInfo *di, FRenderState &state, bool translucent)
 //
 //==========================================================================
 
-bool GLSprite::CalculateVertices(HWDrawInfo *di, FVector3 *v, DVector3 *vp)
+bool HWSprite::CalculateVertices(HWDrawInfo *di, FVector3 *v, DVector3 *vp)
 {
 	const auto &HWAngles = di->Viewpoint.HWAngles;
 	if (actor != nullptr && (actor->renderflags & RF_SPRITETYPEMASK) == RF_FLATSPRITE)
@@ -459,7 +459,7 @@ bool GLSprite::CalculateVertices(HWDrawInfo *di, FVector3 *v, DVector3 *vp)
 //
 //==========================================================================
 
-inline void GLSprite::PutSprite(HWDrawInfo *di, bool translucent)
+inline void HWSprite::PutSprite(HWDrawInfo *di, bool translucent)
 {
 	// That's a lot of checks...
 	if (modelframe && !modelframe->isVoxel && RenderStyle.BlendOp != STYLEOP_Shadow && gl_light_sprites && di->Level->HasDynamicLights && !di->isFullbrightScene() && !fullbright)
@@ -484,7 +484,7 @@ inline void GLSprite::PutSprite(HWDrawInfo *di, bool translucent)
 //
 //==========================================================================
 
-void GLSprite::CreateVertices(HWDrawInfo *di)
+void HWSprite::CreateVertices(HWDrawInfo *di)
 {
 	if (modelframe == nullptr)
 	{
@@ -509,9 +509,9 @@ void GLSprite::CreateVertices(HWDrawInfo *di)
 //
 //==========================================================================
 
-void GLSprite::SplitSprite(HWDrawInfo *di, sector_t * frontsector, bool translucent)
+void HWSprite::SplitSprite(HWDrawInfo *di, sector_t * frontsector, bool translucent)
 {
-	GLSprite copySprite;
+	HWSprite copySprite;
 	double lightbottom;
 	unsigned int i;
 	bool put=false;
@@ -558,7 +558,7 @@ void GLSprite::SplitSprite(HWDrawInfo *di, sector_t * frontsector, bool transluc
 //
 //==========================================================================
 
-void GLSprite::PerformSpriteClipAdjustment(AActor *thing, const DVector2 &thingpos, float spriteheight)
+void HWSprite::PerformSpriteClipAdjustment(AActor *thing, const DVector2 &thingpos, float spriteheight)
 {
 	const float NO_VAL = 100000000.0f;
 	bool clipthing = (thing->player || thing->flags3&MF3_ISMONSTER || thing->IsKindOf(NAME_Inventory)) && (thing->flags&MF_ICECORPSE || !(thing->flags&MF_CORPSE));
@@ -673,7 +673,7 @@ inline bool IsDistanceCulled(AActor* thing)
 	return false;
 }
 
-void GLSprite::Process(HWDrawInfo *di, AActor* thing, sector_t * sector, area_t in_area, int thruportal, bool isSpriteShadow)
+void HWSprite::Process(HWDrawInfo *di, AActor* thing, sector_t * sector, area_t in_area, int thruportal, bool isSpriteShadow)
 {
 	sector_t rs;
 	sector_t * rendersector;
@@ -1202,7 +1202,7 @@ void GLSprite::Process(HWDrawInfo *di, AActor* thing, sector_t * sector, area_t 
 //
 //==========================================================================
 
-void GLSprite::ProcessParticle (HWDrawInfo *di, particle_t *particle, sector_t *sector)//, int shade, int fakeside)
+void HWSprite::ProcessParticle (HWDrawInfo *di, particle_t *particle, sector_t *sector)//, int shade, int fakeside)
 {
 	if (particle->alpha==0) return;
 
@@ -1400,7 +1400,7 @@ void HWDrawInfo::ProcessActorsInPortal(FLinePortalSpan *glport, area_t in_area)
 					th->SetXYZ(newpos);
 					th->Prev += newpos - savedpos;
 
-					GLSprite spr;
+					HWSprite spr;
 
 					// [Nash] draw sprite shadow
 					if (R_ShouldDrawSpriteShadow(th))
