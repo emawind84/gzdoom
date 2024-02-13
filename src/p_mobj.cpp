@@ -6995,7 +6995,7 @@ AActor *P_SpawnPlayerMissile (AActor *source, double x, double y, double z,
 		if (aimflags & ALF_ISOFFHAND)
 		{
 			pos = source->player->mo->OffhandPos;
-			dir = source->player->mo->OffhandDir(source, an, pitch);
+			dir = source->player->mo->OffhandDir(source, angle, pitch);
 			xoffsetDir = source->player->mo->OffhandDir(source, source->Angles.Yaw, source->Angles.Pitch);
 			yoffsetDir = source->player->mo->OffhandDir(source, source->Angles.Yaw - 90, source->Angles.Pitch);
 			zoffsetDir = source->player->mo->OffhandDir(source, source->Angles.Yaw, source->Angles.Pitch + 90);
@@ -7005,7 +7005,7 @@ AActor *P_SpawnPlayerMissile (AActor *source, double x, double y, double z,
 		else
 		{
 			pos = source->player->mo->AttackPos;
-			dir = source->player->mo->AttackDir(source, an, pitch);
+			dir = source->player->mo->AttackDir(source, angle, pitch);
 			xoffsetDir = source->player->mo->AttackDir(source, source->Angles.Yaw, source->Angles.Pitch);
 			yoffsetDir = source->player->mo->AttackDir(source, source->Angles.Yaw - 90, source->Angles.Pitch);
 			zoffsetDir = source->player->mo->AttackDir(source, source->Angles.Yaw, source->Angles.Pitch + 90);
