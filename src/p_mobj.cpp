@@ -6940,7 +6940,7 @@ AActor *P_SpawnPlayerMissile (AActor *source, double x, double y, double z,
 	{
 		// Keep exactly the same angle and pitch as the player's own aim
 		an = angle;
-		pitch = source->Angles.Pitch;
+		pitch = p;
 		pLineTarget->linetarget = NULL;
 	}
 	else // see which target is to be aimed at
