@@ -348,13 +348,15 @@ PPGLTexture FGLRenderBuffers::Create2DTexture(const char *name, GLuint format, i
 
 PPGLTexture FGLRenderBuffers::Create2DMultisampleTexture(const char *name, GLuint format, int width, int height, int samples, bool fixedSampleLocations)
 {
+	// TODO multisample
 	PPGLTexture tex;
 	tex.Width = width;
 	tex.Height = height;
 	glGenTextures(1, &tex.handle);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, tex.handle);
 	FGLDebug::LabelObject(GL_TEXTURE, tex.handle, name);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, fixedSampleLocations);
+	//glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, fixedSampleLocations);
+	glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, fixedSampleLocations);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 	return tex;
 }

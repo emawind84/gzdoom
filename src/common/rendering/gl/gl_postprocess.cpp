@@ -95,7 +95,7 @@ void FGLRenderer::BlurScene(float gameinfobluramount)
 	for (int i = 0; i < eyeCount; ++i)
 	{
 		hw_postprocess.bloom.RenderBlur(&renderstate, sceneWidth, sceneHeight, gameinfobluramount);
-		mBuffers->NextEye(eyeCount);
+		if (eyeCount - i > 1) mBuffers->NextEye(eyeCount);
 	}
 }
 
