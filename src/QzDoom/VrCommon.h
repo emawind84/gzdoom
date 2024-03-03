@@ -2,7 +2,15 @@
 #define vrcommon_h
 
 #include "c_cvars.h"
-#include "mathlib.h"
+
+typedef float vec_t;
+typedef vec_t vec3_t[3];
+
+#define PITCH 0
+#define YAW 1
+#define ROLL 2
+
+#define VectorSet(v, x, y, z) ((v)[0]=(x),(v)[1]=(y),(v)[2]=(z))
 
 EXTERN_CVAR(Int, vr_control_scheme)
 EXTERN_CVAR(Bool, vr_move_use_offhand)
@@ -16,8 +24,6 @@ EXTERN_CVAR(Bool, vr_secondary_button_mappings);
 EXTERN_CVAR(Bool, vr_two_handed_weapons);
 EXTERN_CVAR(Bool, vr_crouch_use_button);
 
-extern bool qzdoom_initialised;
-
 extern bool cinemamode;
 extern float cinemamodeYaw;
 extern float cinemamodePitch;
@@ -27,14 +33,6 @@ extern bool resetDoomYaw;
 extern float doomYaw;
 extern bool resetPreviousPitch;
 extern float previousPitch;
-
-extern float vrFOV;
-
-extern vec3_t worldPosition;
-
-extern vec3_t hmdPosition;
-extern vec3_t hmdorientation;
-extern vec3_t positionDeltaThisFrame;
 
 extern vec3_t weaponangles;
 extern vec3_t weaponoffset;
@@ -46,8 +44,6 @@ extern bool player_moving;
 
 extern bool ready_teleport;
 extern bool trigger_teleport;
-
-extern bool shutdown;
 
 //Called from engine code
 void QzDoom_setUseScreenLayer(bool use);

@@ -25,6 +25,8 @@
 **
 */
 
+#ifdef USE_OPENXR
+
 #include "gl_openxrdevice.h"
 
 #include <string>
@@ -45,12 +47,13 @@
 #include "g_levellocals.h" // pixelstretch
 #include "math/cmath.h"
 #include "c_cvars.h"
+#include "c_console.h"
+#include "c_dispatch.h"
 #include "cmdlib.h"
 #include "LSMatrix.h"
 #include "d_gui.h"
 #include "d_event.h"
 #include "doomstat.h"
-#include "c_console.h"
 #include "hw_models.h"
 #include "hwrenderer/scene/hw_drawinfo.h"
 #include "hwrenderer/data/flatvertices.h"
@@ -84,6 +87,7 @@ EXTERN_CVAR(Float, vr_2dweaponOffsetZ);
 //HUD control
 EXTERN_CVAR(Float, vr_hud_scale);
 EXTERN_CVAR(Float, vr_hud_stereo);
+EXTERN_CVAR(Float, vr_hud_distance);
 EXTERN_CVAR(Float, vr_hud_rotate);
 EXTERN_CVAR(Bool, vr_hud_fixed_pitch);
 EXTERN_CVAR(Bool, vr_hud_fixed_roll);
@@ -92,6 +96,7 @@ EXTERN_CVAR(Bool, vr_hud_fixed_roll);
 EXTERN_CVAR(Bool, vr_automap_use_hud);
 EXTERN_CVAR(Float, vr_automap_scale);
 EXTERN_CVAR(Float, vr_automap_stereo);
+EXTERN_CVAR(Float, vr_automap_distance);
 EXTERN_CVAR(Float, vr_automap_rotate);
 EXTERN_CVAR(Bool,  vr_automap_fixed_pitch);
 EXTERN_CVAR(Bool,  vr_automap_fixed_roll);
@@ -104,19 +109,21 @@ extern vec3_t hmdorientation;
 extern vec3_t weaponoffset;
 extern vec3_t weaponangles;
 extern vec3_t offhandoffset;
-extern vec3_t offhandoffset;
 extern vec3_t offhandangles;
 
 extern float playerYaw;
 extern float doomYaw;
-extern bool cinemamode;
+extern float previousPitch;
+extern float snapTurn;
 
 extern bool ready_teleport;
 extern bool trigger_teleport;
 extern bool shutdown;
 extern bool resetDoomYaw;
 extern bool resetPreviousPitch;
-extern float previousPitch;
+extern bool cinemamode;
+extern float cinemamodeYaw;
+extern float cinemamodePitch;
 
 bool TBXR_FrameSetup();
 void TBXR_prepareEyeBuffer(int eye );
@@ -124,6 +131,7 @@ void TBXR_finishEyeBuffer(int eye );
 void TBXR_submitFrame();
 
 void QzDoom_setUseScreenLayer(bool use);
+void QzDoom_Vibrate(float duration, int channel, float intensity);
 void VR_GetMove( float *joy_forward, float *joy_side, float *hmd_forward, float *hmd_side, float *up, float *yaw, float *pitch, float *roll );
 bool VR_GetVRProjection(int eye, float zNear, float zFar, float* projection);
 void VR_HapticEnable();
@@ -141,7 +149,7 @@ float getHmdAdjustedHeightInMapUnit()
 }
 
 //bit of a hack, assume player is at "normal" height when not crouching
-float getDoomPlayerHeightWithoutCrouch(const player_t *player)
+static float getDoomPlayerHeightWithoutCrouch(const player_t *player)
 {
     if (!vr_crouch_use_button)
     {
@@ -272,7 +280,8 @@ namespace s3d
         // hmd coordinates (meters) from ndc coordinates
         // const float weapon_distance_meters = 0.55f;
         // const float weapon_width_meters = 0.3f;
-        new_projection.translate(0.0, 0.0, 1.0);
+        double distance = getHUDValue<FFloatCVarRef>(vr_automap_distance, vr_hud_distance);
+        new_projection.translate(0.0, 0.0, distance);
         double vr_scale = getHUDValue<FFloatCVarRef>(vr_automap_scale, vr_hud_scale);
         new_projection.scale(
                 -vr_scale,
@@ -376,6 +385,7 @@ namespace s3d
         screen->mScreenViewport.height = sceneHeight;
     }
 
+    /* hand is 1 for left (offhand) and 0 for right (mainhand) */
     void OpenXRDeviceMode::AdjustPlayerSprites(int hand) const
     {
         if (GetWeaponTransform(&gl_RenderState.mModelMatrix, hand))
@@ -395,6 +405,12 @@ namespace s3d
         gl_RenderState.EnableModelMatrix(false);
     }
 
+    //---------------------------------------------------------------------------
+    //
+    // This method has not been changed from its original implementation (before dualwield)
+    // the hand parameter respect the old logic of 0 for left (offhand) and 1 for right (mainhand)
+    //
+    //---------------------------------------------------------------------------
     bool OpenXRDeviceMode::GetHandTransform(int hand, VSMatrix* mat) const
     {
         double pixelstretch = level.info ? level.info->pixelstretch : 1.2;
@@ -447,27 +463,6 @@ namespace s3d
 
         return false;
     }
-
-    bool OpenXRDeviceMode::GetWeaponTransform(VSMatrix* out, int hand_weapon) const
-    {
-        player_t * player = r_viewpoint.camera ? r_viewpoint.camera->player : nullptr;
-        bool autoReverse = true;
-        if (player)
-        {
-            AActor *weap = hand_weapon ? player->OffhandWeapon : player->ReadyWeapon;
-            autoReverse = weap == nullptr || !(weap->IntVar(NAME_WeaponFlags) & WIF_NO_AUTO_REVERSE);
-        }
-        bool oculusquest_rightHanded = vr_control_scheme < 10;
-        int hand = hand_weapon ? 1 - oculusquest_rightHanded : oculusquest_rightHanded;
-        if (GetHandTransform(hand, out))
-        {
-            if (!hand && autoReverse)
-                out->scale(-1.0f, 1.0f, 1.0f);
-            return true;
-        }
-        return false;
-    }
-
 
 /* virtual */
     void OpenXRDeviceMode::Present() const {
@@ -526,7 +521,7 @@ namespace s3d
             return;
         }
 
-        if (gamestate == GS_LEVEL && getMenuState() == MENU_Off) {
+        if (gamestate == GS_LEVEL && menuactive == MENU_Off) {
             cachedScreenBlocks = screenblocks;
             screenblocks = 12;
             QzDoom_setUseScreenLayer(false);
@@ -539,7 +534,7 @@ namespace s3d
         player_t* player = r_viewpoint.camera ? r_viewpoint.camera->player : nullptr;
 
         //Some crazy stuff to ascertain the actual yaw that doom is using at the right times!
-        if (getGameState() != GS_LEVEL || getMenuState() != MENU_Off 
+        if (gamestate != GS_LEVEL || menuactive != MENU_Off 
         || ConsoleState == c_down || ConsoleState == c_falling 
         || (player && player->playerstate == PST_DEAD)
         || (player && player->resetDoomYaw)
@@ -548,13 +543,13 @@ namespace s3d
         {
             resetDoomYaw = true;
         }
-        else if (getGameState() == GS_LEVEL && resetDoomYaw && r_viewpoint.camera != nullptr)
+        else if (gamestate == GS_LEVEL && resetDoomYaw && r_viewpoint.camera != nullptr)
         {
             doomYaw = (float)r_viewpoint.camera->Angles.Yaw.Degrees();
             resetDoomYaw = false;
         }
 
-        if (gamestate == GS_LEVEL && getMenuState() == MENU_Off)
+        if (gamestate == GS_LEVEL && menuactive == MENU_Off)
         {
             if (player && player->mo)
             {
@@ -600,7 +595,7 @@ namespace s3d
 
                 if (vr_teleport && player->mo->health > 0) {
 
-                    DAngle yaw = DAngle::fromDeg(doomYaw - hmdorientation[YAW] + offhandangles[YAW]);
+                    DAngle yaw = DAngle::fromDeg(getViewpointYaw() - hmdorientation[YAW] + offhandangles[YAW]);
                     DAngle pitch = DAngle::fromDeg(offhandangles[PITCH]);
                     double pixelstretch = level.info ? level.info->pixelstretch : 1.2;
 
@@ -639,7 +634,18 @@ namespace s3d
 
                     trigger_teleport = false;
                 }
-
+#if 0  // this replace the move with offhand implementation in VrInputDefault.cpp
+                LSMatrix44 mat;
+                bool rightHanded = vr_control_scheme < 10;
+                if (GetHandTransform(rightHanded ? 0 : 1, &mat) && vr_move_use_offhand)
+                {
+                    player->mo->ThrustAngleOffset = DAngle::fromDeg(RAD2DEG(atan2f(-mat[2][2], -mat[2][0]))) - player->mo->Angles.Yaw;
+                }
+                else
+                {
+                    player->mo->ThrustAngleOffset = nullAngle;
+                }
+#endif
                 //Positional Movement
                 float hmd_forward=0;
                 float hmd_side=0;
@@ -676,6 +682,8 @@ namespace s3d
         float yaw=0;
         float pitch=0;
         float roll=0;
+
+        // the yaw returned contains snapTurn input value
         VR_GetMove(&dummy, &dummy, &dummy, &dummy, &dummy, &yaw, &pitch, &roll);
 
         //Yaw
@@ -710,7 +718,7 @@ namespace s3d
 
         if (!cinemamode)
         {
-            if (getGameState() == GS_LEVEL && getMenuState() == MENU_Off)
+            if (gamestate == GS_LEVEL && menuactive == MENU_Off)
             {
                 doomYaw += hmdYawDeltaDegrees;
                 vp.HWAngles.Roll = FAngle::fromDeg(roll);
@@ -728,10 +736,15 @@ namespace s3d
         }
     }
 
+    void OpenXRDeviceMode::Vibrate(float duration, int channel, float intensity) const
+    {
+        QzDoom_Vibrate(duration, channel, intensity);
+    }
+
 /* virtual */
     void OpenXRDeviceMode::TearDown() const
     {
-        if (getGameState() == GS_LEVEL && cachedScreenBlocks != 0 && !getMenuState()) {
+        if (gamestate == GS_LEVEL && cachedScreenBlocks != 0 && !menuactive) {
             screenblocks = cachedScreenBlocks;
         }
         super::TearDown();
@@ -744,4 +757,20 @@ namespace s3d
 
 } /* namespace s3d */
 
+CCMD (cinemamode)
+{
+    cinemamode = !cinemamode;
 
+    //Store these
+    cinemamodeYaw = hmdorientation[YAW] + snapTurn;
+    cinemamodePitch = hmdorientation[PITCH];
+
+    //Reset angles back to normal view
+    if (!cinemamode)
+    {
+        resetDoomYaw = true;
+        resetPreviousPitch = true;
+    }
+}
+
+#endif  // USE_OPENXR

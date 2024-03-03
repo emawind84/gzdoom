@@ -46,6 +46,8 @@
 #include "d_net.h"
 #include "serializer.h"
 #include "vm.h"
+#include "hw_vrmodes.h"
+
 #include <QzDoom/VrCommon.h>
 
 //===========================================================================

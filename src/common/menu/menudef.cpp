@@ -262,6 +262,12 @@ static bool CheckSkipOptionBlock(FScanner &sc)
 				filter = true;
 			#endif
 		}
+		else if (sc.Compare("OpenVR"))
+		{
+			#ifdef USE_OPENVR
+				filter = true;
+			#endif
+		}
 	}
 	while (sc.CheckString(","));
 	sc.MustGetStringName(")");

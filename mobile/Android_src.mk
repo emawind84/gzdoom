@@ -12,7 +12,7 @@ LOCAL_CFLAGS   := -D__MOBILE__ -DOPNMIDI_DISABLE_GX_EMULATOR -DGZDOOM -D__STDINT
 LOCAL_CPPFLAGS := -include g_pch.h -std=c++17 -Wno-switch -Wno-inconsistent-missing-override -Werror=format-security \
     -fexceptions -fpermissive -Dstricmp=strcasecmp -Dstrnicmp=strncasecmp -D__forceinline=inline -DNO_GTK -DNO_SSE -fsigned-char
 
-LOCAL_CFLAGS  += -DNO_SEND_STATS -DMINIZ_NO_STDIO -DVR -DNO_SWRENDERER
+LOCAL_CFLAGS  += -DNO_SEND_STATS -DMINIZ_NO_STDIO -DUSE_OPENXR -DNO_SWRENDERER
 
 LOCAL_CFLAGS  += -DOPNMIDI_USE_LEGACY_EMULATOR
 LOCAL_CFLAGS  += -DADLMIDI_DISABLE_MUS_SUPPORT -DADLMIDI_DISABLE_XMI_SUPPORT -DADLMIDI_DISABLE_MIDI_SEQUENCER
@@ -69,6 +69,7 @@ LOCAL_C_INCLUDES := \
     	$(GZDOOM_TOP_PATH)/src/gamedata/fonts \
     	$(GZDOOM_TOP_PATH)/src/rendering \
     	$(GZDOOM_TOP_PATH)/src/rendering/hwrenderer \
+    	$(GZDOOM_TOP_PATH)/src/rendering/gl/stereo3d \
     	$(GZDOOM_TOP_PATH)/src/rendering/2d \
     	$(GZDOOM_TOP_PATH)/src/r_data \
     	$(GZDOOM_TOP_PATH)/src/sound \

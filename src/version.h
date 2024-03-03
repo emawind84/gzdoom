@@ -91,12 +91,12 @@ const char *GetVersionString();
 #define SAVEVER 4560
 
 // This is so that derivates can use the same savegame versions without worrying about engine compatibility
-#define GAMESIG "LZDOOM"
+#define GAMESIG "QZDOOM"
 #ifdef __ANDROID__
-#define BASEWAD "res/lzdoom.pk3"
+#define BASEWAD "res/qzdoom.pk3"
 #define OPTIONALWAD "res/game_support.pk3"
 #else
-#define BASEWAD "lzdoom.pk3"
+#define BASEWAD "qzdoom.pk3"
 #define OPTIONALWAD "game_support.pk3"
 #endif
 

@@ -158,6 +158,9 @@ CUSTOM_CVARD(Int, gl_lightmode, 1, CVAR_ARCHIVE, "Select lighting mode. 2 is van
 
 ELightMode getRealLightmode(FLevelLocals* Level, bool for3d)
 {
+	if (Level->info == nullptr)
+		return ELightMode::Doom;
+
 	// The rules are:
 	// 1) if the map sets a proper light mode, it is taken unconditionally.
 	if (Level->info->lightmode != ELightMode::NotSet) return Level->info->lightmode;

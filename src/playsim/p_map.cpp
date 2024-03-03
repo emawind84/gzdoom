@@ -93,6 +93,8 @@
 #include "r_sky.h"
 #include "g_levellocals.h"
 #include "actorinlines.h"
+#include "hw_vrmodes.h"
+
 #include <shadowinlines.h>
 
 CVAR(Bool, cl_bloodsplats, true, CVAR_ARCHIVE)
@@ -4646,6 +4648,8 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
 	direction = { pc * angle.Cos(), pc * angle.Sin(), -pitch.Sin() };
 	shootz = t1->Center() - t1->Floorclip + t1->AttackOffset();
 
+	auto vrmode = VRMode::GetVRMode(true);
+
 	if (t1->player != NULL)
 	{
 		// this is coming from a weapon attack function which needs to transfer information to the obituary code,
@@ -4656,11 +4660,11 @@ AActor *P_LineAttack(AActor *t1, DAngle angle, double distance,
             //Haptics
             long rightHanded = vr_control_scheme < 10;
 			rightHanded = (flags & LAF_ISOFFHAND) ? 1 - rightHanded : rightHanded;
-            QzDoom_Vibrate(150, rightHanded ? 1 : 0, 0.8);
+            vrmode->Vibrate(150, rightHanded ? 1 : 0, 0.8);
 			VR_HapticEvent("fire_weapon", rightHanded ? 2 : 1, 100 * C_GetExternalHapticLevelValue("fire_weapon"), 0, 0);
 
             if (weaponStabilised) {
-                QzDoom_Vibrate(150, rightHanded ? 0 : 1, 0.6);
+                vrmode->Vibrate(150, rightHanded ? 0 : 1, 0.6);
 				VR_HapticEvent("fire_weapon", rightHanded ? 1 : 2, 100 * C_GetExternalHapticLevelValue("fire_weapon"), 0, 0);
 			}
         }
@@ -5514,11 +5518,12 @@ void P_RailAttack(FRailParams *p)
 			//Haptics
 			long rightHanded = vr_control_scheme < 10;
 			rightHanded = (p->flags & RAF_ISOFFHAND) ? 1 - rightHanded : rightHanded;
-			QzDoom_Vibrate(150, rightHanded ? 1 : 0, 0.8);
+			auto vrmode = VRMode::GetVRMode(true);
+			vrmode->Vibrate(150, rightHanded ? 1 : 0, 0.8);
 			VR_HapticEvent("fire_weapon", rightHanded ? 2 : 1, 100 * C_GetExternalHapticLevelValue("fire_weapon"), 0, 0);
 
 			if (weaponStabilised) {
-				QzDoom_Vibrate(150, rightHanded ? 0 : 1, 0.6);
+				vrmode->Vibrate(150, rightHanded ? 0 : 1, 0.6);
 				VR_HapticEvent("fire_weapon", rightHanded ? 1 : 2, 100 * C_GetExternalHapticLevelValue("fire_weapon"), 0, 0);
 			}
 		}

@@ -1,0 +1,563 @@
+Model BFG9000
+{ 
+   Path "Models/Weapons/Pickup/BFG9000"
+   Model 0 "BFG9000.md3"
+   Skin 0 "BFG9000.png"
+   Model 1 "BFGLights.md3"
+   Skin 1 "Lights.png"
+   Model 2 "BFGGlass.md3"
+   Skin 2 "Glass.png"
+   Scale 2.0 2.0 2.0
+
+   FrameIndex BFUG A 0 0
+}
+
+Model Chaingun
+{ 
+   Path "Models/Weapons/Pickup/Chaingun"
+   Model 0 "ChaingunBarrels.md3"
+   Skin 0 "dcbarrel.tga"
+   Model 1 "ChaingunBase.md3"
+   Skin 1 "dchain.jpg"
+   Model 2 "ChaingunBullets.md3"
+   Skin 2 "M_shell.jpg"
+   Model 3 "ChaingunFeeder.md3"
+   Skin 3 "feeder.tga"
+   Scale 2.0 2.0 2.0
+
+   FrameIndex MGUN A 0 0
+}
+
+Model Chainsaw
+{ 
+   Path "Models/Weapons/Pickup/Chainsaw"
+   Model 0 "Chainsaw.md3"
+   Skin 0 "doomchainsaw.jpg"
+   Model 1 "ChainsawMuffler.md3"
+   Skin 1 "doomchainsaw_muffler.jpg"
+   Model 2 "ChainsawChain.md3"
+   Skin 2 "doomchainsawc.tga"
+   Scale 2.0 2.0 2.0
+
+   FrameIndex CSAW A 0 0
+}
+
+Model Pistol
+{ 
+   Path "Models/Weapons/Pickup/Pistol"
+   Model 0 "PistolFrame.md3"
+   Skin 0 "frame.jpg"
+   Model 1 "PistolSlide.md3"
+   Skin 1 "slide.jpg"
+   Model 2 "PistolParts.md3"
+   Skin 2 "parts.jpg"
+   Scale 2.0 2.0 2.0
+
+   FrameIndex PIST A 0 0
+} 
+
+Model PlasmaRifle
+{ 
+   Path "Models/Weapons/Pickup/PlasmaRifle"
+   Model 0 "PlasmaRifle.md3"
+   Skin 0 "plasmagun.jpg"
+   Model 1 "PlasmaTubes.md3"
+   Skin 1 "Glass.png"
+   Model 2 "PlasmaLight.md3"
+   Skin 2 "Lights.png"
+   Scale 2.0 2.0 2.0
+
+   FrameIndex PLAS A 0 0
+} 
+
+Model RocketLauncher
+{ 
+   Path "Models/Weapons/Pickup/RocketLauncher"
+   Model 0 "RocketLauncherBase.md3"
+   Skin 0 "drock01.png"
+   Model 1 "RocketLauncherEnd.md3"
+   Skin 1 "drock02.png"
+   Scale 2.0 2.0 2.0
+
+   FrameIndex LAUN A 0 0
+} 
+
+Model Shotgun
+{ 
+   Path "Models/Weapons/Pickup/Shotgun"
+   Model 0 "shotgun.md3"
+   Skin 0 "doomboomstick.jpg"
+   Scale 2.0 2.0 2.0
+
+   FrameIndex SHOT A 0 0
+} 
+
+Model SuperShotgun
+{ 
+   Path "Models/Weapons/Pickup/SSG"
+   Model 0 "SuperShotgun.md3"
+   Skin 0 "doomssg.jpg"
+   Scale 2.0 2.0 2.0
+
+   FrameIndex SGN2 A 0 0
+} 
+
+
+MODEL CHAINGUN
+{
+Path "Models/Weapons/Hud/CHAINGUN"
+Model 0 "CGBarrel.md3"
+Skin 0 "dcbarrel.tga"
+Model 1 "CGBase.md3"
+Skin 1 "dchain.jpg"
+
+Scale -4.0 4.0 4.0
+   Offset 0.0 -25.0 20.0
+
+NOINTERPOLATION
+
+FrameIndex CHGG A 0 0
+}
+
+MODEL CHAINGUN
+{
+Path "Models/Weapons/Hud/CHAINGUN"
+Model 0 "CGBarrel2.md3"
+Skin 0 "dcbarrel.tga"
+Model 1 "CGBase.md3"
+Skin 1 "dchain.jpg"
+
+Scale -4.0 4.0 4.0
+   Offset 0.0 -25.0 20.0
+
+NOINTERPOLATION
+
+FrameIndex CHGG B 0 0
+}
+
+Model PlasmaRifle
+{ 
+   Path "Models/Weapons/Hud/PlasmaRifle"
+   Model 0 "PlasmaRifle.md2"
+   Skin 0 "PlasmaRifle.png"
+   Scale -1.2 1.0 1.0
+   ZOffset -5
+//   NOINTERPOLATION
+
+   FrameIndex PLSG A 0 0
+} 
+ 
+Model PlasmaRifle
+{ 
+   Path "Models/Weapons/Hud/PlasmaRifle"
+   Model 0 "PlasmaRifle.md2"
+   Skin 0 "PlasmaRifle.png"
+   Scale -1.2 1.0 1.0
+   ZOffset -5
+
+   FrameIndex PLSG B 0 3
+} 
+Model BFG9000
+{
+   Path "Models/Weapons/Hud/BFG9000"
+   Model 0 "BFGDoom.md3"
+   Skin 0 "doombfg.tga"
+   Model 1 "BFGParts.md3"
+   Skin 1 "bfgparts.tga"
+   Model 2 "BFGLights.md3"
+   Skin 2 "Lights.PNG"
+   Model 3 "BFGPlasma.md3"
+   Skin 3 "Glass.png"
+
+   Scale 4.0 4.0 4.0
+   Offset 0.0 -15.0 30.0
+
+
+   FrameIndex BFGG A 0 0
+}
+
+Model BFG9000
+{
+   Path "Models/Weapons/Hud/BFG9000"
+   Model 0 "BFGDoom.md3"
+   Skin 0 "doombfg.tga"
+   Model 1 "BFGParts.md3"
+   Skin 1 "bfgparts.tga"
+   Model 2 "BFGLights.md3"
+   Skin 2 "Lights2.PNG"
+   Model 3 "BFGPlasma.md3"
+   Skin 3 "Glass.png"
+
+   Scale 4.0 4.0 4.0
+   Offset 0.0 -15.0 30.0
+
+
+   FrameIndex BFGG B 0 0
+   FrameIndex BFGG C 0 0
+}
+
+Model Chainsaw
+{
+   Path "Models/Weapons/Hud/Chainsaw"
+   Model 0 "Chainsaw.md3"
+   Model 1 "ChainsawMuffler.md3"
+   Model 2 "ChainsawBlade.md3"
+   Model 3 "ChainsawHand.md3"
+   Skin 0 "doomchainsaw.png"
+   Skin 1 "doomchainsaw_muffler.png"
+   Skin 2 "doomchainsawc.png"
+   Skin 3 "Hands.png"
+   Scale -4.0 4.0 4.0
+
+ZOffset -1
+
+   FrameIndex SAWG C 0 2	   FrameIndex SAWG C 1 2	   FrameIndex SAWG C 2 2	   FrameIndex SAWG C 3 2
+   FrameIndex SAWG D 0 1	   FrameIndex SAWG D 1 1	   FrameIndex SAWG D 2 1	   FrameIndex SAWG D 3 1
+}
+
+Model Chainsaw
+{
+   Path "Models/Weapons/Hud/Chainsaw"
+   Model 0 "Chainsaw.md3"
+   Model 1 "ChainsawMuffler.md3"
+   Model 2 "ChainsawBlade.md3"
+   Model 3 "ChainsawHand.md3"
+   Skin 0 "doomchainsaw.png"
+   Skin 1 "doomchainsaw_muffler.png"
+   Skin 2 "doomchainsawc.png"
+   Skin 3 "Hands.png"
+   Scale -4.0 4.0 4.0
+	NOINTERPOLATION
+ZOffset -1
+
+   FrameIndex SAWG A 0 0	   FrameIndex SAWG A 1 0	   FrameIndex SAWG A 2 0	   FrameIndex SAWG A 3 0
+}
+
+Model Chainsaw
+{
+   Path "Models/Weapons/Hud/Chainsaw"
+   Model 0 "Chainsaw.md3"
+   Model 1 "ChainsawMuffler.md3"
+   Model 2 "ChainsawBlade.md3"
+   Model 3 "ChainsawHand.md3"
+   Skin 0 "doomchainsaw.png"
+   Skin 1 "doomchainsaw_muffler.png"
+   Skin 2 "doomchainsawc2.png"
+   Skin 3 "Hands.png"
+   Scale -4.0 4.0 4.0
+	NOINTERPOLATION
+ZOffset -1
+
+   FrameIndex SAWG B 0 0	   FrameIndex SAWG B 1 0	   FrameIndex SAWG B 2 0	   FrameIndex SAWG B 3 0
+}
+
+
+
+Model Fist
+{
+   Path "Models/Weapons/Hud/Fist"
+   Model 0 "Hud_Punch.md3"
+   Skin 0 "Hands.Png"
+   ZOffset 0
+   Scale -2.0 1.5 2.0
+	ZOffset -2
+   FrameIndex PUNG A 0 16
+   FrameIndex PUNG B 0 12
+   FrameIndex PUNG C 0 8
+   FrameIndex PUNG D 0 1
+
+}
+
+Model SHOTGUN
+{ 
+   Path "Models/Weapons/Hud/SHOTGUN"
+   Model 0 "Shotgun.md3"
+   Skin 0 "doomboomstick.jpg"
+   Model 1 "ShotgunHands.md3"
+   Skin 1 "Hands.png"
+   Scale -1.0 1.0 1.0
+   Offset 0.0 -25.0 10.0
+   
+   FrameIndex SHTG A 0 0   FrameIndex SHTG A 1 0
+   FrameIndex SHTG B 0 1   FrameIndex SHTG B 1 1
+   FrameIndex SHTG C 0 3   FrameIndex SHTG C 1 3
+   FrameIndex SHTG D 0 4   FrameIndex SHTG D 1 4
+
+}
+
+Model ROCKETLAUNCHER
+{ 
+   Path "Models/Weapons/Hud/RocketLauncher"
+   Model 0 "HUDRocketLauncher.md2"
+   Skin 0 "RocketLauncher.png"
+   Scale -1.05 1.0 1.0
+   Offset 0.0 0.0 10.0
+   FrameIndex MISG A 0 0
+   FrameIndex MISG B 0 1
+}
+
+Model SuperShotgun
+{ 
+   Path "Models/Weapons/Hud/SSG"
+   Model 0 "SSG.md3"
+   Skin 0 "Hud_SSG.png"
+   Model 2 "SSGHand.md3"
+   Skin 2 "Hands.png"
+
+   Scale 1.1 1.0 1.0
+INTERPOLATEDOUBLEDFRAMES
+ZOffset -1.6
+
+   FrameIndex SHT2 A 0 0   FrameIndex SHT2 A 2 0
+   FrameIndex SHT2 B 0 1   FrameIndex SHT2 B 2 1
+   FrameIndex SHT2 C 0 2   FrameIndex SHT2 C 2 2
+   FrameIndex SHT2 D 0 3   FrameIndex SHT2 D 2 3
+}
+
+Model SuperShotgun
+{ 
+   Path "Models/Weapons/Hud/SSG"
+   Model 0 "SSG.md3"
+   Skin 0 "Hud_SSG.png"
+   Model 1 "SSGPutShell.md3"
+   Skin 1 "Hud_SSG.png"
+   Model 2 "SSGHand.md3"
+   Skin 2 "Hands.png"
+   Model 3 "SSGPutHand.md3"
+   Skin 3 "Hands.png"
+
+   Scale 1.1 1.0 1.0
+INTERPOLATEDOUBLEDFRAMES
+ZOffset -1.6
+
+   FrameIndex SHT2 E 0 6	   FrameIndex SHT2 E 1 0	   FrameIndex SHT2 E 2 6	   FrameIndex SHT2 E 3 0
+   FrameIndex SHT2 F 0 7	   FrameIndex SHT2 F 1 2	   FrameIndex SHT2 F 2 7	   FrameIndex SHT2 F 3 2
+
+   FrameIndex SHT2 H 0 9	   FrameIndex SHT2 H 1 999	   FrameIndex SHT2 H 2 9	   FrameIndex SHT2 H 3 999
+}
+
+Model SuperShotgun
+{ 
+   Path "Models/Weapons/Hud/SSG"
+   Model 0 "SSG.md3"
+   Skin 0 "Hud_SSG.png"
+   Model 1 "SSGPutShell.md3"
+//   Skin 1 "Hud_SSG.png"
+   Model 2 "SSGHand.md3"
+   Skin 2 "Hands.png"
+   Model 3 "SSGPutHand.md3"
+   Skin 3 "Hands.png"
+
+   Scale 1.1 1.0 1.0
+INTERPOLATEDOUBLEDFRAMES
+ZOffset -1.6
+
+   FrameIndex SHT2 G 0 8	   FrameIndex SHT2 G 1 999	   FrameIndex SHT2 G 2 8	   FrameIndex SHT2 G 3 4
+
+}
+
+Model SuperShotgun
+{ 
+   Path "Models/Weapons/Hud/SSG"
+   Model 0 "hud_ssg_mf1.md3"
+   SKIN 0 "MF1.png"
+   Model 1 "hud_ssg_mf2.md3"
+   SKIN 1 "MF2.png"
+   Scale 1.1 1.0 1.0
+
+ZOffset -1.6
+
+   FrameIndex SHT2 I 0 0   FrameIndex SHT2 I 1 0
+}
+
+Model SuperShotgun
+{ 
+   Path "Models/Weapons/Hud/SSG"
+   Model 0 "Hud_ssg_MF1.md3"
+   Model 1 "Hud_ssg_MF2.md3"
+   Scale 1.1 1.0 1.0
+
+ZOffset -1.6
+
+   FrameIndex SHT2 J 0 1   FrameIndex SHT2 J 1 1
+}
+
+Model PISTOL
+{ 
+   Path "Models/Weapons/Hud/Pistol"
+   Model 0 "Pistol.md3"
+   Skin 0 "Pistol.png"
+   Model 1 "PistolHand.md3"
+   Skin 1 "Hands.png"
+   Scale 1.0 1.0 1.0
+
+   FrameIndex PISG A 0 0   FrameIndex PISG A 1 0
+   FrameIndex PISG B 0 1   FrameIndex PISG B 1 1
+   FrameIndex PISG C 0 2   FrameIndex PISG C 1 2
+
+}
+
+//Hud WEAPON FLASH
+
+Model PISTOL
+{ 
+   Path "Models/Weapons/Hud/Pistol"
+   Model 0 "Pistol-MF.MD3"
+   Skin 0 "MF2.png"
+   Scale 1.0 1.0 1.0
+
+zoffset -2
+
+   FrameIndex PISF A 0 2
+
+}
+
+
+MODEL CHAINGUN
+{
+
+Path "Models/Weapons/Hud/Chaingun"
+Model 0 "CG_MF1.md3"
+Skin 0 "MF0.png"
+Model 1 "CG_MF2.md3"
+Skin 1 "MF2.png"
+Scale -4.0 4.0 4.0
+   Offset 0.0 -25.0 20.0
+
+NOINTERPOLATION
+
+FrameIndex CHGF A 0 0
+}
+MODEL CHAINGUN
+{
+
+Path "Models/Weapons/Hud/Chaingun"
+Model 0 "CG_MF1.md3"
+Skin 0 "MF1.png"
+Model 1 "CG_MF2.md3"
+Skin 1 "MF3.png"
+Scale -4.0 4.0 4.0
+   Offset 0.0 -25.0 20.0
+
+NOINTERPOLATION
+
+FrameIndex CHGF B 0 0
+}
+
+Model PlasmaRifle
+{ 
+   Path "Models/Weapons/Hud/PlasmaRifle"
+   Model 0 "PlasmaRifle-FL.MD2"
+   Skin 0 "PlasmaRifle-FL.tga"
+   Scale -1.2 1.0 1.0
+   ZOffset -5
+
+   FrameIndex PLSF A 0 0
+} 
+ 
+Model PlasmaRifle
+{ 
+   Path "Models/Weapons/Hud/PlasmaRifle"
+   Model 0 "PlasmaRifle-FL.MD2"
+   Skin 0 "PlasmaRifle-FL1.tga"
+   Scale -1.2 1.0 1.0
+   ZOffset -5
+
+   FrameIndex PLSF B 0 3
+}
+
+Model BFG9000
+{
+   Path "Models/Weapons/Hud/BFG9000"
+   Model 0 "bfgexpo.md2"
+   Skin 0 "energy_flash0.png"
+
+   Scale -4.0 4.0 4.0
+   Offset 0.0 -20.0 40.0
+
+   FrameIndex BFGF A 0 0
+}
+
+Model BFG9000
+{
+   Path "Models/Weapons/Hud/BFG9000"
+   Model 0 "bfgexpo.md2"
+   Skin 0 "energy_flash1.png"
+   Offset 0.0 -20.0 40.0
+   Scale -4.0 4.0 4.0
+
+   FrameIndex BFGF B 0 0
+}
+
+Model SHOTGUN
+{ 
+   Path "Models/Weapons/Hud/Shotgun"
+   MODEL 0 "Shotgun_MF1.md3"
+   SKIN 0 "MF1.png"
+   MODEL 1 "Shotgun_MF2.md3"
+   SKIN 1 "MF2.png"
+   Scale 1.0 1.0 1.0
+   Offset 0.0 -25.0 10.0
+	NOINTERPOLATION
+   FrameIndex SHTF A 0 0   FrameIndex SHTF A 1 0
+
+}
+
+Model SHOTGUN
+{ 
+   Path "Models/Weapons/Hud/Shotgun"
+   MODEL 0 "Shotgun_MF1.md3"
+   MODEL 1 "Shotgun_MF2.md3"
+   Scale 1.0 1.0 1.0
+   Offset 0.0 -25.0 10.0
+	NOINTERPOLATION
+
+   FrameIndex SHTF B 0 0   FrameIndex SHTF B 1 0
+}
+
+Model ROCKETLAUNCHER
+{ 
+   Path "Models/Weapons/Hud/RocketLauncher"
+   Model 0 "RocketLauncher-MF.MD2"
+   Model 1 "HudRocketLauncher.md2"
+   Skin 0 "Hud_RL_MF0.PNG"
+   Skin 1 "RocketLauncher2FL.png"
+   Scale -1.05 1.0 1.0
+   Offset 0.0 0.0 10.0
+   NoInterpolation
+   FrameIndex MISF A 0 0	   FrameIndex MISF A 1 1
+}
+Model ROCKETLAUNCHER
+{ 
+   Path "Models/Weapons/Hud/RocketLauncher"
+   Model 0 "RocketLauncher-MF.MD2"
+   Model 1 "HudRocketLauncher.md2"
+   Skin 0 "Hud_RL_MF1.PNG"
+   Skin 1 "RocketLauncher2FL.png"
+   Scale -1.05 1.0 1.0
+   Offset 0.0 0.0 10.0
+NoInterpolation
+   FrameIndex MISF B 0 0	   FrameIndex MISF B 1 1
+}
+Model ROCKETLAUNCHER
+{ 
+   Path "Models/Weapons/Hud/RocketLauncher"
+   Model 0 "RocketLauncher-MF.MD2"
+   Model 1 "HudRocketLauncher.md2"
+   Skin 0 "Hud_RL_MF2.PNG"
+   Skin 1 "RocketLauncher2FL2.png"
+   Scale -1.05 1.0 1.0
+   Offset 0.0 0.0 10.0
+NoInterpolation
+   FrameIndex MISF C 0 0	   FrameIndex MISF C 1 1
+}
+Model ROCKETLAUNCHER
+{ 
+   Path "Models/Weapons/Hud/RocketLauncher"
+   Model 0 "RocketLauncher-MF.MD2"
+   Skin 0 "Hud_RL_MF3.PNG"
+   Scale -1.05 1.0 1.0
+   Offset 0.0 0.0 10.0
+   NoInterpolation
+   FrameIndex MISF D 0 0
+}

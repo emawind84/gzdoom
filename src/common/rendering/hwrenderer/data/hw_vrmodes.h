@@ -17,11 +17,15 @@ enum
 	VR_QUADSTEREO = 7,
 	VR_SIDEBYSIDELETTERBOX = 8,
 	VR_AMBERBLUE = 9,
+	VR_OPENVR = 10,
 	VR_TOPBOTTOM = 11,
 	VR_ROWINTERLEAVED = 12,
 	VR_COLUMNINTERLEAVED = 13,
 	VR_CHECKERINTERLEAVED = 14,
-	VR_OPENVR = 15
+	VR_OPENXR_MOBILE = 15,
+
+	VR_MAINHAND = 0,
+	VR_OFFHAND = 1
 };
 
 struct HWDrawInfo;
@@ -75,12 +79,22 @@ struct VRMode
 	virtual void UnAdjustPlayerSprites() const {};
 	virtual void AdjustCrossHair() const {}
 	virtual void UnAdjustCrossHair() const {}
+
+	virtual void SetupOverlay() {}
+	virtual void UpdateOverlaySettings() const {}
+	virtual void DrawControllerModels(HWDrawInfo* di, FRenderState& state) const {}
 	
 	virtual void Present() const;
 
 	virtual bool GetHandTransform(int hand, VSMatrix* out) const { return false; }
-	virtual bool GetWeaponTransform(VSMatrix* out, int hand = 0) const { return false; }
+	virtual bool GetWeaponTransform(VSMatrix* out, int hand = 0) const;
 	virtual bool RenderPlayerSpritesInScene() const;
 	virtual bool GetTeleportLocation(DVector3 &out) const { return false; }
 	virtual bool IsInitialized() const { return true; }
+	virtual void Vibrate(float duration, int channel, float intensity) const { }
 };
+
+void VR_HapticEvent(const char* event, int position, int intensity, float angle, float yHeight );
+void QzDoom_GetScreenRes(uint32_t *width, uint32_t *height);
+
+extern bool weaponStabilised;

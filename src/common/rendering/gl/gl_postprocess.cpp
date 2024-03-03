@@ -41,7 +41,10 @@
 
 extern bool vid_hdr_active;
 extern bool cinemamode;
+bool VR_UseScreenLayer();
 
+EXTERN_CVAR(Int, vr_mode)
+EXTERN_CVAR(Int, vr_overlayscreen)
 CVAR(Int, gl_dither_bpc, 0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL)
 
 namespace OpenGLRenderer
@@ -119,7 +122,7 @@ void FGLRenderer::Flush()
 	}
 	else
 	{
-		const bool is2D = (gamestate != GS_LEVEL) || cinemamode;
+		const bool is2D = (gamestate != GS_LEVEL);
 		if (is2D) vrmode->SetUp();
 		// Render 2D to eye textures
 		int eyeCount = vrmode->mEyeCount;
@@ -132,7 +135,7 @@ void FGLRenderer::Flush()
 				eye->AdjustBlend(nullptr);
 				screen->Draw2D(true);
 			}
-			if (!is2D && !getMenuState())
+			if (!VR_UseScreenLayer())
 			{
 				eye->AdjustHud();
 			}

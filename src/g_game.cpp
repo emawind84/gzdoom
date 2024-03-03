@@ -390,28 +390,6 @@ CCMD (turn180)
 	sendturn180 = true;
 }
 
-extern bool cinemamode;
-extern float cinemamodeYaw;
-extern float cinemamodePitch;
-extern vec3_t hmdorientation;
-extern float snapTurn;
-
-CCMD (cinemamode)
-{
-	cinemamode = !cinemamode;
-
-	//Store these
-	cinemamodeYaw = hmdorientation[YAW] + snapTurn;
-	cinemamodePitch = hmdorientation[PITCH];
-
-	//Reset angles back to normal view
-	if (!cinemamode)
-    {
-	    resetDoomYaw = true;
-	    resetPreviousPitch = true;
-    }
-}
-
 CCMD (weapnext)
 {
 	int hand = 0;
@@ -783,8 +761,7 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	if (buttonMap.ButtonDown(Button_ShowScores))	cmd->ucmd.buttons |= BT_SHOWSCORES;
 	if (speed) cmd->ucmd.buttons |= BT_RUN;
 
-if (!vrmode->IsVR())
-{
+#if !defined(USE_OPENVR) && !defined(USE_OPENXR)
 	// Handle joysticks/game controllers.
 	float joyaxes[NUM_JOYAXIS];
 
@@ -811,8 +788,10 @@ if (!vrmode->IsVR())
 		G_AddViewAngle(joyint(-1280 * joyaxes[JOYAXIS_Yaw]));
 	}
 
-	side -= joyint(sidemove[speed] * joyaxes[JOYAXIS_Side]);
-	forward += joyint(joyaxes[JOYAXIS_Forward] * forwardmove[speed]);
+	if (!vr_teleport) {
+		side -= joyint(sidemove[speed] * joyaxes[JOYAXIS_Side]);
+		forward += joyint(joyaxes[JOYAXIS_Forward] * forwardmove[speed]);
+	}
 	fly += joyint(joyaxes[JOYAXIS_Up] * 2048);
 
 	// Handle mice.
@@ -820,8 +799,8 @@ if (!vrmode->IsVR())
 	{
 		forward += xs_CRoundToInt(mousey * m_forward);
 	}
-}
-
+#endif
+#if 1
 	if (vrmode->IsVR())
 		side = forward = 0;
 
@@ -837,6 +816,7 @@ if (!vrmode->IsVR())
 	{
 		side = forward = 0;
 	}
+#endif
 
 	cmd->ucmd.pitch = LocalViewPitch >> 16;
 

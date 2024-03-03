@@ -54,6 +54,7 @@
 #include "g_input.h"
 #include "d_eventbase.h"
 #include "g_game.h"
+#include "hw_vrmodes.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -128,7 +129,8 @@ FEndoomScreen::FEndoomScreen(int loading_lump)
 
 void FEndoomScreen::Update()
 {
-	if (blinking && I_msTime() > lastUpdateTime + BLINK_PERIOD)
+	auto vrmode = VRMode::GetVRMode(true);
+	if (vrmode->IsVR() || (blinking && I_msTime() > lastUpdateTime + BLINK_PERIOD))
 	{
 		lastUpdateTime = I_msTime();
 		UpdateTextBlink (StartupBitmap, endoom_screen, blinkstate);

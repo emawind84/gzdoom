@@ -54,10 +54,8 @@ EXTERN_CVAR(Bool, use_joystick);
 bool M_LoadJoystickConfig(IJoystickConfig *joy);
 void M_SaveJoystickConfig(IJoystickConfig *joy);
 
-//We use these from the C controller handlers
 void Joy_GenerateButtonEvents(int oldbuttons, int newbuttons, int numbuttons, int base);
 void Joy_GenerateButtonEvents(int oldbuttons, int newbuttons, int numbuttons, const int *keys);
-
 int Joy_XYAxesToButtons(double x, double y);
 double Joy_RemoveDeadZone(double axisval, double deadzone, uint8_t *buttons);
 

@@ -28,7 +28,12 @@
 #ifndef VR_LS_MATRIX_H_
 #define VR_LS_MATRIX_H_
 
-#include "matrix.h"
+#ifdef USE_OPENVR
+#include "openvr_include.h"
+namespace openvr {
+	struct HmdMatrix34_t;
+}
+#endif
 
 class LSVec3
 {
@@ -94,6 +99,17 @@ public:
 	{
 		loadIdentity();
 	}
+
+#ifdef USE_OPENVR
+	LSMatrix44(const openvr::HmdMatrix34_t& m) {
+		loadIdentity();
+		for (int i = 0; i < 3; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				(*this)[i][j] = m.m[i][j];
+			}
+		}
+	}
+#endif
 
 	LSMatrix44(const VSMatrix& m) {
 		m.copy(mMatrix);

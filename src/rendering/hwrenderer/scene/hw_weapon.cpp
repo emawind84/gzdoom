@@ -54,6 +54,8 @@ EXTERN_CVAR(Float, transsouls)
 EXTERN_CVAR(Int, gl_fuzztype)
 EXTERN_CVAR(Bool, r_drawplayersprites)
 EXTERN_CVAR(Bool, r_deathcamera)
+//To force translucency for weapon sprites, tex->GetTranslucency returns false result for 32 bit PNG
+CVAR(Bool, r_transparentPlayerSprites, true, CVAR_ARCHIVE)
 
 EXTERN_CVAR(Int, r_PlayerSprites3DMode)
 EXTERN_CVAR(Float, gl_fatItemWidth)
@@ -100,7 +102,7 @@ void HWDrawInfo::DrawPSprite(HUDSprite *huds, FRenderState &state)
 
 	if (huds->mframe)
 	{
-		state.AlphaFunc(Alpha_GEqual, 0);
+		state.AlphaFunc(Alpha_GEqual, gl_mask_threshold);
 
 		FHWModelRenderer renderer(this, state, huds->lightindex);
 		RenderHUDModel(&renderer, huds->weapon, huds->translation, huds->rotation + FVector3(huds->mx / 4., (huds->my - WEAPONTOP) / -4., 0), huds->pivot, huds->mframe);
@@ -245,6 +247,8 @@ void HWDrawInfo::DrawPSprite(HUDSprite *huds, FRenderState &state)
 void HWDrawInfo::DrawPlayerSprites(bool hudModelStep, FRenderState &state)
 {
 	auto vrmode = VRMode::GetVRMode(true);
+	// vrmode->AdjustPlayerSprites(this);
+	
 	auto oldlightmode = lightmode;
 	for (auto &hudsprite : hudsprites)
 	{
@@ -255,6 +259,21 @@ void HWDrawInfo::DrawPlayerSprites(bool hudModelStep, FRenderState &state)
 		if (!hudsprite.mframe) vrmode->UnAdjustPlayerSprites();
 		lightmode = oldlightmode;
 	}
+	
+	// TODO hh gzdoom vr disabled for now
+	// vrmode->DrawControllerModels(this, state);
+
+	// state.SetObjectColor(0xffffffff);
+	// state.SetDynLight(0, 0, 0);
+	// state.EnableBrightmap(false);
+
+	//lightmode = oldlightmode;
+	
+	// if (!hudModelStep)
+	// {
+	// 	vrmode->UnAdjustPlayerSprites();
+	// }
+
 }
 
 

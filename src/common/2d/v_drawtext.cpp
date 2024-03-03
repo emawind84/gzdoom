@@ -43,9 +43,6 @@
 #include "gstrings.h"
 #include "vm.h"
 #include "printf.h"
-#include "v_video.h"
-#include "gamestate.h"
-#include "version.h"
 
 
 int ListGetInt(VMVa_List &tags);

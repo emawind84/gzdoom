@@ -54,6 +54,7 @@
 #include "a_lights.h"
 #include "s_music.h"
 #include "texturemanager.h"
+#include "hw_vrmodes.h"
 
 using namespace FileSys;
 

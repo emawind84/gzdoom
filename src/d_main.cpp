@@ -1015,6 +1015,12 @@ void D_Display ()
 	}
 	else
 	{
+		if (vr_mode != 0)
+		{
+			//When wipegamestate differs from gamestate, game cannot be paused
+			//see condition in P_CheckTickerPaused
+			wipegamestate = gamestate;
+		}
 		wipestart = nullptr;
 	}
 	
@@ -1045,7 +1051,7 @@ void D_Display ()
 			{
 				primaryLevel->automap->Drawer ((hud_althud && viewheight == SCREENHEIGHT) ? viewheight : StatusBar->GetTopOfStatusbar());
 			}
-		
+			
 			// for timing the statusbar code.
 			//cycle_t stb;
 			//stb.Reset();
@@ -3819,11 +3825,19 @@ static int D_DoomMain_Internal (void)
 		D_DoAnonStats();
 		I_UpdateWindowTitle();
 		D_DoomLoop ();		// this only returns if a 'restart' CCMD is given.
-
+		// 
+		// Clean up after a restart
+		//
+#ifdef USE_OPENXR
 		// We replace the vanilla zdoom restart with a complete Android application restart instead
 		// all the arguments passed are retained since we read the commandline file again.
 		InitShutdown();
 		QzDoom_Restart();
+#else
+		D_Cleanup();
+
+		gamestate = GS_STARTUP;
+#endif
 	}
 	while (1);
 }

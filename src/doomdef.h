@@ -70,8 +70,6 @@ enum
 	TELEFRAG_DAMAGE = 1000000
 };
 
-extern "C" int getGameState();
-
 inline int Tics2Seconds(int tics)
 {
 	return tics / TICRATE;

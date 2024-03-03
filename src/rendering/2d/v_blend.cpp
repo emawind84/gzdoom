@@ -47,6 +47,7 @@
 #include "v_palette.h"
 #include "r_utility.h"
 #include "hw_cvars.h"
+#include "hwrenderer/data/hw_vrmodes.h"
 #include "d_main.h"
 #include "v_draw.h"
 
@@ -130,8 +131,9 @@ void V_AddPlayerBlend (player_t *CPlayer, float blend[4], float maxinvalpha, int
 
 		//Super short haptic blip on pickup
 		if (vr_pickup_haptic_level > 0.0) {
-			QzDoom_Vibrate(50, 0, vr_pickup_haptic_level); // left
-			QzDoom_Vibrate(50, 1, vr_pickup_haptic_level); // right
+			auto vrmode = VRMode::GetVRMode(true);
+			vrmode->Vibrate(50, 0, vr_pickup_haptic_level); // left
+			vrmode->Vibrate(50, 1, vr_pickup_haptic_level); // right
 
 			VR_HapticEvent("pickup", 0, 100 * C_GetExternalHapticLevelValue("pickup"), 0, 0);
 		}

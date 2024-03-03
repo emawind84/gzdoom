@@ -122,7 +122,7 @@ public:
 
 	// Stops a sound channel.
 	virtual void StopChannel (FISoundChannel *chan) = 0;
- 
+
 	// Changes a channel's volume.
 	virtual void ChannelVolume (FISoundChannel *chan, float volume) = 0;
 

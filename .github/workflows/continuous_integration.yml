@@ -17,21 +17,22 @@ jobs:
         config:
         - name: Visual Studio 2022
           os: windows-2022
-          extra_options:
+          extra_options: -DENABLE_OPENVR=ON
           build_type: Release
 
         - name: Visual Studio 2022
           os: windows-2022
-          extra_options:
+          extra_options: -DENABLE_OPENVR=ON
           build_type: Debug
 
         - name: Visual Studio 2019
           os: windows-2019
-          extra_options:
+          extra_options: -DENABLE_OPENVR=ON
           build_type: Release
 
         - name: macOS
           os: macos-12
+          extra_options:
           deps_cmdline: brew install libvpx webp
           build_type: Release
 
@@ -80,6 +81,16 @@ jobs:
       shell: bash
       run: echo CMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
 
+    - name: Prepare OpenVR SDK dependency
+      shell: bash
+      run: |
+        mkdir -p build
+        export OPENVR_SDK=openvr-2.2.3
+        echo OPENVR_SDK="${OPENVR_SDK}" >> $GITHUB_ENV
+        cd build
+        curl -LO "https://github.com/emawind84/gzdoom/releases/download/ci_deps/${OPENVR_SDK}.tar.gz"
+        tar -xf "${OPENVR_SDK}.tar.gz"
+    
     - name: Install Dependencies
       shell: bash
       run: |
@@ -97,8 +108,11 @@ jobs:
 
     - name: Configure
       shell: bash
-      run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_PREFIX_PATH=`pwd`/build/zmusic_install -DPK3_QUIET_ZIPDIR=ON ${{ matrix.config.extra_options }} .
+      run: >
+        cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} 
+        -DCMAKE_PREFIX_PATH=`pwd`/build/zmusic_install -DPK3_QUIET_ZIPDIR=ON
+        -DOPENVR_SDK_PATH=`pwd`/build/${OPENVR_SDK}
+        ${{ matrix.config.extra_options }} .
 
     - name: Build
       shell: bash
@@ -113,11 +127,11 @@ jobs:
         cd build
         mkdir package
         if [[ "${{ runner.os }}" == 'Windows' ]]; then
-          cp *.pk3 package
+          cp ${{ matrix.config.build_type }}/qzdoom.exe ${{ matrix.config.build_type }}/*.pk3 package
         elif [[ "${{ runner.os }}" == 'macOS' ]]; then
-          cp -r lzdoom.app package
+          cp -r qzdoom.app package
         elif [[ "${{ runner.os }}" == 'Linux' ]]; then
-          cp *.pk3 package
+          cp qzdoom *.pk3 package
         fi
 
     - name: Upload Package

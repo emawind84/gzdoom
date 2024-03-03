@@ -1233,6 +1233,7 @@ public:
 	sector_t		*BlockingCeiling;	// Sector that blocked the last move (ceiling plane slope)
 	sector_t		*BlockingFloor;		// Sector that blocked the last move (floor plane slope)
 
+	DAngle			ThrustAngleOffset; //For VR: offset thrust angles by this amount
 	uint32_t		freezetics;	// actor has actions completely frozen (including movement) for this many tics, but they still get Tick() calls
 
 	int PoisonDamage; // Damage received per tic from poison.
@@ -1529,18 +1530,18 @@ public:
 
 	void Thrust()
 	{
-		Vel.X += Speed * Angles.Yaw.Cos();
-		Vel.Y += Speed * Angles.Yaw.Sin();
+		Thrust(Angles.Yaw, Speed);
 	}
 
 	void Thrust(double speed)
 	{
-		Vel.X += speed * Angles.Yaw.Cos();
-		Vel.Y += speed * Angles.Yaw.Sin();
+		Thrust(Angles.Yaw, speed);
 	}
 
 	void Thrust(DAngle angle, double speed)
 	{
+		angle += ThrustAngleOffset;
+		
 		Vel.X += speed * angle.Cos();
 		Vel.Y += speed * angle.Sin();
 	}

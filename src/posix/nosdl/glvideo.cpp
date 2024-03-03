@@ -73,6 +73,7 @@ EXTERN_CVAR (Int, vid_maxfps)
 EXTERN_CVAR (Int, vid_defwidth)
 EXTERN_CVAR (Int, vid_defheight)
 EXTERN_CVAR (Int, vid_refreshrate)
+EXTERN_CVAR (Int, vid_preferbackend)
 EXTERN_CVAR (Bool, cl_capfps)
 
 
@@ -113,6 +114,7 @@ int TBXR_GetRefresh();
 
 DFrameBuffer *NoSDLGLVideo::CreateFrameBuffer ()
 {
+	vid_preferbackend = 0;
 	SystemGLFrameBuffer *fb = new OpenGLRenderer::OpenGLFrameBuffer(0, true);
 
 	return fb;
