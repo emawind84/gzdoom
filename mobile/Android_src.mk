@@ -92,7 +92,7 @@ LOCAL_C_INCLUDES := \
 \
  $(SUPPORT_LIBS)/openal/include/AL \
  $(SUPPORT_LIBS)/jpeg8d \
- $(SUPPORT_LIBS)/libvpx\include \
+ $(SUPPORT_LIBS)/libvpx/include \
  $(SUPPORT_LIBS)/ZMusic/include  \
  $(GZDOOM_TOP_PATH)/mobile/src/extrafiles  \
  $(GZDOOM_TOP_PATH)/mobile/src
