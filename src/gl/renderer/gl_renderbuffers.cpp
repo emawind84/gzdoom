@@ -500,6 +500,21 @@ GLuint FGLRenderBuffers::Create2DTexture(const FString &name, GLuint format, int
 	default: I_FatalError("Unknown format passed to FGLRenderBuffers.Create2DTexture");
 	}
 
+#ifdef __MOBILE__
+	// Mobile does not have GL_RGBA16_SNORM so convert to GL_RGBA8_SNORM
+	// Used for SSAO random texture
+    if (format == GL_RGBA16_SNORM)
+	{
+		format = GL_RGBA8_SNORM;
+		dataformat = GL_RGBA;
+		datatype = GL_BYTE;
+		for(int n = 0; n < width * height; n++)
+		{
+			((int8_t*)data)[n] = ((int16_t*)data)[n] / 256;
+		}
+	}
+#endif
+
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, dataformat, datatype, data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -514,7 +529,11 @@ GLuint FGLRenderBuffers::Create2DMultisampleTexture(const FString &name, GLuint 
 	glGenTextures(1, &handle);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, handle);
 	FGLDebug::LabelObject(GL_TEXTURE, handle, name);
+#ifdef __MOBILE__
+	glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, fixedSampleLocations);
+#else
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, fixedSampleLocations);
+#endif
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 	return handle;
 }
