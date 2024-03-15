@@ -2313,7 +2313,7 @@ class PlayerPawn : Actor
 	virtual void SwitchWeaponHand(int hand = 0)
 	{
 		let weap = hand == 0 ? player.OffhandWeapon : player.ReadyWeapon;
-		if (weap != null && !weap.bNoHandSwitch)
+		if (weap != null && !weap.bNoHandSwitch && player.playerstate == PST_LIVE)
 		{
 			let nextweap = player.mo.PickNextWeapon(1 - hand);
 			player.OffhandWeapon = player.ReadyWeapon = null;
