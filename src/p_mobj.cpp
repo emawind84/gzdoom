@@ -7041,6 +7041,7 @@ AActor *P_SpawnPlayerMissile (AActor *source, double x, double y, double z,
 	P_PlaySpawnSound(MissileActor, source, !!(aimflags & ALF_ISOFFHAND) ? CHAN_OFFWEAPON : CHAN_WEAPON, CHANF_OVERLAP);
 	MissileActor->target = source;
 	MissileActor->Angles.Yaw = an;
+	MissileActor->Angles.Pitch = pitch;
 	if (MissileActor->flags3 & (MF3_FLOORHUGGER | MF3_CEILINGHUGGER))
 	{
 		MissileActor->VelFromAngle();

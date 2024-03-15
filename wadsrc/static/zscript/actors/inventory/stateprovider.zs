@@ -252,7 +252,7 @@ class StateProvider : Inventory
 						Vector3 dir;
 						if (weapon.bOffhandWeapon)
 						{
-							dir = player.mo.OffhandDir(misl, misl.Angle + angle, misl.Pitch);
+							dir = player.mo.OffhandDir(misl, misl.Angle + (weapon.bNoAutoReverse ? 1. : -1.) * angle, misl.Pitch);
 						}
 						else
 						{
