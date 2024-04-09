@@ -212,6 +212,8 @@ private:
 
 	void PreparePlayerSprites2D(sector_t * viewsector, area_t in_area);
 	void PreparePlayerSprites3D(sector_t * viewsector, area_t in_area);
+
+	void PrepareFakeWall(seg_t *seg);
 public:
 
 	void SetCameraPos(const DVector3 &pos)

@@ -311,23 +311,6 @@ void HWDrawInfo::AddLine (seg_t *seg, bool portalclip)
 
 	uint8_t ispoly = uint8_t(seg->sidedef->Flags & WALLF_POLYOBJ);
 
-	if (IsDistanceCulled(seg))
-	{
-		if (multithread)
-		{
-			jobQueue.AddJob(RenderJob::WallJob, currentsubsector, seg);
-		}
-		else
-		{
-			HWWall wall;
-			HWWallDispatcher disp(this);
-			wall.sub = currentsubsector;
-			wall.Process(&disp, seg, seg->frontsector, seg->backsector, true);
-		}
-		clipper.SafeAddClipRange(startAngle, endAngle);
-		return;
-	}
-
 	if (!seg->backsector)
 	{
 		clipper.SafeAddClipRange(startAngle, endAngle);
@@ -393,6 +376,25 @@ void HWDrawInfo::AddLine (seg_t *seg, bool portalclip)
 	}
 }
 
+void HWDrawInfo::PrepareFakeWall(seg_t *seg)
+{
+	if (multithread)
+	{
+		jobQueue.AddJob(RenderJob::WallJob, currentsubsector, seg);
+	}
+	else
+	{
+		HWWall wall;
+		HWWallDispatcher disp(this);
+		wall.sub = currentsubsector;
+		wall.Process(&disp, seg, seg->frontsector, seg->backsector, true);
+	}
+	auto &clipper = *mClipper;
+	angle_t startAngle = clipper.GetClipAngle(seg->v2);
+	angle_t endAngle = clipper.GetClipAngle(seg->v1);
+	clipper.SafeAddClipRange(startAngle, endAngle);
+}
+
 //==========================================================================
 //
 // R_Subsector
@@ -406,6 +408,11 @@ void HWDrawInfo::PolySubsector(subsector_t * sub)
 {
 	int count = sub->numlines;
 	seg_t * line = sub->firstline;
+	if (IsDistanceCulled(line))
+	{
+		PrepareFakeWall(line);
+		return;
+	}
 
 	while (count--)
 	{
@@ -496,6 +503,11 @@ void HWDrawInfo::AddLines(subsector_t * sub, sector_t * sector)
 	{
 		int count = sub->numlines;
 		seg_t * seg = sub->firstline;
+		if (IsDistanceCulled(seg))
+		{
+			PrepareFakeWall(seg);
+			return;
+		}
 
 		while (count--)
 		{
@@ -534,6 +546,11 @@ void HWDrawInfo::AddSpecialPortalLines(subsector_t * sub, sector_t * sector, lin
 	ClipWall.Clock();
 	int count = sub->numlines;
 	seg_t * seg = sub->firstline;
+	if (IsDistanceCulled(seg))
+	{
+		PrepareFakeWall(seg);
+		return;
+	}
 
 	while (count--)
 	{

@@ -212,6 +212,7 @@ void HWFlat::DrawSubsectors(HWDrawInfo *di, FRenderState &state)
 	state.SetLightIndex(dynlightindex);
 
 	state.DrawIndexed(DT_Triangles, iboindex + section->vertexindex, section->vertexcount);
+	flatVerticesPerEye += section->vertexcount;
 	flatvertices += section->vertexcount;
 	flatprimitives++;
 }
@@ -238,6 +239,7 @@ void HWFlat::DrawOtherPlanes(HWDrawInfo *di, FRenderState &state)
     {
         state.SetLightIndex(node->lightindex);
         auto num = node->sub->numlines;
+		flatVerticesPerEye += num;
         flatvertices += num;
         flatprimitives++;
         state.Draw(DT_TriangleFan,node->vertexindex, num);
@@ -269,6 +271,7 @@ void HWFlat::DrawFloodPlanes(HWDrawInfo *di, FRenderState &state)
 	state.SetLightIndex(-1);
 	while (fnode)
 	{
+		flatVerticesPerEye += 12;
 		flatvertices += 12;
 		flatprimitives += 3;
 
