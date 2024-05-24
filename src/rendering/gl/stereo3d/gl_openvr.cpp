@@ -1775,15 +1775,15 @@ namespace s3d
 				((pDominantTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis1)) != 0) && !dominantGripPushedNew ? 1 : 0,
 				1, KEY_PAD_RTRIGGER);
 
-			Joy_GenerateButtonEvents(
-				((pDominantTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && !dominantGripPushedOld ? 1 : 0,
-				((pDominantTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && !dominantGripPushedNew ? 1 : 0,
-				1, KEY_F1);
+			// Joy_GenerateButtonEvents(
+			// 	((pDominantTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && !dominantGripPushedOld ? 1 : 0,
+			// 	((pDominantTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && !dominantGripPushedNew ? 1 : 0,
+			// 	1, KEY_F1);
 
-			Joy_GenerateButtonEvents(
-				((pDominantTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && !dominantGripPushedOld ? 1 : 0,
-				((pDominantTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && !dominantGripPushedNew ? 1 : 0,
-				1, KEY_F5);
+			// Joy_GenerateButtonEvents(
+			// 	((pDominantTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && !dominantGripPushedOld ? 1 : 0,
+			// 	((pDominantTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && !dominantGripPushedNew ? 1 : 0,
+			// 	1, KEY_F5);
 
 			//No Default Binding
 			// Joy_GenerateButtonEvents(
@@ -1826,16 +1826,16 @@ namespace s3d
 				1, KEY_PAD_LTRIGGER);
 
 			//No Default Binding
-			Joy_GenerateButtonEvents(
-				((pDominantTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && dominantGripPushedOld ? 1 : 0,
-				((pDominantTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && dominantGripPushedNew ? 1 : 0,
-				1, KEY_F3);
+			// Joy_GenerateButtonEvents(
+			// 	((pDominantTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && dominantGripPushedOld ? 1 : 0,
+			// 	((pDominantTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && dominantGripPushedNew ? 1 : 0,
+			// 	1, KEY_F3);
 
 			//No Default Binding
-			Joy_GenerateButtonEvents(
-				((pDominantTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && dominantGripPushedOld ? 1 : 0,
-				((pDominantTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && dominantGripPushedNew ? 1 : 0,
-				1, KEY_F6);
+			// Joy_GenerateButtonEvents(
+			// 	((pDominantTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && dominantGripPushedOld ? 1 : 0,
+			// 	((pDominantTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && dominantGripPushedNew ? 1 : 0,
+			// 	1, KEY_F6);
 
 			//No Default Binding
 			// Joy_GenerateButtonEvents(
@@ -1873,16 +1873,16 @@ namespace s3d
 				1, KEY_LSHIFT);
 
 			//No Default Binding
-			Joy_GenerateButtonEvents(
-				((pOffTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && !dominantGripPushedOld ? 1 : 0,
-				((pOffTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && !dominantGripPushedNew ? 1 : 0,
-				1, KEY_F2);
+			// Joy_GenerateButtonEvents(
+			// 	((pOffTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && !dominantGripPushedOld ? 1 : 0,
+			// 	((pOffTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && !dominantGripPushedNew ? 1 : 0,
+			// 	1, KEY_F2);
 
 			//No Default Binding
-			Joy_GenerateButtonEvents(
-				((pOffTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && !dominantGripPushedOld ? 1 : 0,
-				((pOffTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && !dominantGripPushedNew ? 1 : 0,
-				1, KEY_F7);
+			// Joy_GenerateButtonEvents(
+			// 	((pOffTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && !dominantGripPushedOld ? 1 : 0,
+			// 	((pOffTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && !dominantGripPushedNew ? 1 : 0,
+			// 	1, KEY_F7);
 
 			//No Default Binding
 			// Joy_GenerateButtonEvents(
@@ -1923,16 +1923,16 @@ namespace s3d
 				1, KEY_LALT);
 
 			//No Default Binding
-			Joy_GenerateButtonEvents(
-				((pOffTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && dominantGripPushedOld ? 1 : 0,
-				((pOffTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && dominantGripPushedNew ? 1 : 0,
-				1, KEY_F4);
+			// Joy_GenerateButtonEvents(
+			// 	((pOffTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && dominantGripPushedOld ? 1 : 0,
+			// 	((pOffTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis2)) != 0) && dominantGripPushedNew ? 1 : 0,
+			// 	1, KEY_F4);
 
 			//No Default Binding
-			Joy_GenerateButtonEvents(
-				((pOffTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && dominantGripPushedOld ? 1 : 0,
-				((pOffTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && dominantGripPushedNew ? 1 : 0,
-				1, KEY_F8);
+			// Joy_GenerateButtonEvents(
+			// 	((pOffTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && dominantGripPushedOld ? 1 : 0,
+			// 	((pOffTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_Axis3)) != 0) && dominantGripPushedNew ? 1 : 0,
+			// 	1, KEY_F8);
 
 			//No Default Binding
 			// Joy_GenerateButtonEvents(
