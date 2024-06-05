@@ -1715,10 +1715,10 @@ namespace s3d
 			}
 
 			//Menu button - invoke menu
-			Joy_GenerateButtonEvents(
-				((pPrimaryTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_ApplicationMenu)) != 0) && dominantGripPushedOld ? 1 : 0,
-				((pPrimaryTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_ApplicationMenu)) != 0) && dominantGripPushedNew ? 1 : 0,
-				1, KEY_ESCAPE);
+			// Joy_GenerateButtonEvents(
+			// 	((pPrimaryTrackedRemoteOld->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_ApplicationMenu)) != 0) && dominantGripPushedOld ? 1 : 0,
+			// 	((pPrimaryTrackedRemoteNew->ulButtonPressed & ButtonMaskFromId(openvr::vr::k_EButton_ApplicationMenu)) != 0) && dominantGripPushedNew ? 1 : 0,
+			// 	1, KEY_ESCAPE);
 				
 		}  // in game section
 
@@ -1807,7 +1807,7 @@ namespace s3d
 				((primaryButtonsNew & (1ull << primaryButton1)) != 0) && dominantGripPushedNew ? 1 : 0,
 				1, KEY_PAD_LTHUMB);
 
-			//No Binding
+			//Main Menu
 			Joy_GenerateButtonEvents(
 				((primaryButtonsOld & (1ull << primaryButton2)) != 0) && dominantGripPushedOld ? 1 : 0,
 				((primaryButtonsNew & (1ull << primaryButton2)) != 0) && dominantGripPushedNew ? 1 : 0,

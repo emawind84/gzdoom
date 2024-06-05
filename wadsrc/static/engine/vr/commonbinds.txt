@@ -12,6 +12,7 @@ mwheelup weapprev
 pgup invnext
 pgdn invprev
 home land
+backspace menu_main
 
 // Xbox 360 / PS2 controllers
 pad_a +use
