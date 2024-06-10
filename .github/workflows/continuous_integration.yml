@@ -91,7 +91,7 @@ jobs:
       shell: bash
       run: |
         mkdir -p build
-        export OPENVR_SDK=openvr-2.2.3
+        export OPENVR_SDK=openvr-2.5.1
         echo OPENVR_SDK="${OPENVR_SDK}" >> $GITHUB_ENV
         cd build
         curl -LO "https://github.com/emawind84/gzdoom/releases/download/ci_deps/${OPENVR_SDK}.tar.gz"
