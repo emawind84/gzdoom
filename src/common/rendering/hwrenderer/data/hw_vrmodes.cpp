@@ -58,7 +58,7 @@ CUSTOM_CVAR(Int, vr_mode, 0, CVAR_GLOBALCONFIG|CVAR_ARCHIVE)
 	if (self != 15)
 		self = 15;
 #endif
-#if 0 //def USE_OPENVR
+#ifdef USE_OPENVR
 	if (self != 10)
 		self = 10;
 #endif
@@ -181,7 +181,7 @@ const VRMode *VRMode::GetVRMode(bool toscreen)
 	static VREyeInfo vrmi_righteye_eyes[2] = { VREyeInfo(.5f, 1.f), VREyeInfo(0.f, 0.f) };
 	static VREyeInfo vrmi_topbottom_eyes[2] = { VREyeInfo(-.5f, 1.f), VREyeInfo(.5f, 1.f) };
 	static VREyeInfo vrmi_checker_eyes[2] = { VREyeInfo(-.5f, 1.f), VREyeInfo(.5f, 1.f) };
-#if 0 //def USE_OPENVR
+#ifdef USE_OPENVR
 	static s3d::OpenVREyePose vrmi_openvr_eyes[2] = { s3d::OpenVREyePose(0, -.5f, 1.f), s3d::OpenVREyePose(1, .5f, 1.f) };
 #endif
 
@@ -193,7 +193,7 @@ const VRMode *VRMode::GetVRMode(bool toscreen)
 	static VRMode vrmi_righteye(1, 1.f, 1.f, 1.f, vrmi_righteye_eyes);
 	static VRMode vrmi_topbottom(2, 1.f, .5f, 1.f, vrmi_topbottom_eyes);
 	static VRMode vrmi_checker(2, isqrt2, isqrt2, 1.f, vrmi_checker_eyes);
-#if 0 //def USE_OPENVR
+#ifdef USE_OPENVR
 	static s3d::OpenVRMode vrmi_openvr(vrmi_openvr_eyes);
 #endif
 
@@ -233,10 +233,7 @@ const VRMode *VRMode::GetVRMode(bool toscreen)
 		return &vrmi_checker;
 #ifdef USE_OPENVR
 	case VR_OPENVR:
-		// When calling a function of this class, ensure that you are using a pointer or reference to the derived class
-		const VRMode &vrmode =  s3d::OpenVRMode::getInstance();
-		return vrmode.IsInitialized() ? &vrmode : &vrmi_mono;
-		//return vrmi_openvr.IsInitialized() ? &vrmi_openvr : &vrmi_mono;
+		return vrmi_openvr.IsInitialized() ? &vrmi_openvr : &vrmi_mono;
 #endif
 #ifdef USE_OPENXR
 	case VR_OPENXR_MOBILE:

@@ -95,7 +95,7 @@ class OpenVRMode : public VRMode
 {
 public:
 	friend class OpenVREyePose;
-	static const VRMode &getInstance();
+	//static const VRMode& getInstance(); // Might return Mono mode, if no HMD available
 
 	OpenVRMode(OpenVREyePose eyes[2]);
 	virtual ~OpenVRMode() override;
