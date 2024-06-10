@@ -64,7 +64,7 @@
 #include "hwrenderer/scene/hw_drawinfo.h"
 
 #include "gl_openvr.h"
-// #include "openvr_include.h"
+#include "openvr_include.h"
 #include <QzDoom/VrCommon.h>
 
 using namespace openvr;
@@ -108,26 +108,26 @@ FModule OpenVRModule{ "OpenVR" };
 
 /** Pointer-to-function type, useful for dynamically getting OpenVR entry points. */
 // Derived from global entry at the bottom of openvr_capi.h, plus a few other functions
-// typedef intptr_t(*LVR_InitInternal)(vr::EVRInitError* peError, vr::EVRApplicationType eType);
-// typedef void (*LVR_ShutdownInternal)();
-// typedef bool (*LVR_IsHmdPresent)();
-// typedef intptr_t(*LVR_GetGenericInterface)(const char* pchInterfaceVersion, vr::EVRInitError* peError);
-// typedef bool (*LVR_IsRuntimeInstalled)();
-// typedef const char* (*LVR_GetVRInitErrorAsSymbol)(vr::EVRInitError error);
-// typedef const char* (*LVR_GetVRInitErrorAsEnglishDescription)(vr::EVRInitError error);
-// typedef bool (*LVR_IsInterfaceVersionValid)(const char* version);
-// typedef uint32_t(*LVR_GetInitToken)();
+typedef intptr_t(*LVR_InitInternal)(EVRInitError* peError, EVRApplicationType eType);
+typedef void (*LVR_ShutdownInternal)();
+typedef bool (*LVR_IsHmdPresent)();
+typedef intptr_t(*LVR_GetGenericInterface)(const char* pchInterfaceVersion, EVRInitError* peError);
+typedef bool (*LVR_IsRuntimeInstalled)();
+typedef const char* (*LVR_GetVRInitErrorAsSymbol)(EVRInitError error);
+typedef const char* (*LVR_GetVRInitErrorAsEnglishDescription)(EVRInitError error);
+typedef bool (*LVR_IsInterfaceVersionValid)(const char* version);
+typedef uint32_t(*LVR_GetInitToken)();
 
-// #define DEFINE_ENTRY(name) static TReqProc<OpenVRModule, L##name> name{#name};
-// DEFINE_ENTRY(VR_InitInternal)
-// DEFINE_ENTRY(VR_ShutdownInternal)
-// DEFINE_ENTRY(VR_IsHmdPresent)
-// DEFINE_ENTRY(VR_GetGenericInterface)
-// DEFINE_ENTRY(VR_IsRuntimeInstalled)
-// DEFINE_ENTRY(VR_GetVRInitErrorAsSymbol)
-// DEFINE_ENTRY(VR_GetVRInitErrorAsEnglishDescription)
-// DEFINE_ENTRY(VR_IsInterfaceVersionValid)
-// DEFINE_ENTRY(VR_GetInitToken)
+#define DEFINE_ENTRY(name) static TReqProc<OpenVRModule, L##name> name{#name};
+DEFINE_ENTRY(VR_InitInternal)
+DEFINE_ENTRY(VR_ShutdownInternal)
+DEFINE_ENTRY(VR_IsHmdPresent)
+DEFINE_ENTRY(VR_GetGenericInterface)
+DEFINE_ENTRY(VR_IsRuntimeInstalled)
+DEFINE_ENTRY(VR_GetVRInitErrorAsSymbol)
+DEFINE_ENTRY(VR_GetVRInitErrorAsEnglishDescription)
+DEFINE_ENTRY(VR_IsInterfaceVersionValid)
+DEFINE_ENTRY(VR_GetInitToken)
 
 #ifdef _WIN32
 #define OPENVRLIB "openvr_api.dll"
@@ -1085,25 +1085,25 @@ namespace s3d
 
 		if (!IsOpenVRPresent()) return; // failed to load openvr API dynamically
 
-		if (!vr::VR_IsRuntimeInstalled()) return; // failed to find OpenVR implementation
+		if (!VR_IsRuntimeInstalled()) return; // failed to find OpenVR implementation
 
-		if (!vr::VR_IsHmdPresent()) return; // no VR headset is attached
+		if (!VR_IsHmdPresent()) return; // no VR headset is attached
 
-		vr::EVRInitError eError;
+		EVRInitError eError;
 		// Code below recapitulates the effects of C++ call vr::VR_Init()
-		vr::VR_Init(&eError, vr::EVRApplicationType::VRApplication_Scene);
+		VR_InitInternal(&eError, EVRApplicationType_VRApplication_Scene);
 		if (eError != EVRInitError_VRInitError_None) {
-			std::string errMsg = vr::VR_GetVRInitErrorAsEnglishDescription(eError);
+			std::string errMsg = VR_GetVRInitErrorAsEnglishDescription(eError);
 			return;
 		}
-		if (!vr::VR_IsInterfaceVersionValid(IVRSystem_Version))
+		if (!VR_IsInterfaceVersionValid(IVRSystem_Version))
 		{
-			vr::VR_Shutdown();
+			VR_ShutdownInternal();
 			return;
 		}
-		vrToken = vr::VR_GetInitToken();
+		vrToken = VR_GetInitToken();
 		const std::string sys_key = std::string("FnTable:") + std::string(IVRSystem_Version);
-		vrSystem = (VR_IVRSystem_FnTable*)vr::VR_GetGenericInterface(sys_key.c_str(), &eError);
+		vrSystem = (VR_IVRSystem_FnTable*)VR_GetGenericInterface(sys_key.c_str(), &eError);
 		if (vrSystem == nullptr)
 			return;
 
@@ -1134,16 +1134,16 @@ namespace s3d
 	/* virtual */
 	void OpenVRMode::SetupOverlay()
 	{
-		vr::EVRInitError eError;
+		EVRInitError eError;
 
-		vr::VR_Init(&eError, vr::EVRApplicationType::VRApplication_Overlay);;
+		VR_InitInternal(&eError, EVRApplicationType_VRApplication_Overlay);;
 		if (eError != EVRInitError_VRInitError_None) {
-			std::string errMsg = vr::VR_GetVRInitErrorAsEnglishDescription(eError);
+			std::string errMsg = VR_GetVRInitErrorAsEnglishDescription(eError);
 			return;
 		}
 
 		const std::string comp_key = std::string("FnTable:") + std::string(IVROverlay_Version);
-		vrOverlay = (VR_IVROverlay_FnTable*)vr::VR_GetGenericInterface(comp_key.c_str(), &eError);
+		vrOverlay = (VR_IVROverlay_FnTable*)VR_GetGenericInterface(comp_key.c_str(), &eError);
 		if (vrOverlay == nullptr)
 			return;
 
@@ -2513,7 +2513,7 @@ namespace s3d
 	OpenVRMode::~OpenVRMode()
 	{
 		if (vrSystem != nullptr) {
-			vr::VR_Shutdown();
+			VR_ShutdownInternal();
 			vrSystem = nullptr;
 			vrCompositor = nullptr;
 			vrOverlay = nullptr;
