@@ -899,6 +899,9 @@ void I_SetWindowTitle(const char* title)
 	SystemBaseFrameBuffer::SetWindowTitle(title);
 }
 
+void I_FocusWindow()
+{
+}
 
 #ifdef HAVE_VULKAN
 void I_GetVulkanDrawableSize(int *width, int *height)

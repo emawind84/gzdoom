@@ -231,3 +231,6 @@ void I_SetWindowTitle(const char* caption)
 {
 }
 
+void I_FocusWindow()
+{
+}

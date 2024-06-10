@@ -148,6 +148,7 @@ void Local_Job_Init();
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 extern void I_SetWindowTitle(const char* caption);
+extern void I_FocusWindow();
 extern void ReadStatistics();
 extern void M_SetDefaultMode ();
 extern void G_NewInit ();
@@ -3888,6 +3889,7 @@ static int D_DoomMain_Internal (void)
 
 		D_DoAnonStats();
 		I_UpdateWindowTitle();
+		I_FocusWindow();
 		D_DoomLoop ();		// this only returns if a 'restart' CCMD is given.
 		// 
 		// Clean up after a restart
