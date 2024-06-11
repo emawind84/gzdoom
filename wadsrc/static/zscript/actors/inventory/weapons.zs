@@ -354,7 +354,7 @@ class Weapon : StateProvider
 	//
 	//============================================================================
 
-	static void DoReadyWeaponToSwitch (PlayerInfo player, bool switchable, int hand)
+	static void DoReadyWeaponToSwitch (PlayerInfo player, bool switchable, int hand = 0)
 	{
 		int switchok = hand ? WF_OFFHANDSWITCHOK : WF_WEAPONSWITCHOK;
 		int refireok = hand ? WF_OFFHANDREFIRESWITCHOK : WF_REFIRESWITCHOK;
