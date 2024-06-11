@@ -216,7 +216,7 @@ void Draw2D(F2DDrawer* drawer, FRenderState& state, int x, int y, int width, int
 			state.EnableTexture(false);
 		}
 
-		if (cmd.shape2DBufInfo != nullptr)
+		if (cmd.shape2DBufInfo != nullptr && cmd.shape2DBufInfo->bufIndex != -1)
 		{
 			state.SetVertexBuffer(&cmd.shape2DBufInfo->buffers[cmd.shape2DBufIndex]);
 			state.DrawIndexed(DT_Triangles, 0, cmd.shape2DIndexCount);
