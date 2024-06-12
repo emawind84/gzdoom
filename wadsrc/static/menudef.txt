@@ -2672,10 +2672,10 @@ OptionMenu VideoModeMenu protected
 	Option "$VIDMNU_SCALEMODE",			"vid_scalemode", "ScaleModes"
 	Slider "$VIDMNU_SCALEFACTOR",		"vid_scalefactor", 0.25, 2.0, 0.25, 2
 
-	//StaticText " "
-	//Option "$DSPLYMNU_VSYNC",					"vid_vsync", "OnOff"
-	//Slider "$VIDMNU_MAXFPS",					"vid_maxfps", 35, 500, 1
-	//Option "$DSPLYMNU_CAPFPS",					"cl_capfps", "OffOn"
+	StaticText " "
+	Option "$DSPLYMNU_VSYNC",					"vid_vsync", "OnOff"
+	Slider "$VIDMNU_MAXFPS",					"vid_maxfps", 35, 500, 1
+	Option "$DSPLYMNU_CAPFPS",					"cl_capfps", "OffOn"
 	
 	StaticText ""
 	StaticText "$VIDMNU_CUSTOMRES"
