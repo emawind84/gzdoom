@@ -247,33 +247,17 @@ void HWDrawInfo::DrawPSprite(HUDSprite *huds, FRenderState &state)
 void HWDrawInfo::DrawPlayerSprites(bool hudModelStep, FRenderState &state)
 {
 	auto vrmode = VRMode::GetVRMode(true);
-	// vrmode->AdjustPlayerSprites(this);
 	
 	auto oldlightmode = lightmode;
 	for (auto &hudsprite : hudsprites)
 	{
 		if (!vrmode->IsVR() && (!!hudsprite.mframe) != hudModelStep) continue;
 		if (!hudsprite.mframe && isSoftwareLighting(oldlightmode)) SetFallbackLightMode();	// Software lighting cannot handle 2D content.
-		if (!hudsprite.mframe) vrmode->AdjustPlayerSprites(hudsprite.weapon->GetCaller() == hudsprite.owner->player->OffhandWeapon);
+		if (!hudsprite.mframe) vrmode->AdjustPlayerSprites(state, hudsprite.weapon->GetCaller() == hudsprite.owner->player->OffhandWeapon);
 		DrawPSprite(&hudsprite, state);
-		if (!hudsprite.mframe) vrmode->UnAdjustPlayerSprites();
+		if (!hudsprite.mframe) vrmode->UnAdjustPlayerSprites(state);
 		lightmode = oldlightmode;
 	}
-	
-	// TODO hh gzdoom vr disabled for now
-	// vrmode->DrawControllerModels(this, state);
-
-	// state.SetObjectColor(0xffffffff);
-	// state.SetDynLight(0, 0, 0);
-	// state.EnableBrightmap(false);
-
-	//lightmode = oldlightmode;
-	
-	// if (!hudModelStep)
-	// {
-	// 	vrmode->UnAdjustPlayerSprites();
-	// }
-
 }
 
 

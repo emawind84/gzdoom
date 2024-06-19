@@ -104,8 +104,8 @@ public:
 	virtual bool IsVR() const override { return true; }
 	virtual void Present() const override;
 	virtual void AdjustViewport(DFrameBuffer* screen) const override;
-	virtual void AdjustPlayerSprites(int hand = 0) const override;
-	virtual void UnAdjustPlayerSprites() const override;
+	virtual void AdjustPlayerSprites(FRenderState &state, int hand = 0) const override;
+	virtual void UnAdjustPlayerSprites(FRenderState &state) const override;
 	virtual void AdjustCrossHair() const override;
 	virtual void UnAdjustCrossHair() const override;
 

@@ -40,8 +40,6 @@
 #include "g_game.h" // G_Add...
 #include "p_local.h" // P_TryMove
 #include "gl_renderer.h"
-#include "gl_renderstate.h"
-#include "gl_renderbuffers.h"
 #include "r_utility.h"
 #include "v_video.h"
 #include "g_levellocals.h" // pixelstretch
@@ -55,6 +53,7 @@
 #include "d_event.h"
 #include "doomstat.h"
 #include "hw_models.h"
+#include "hw_renderstate.h"
 #include "hwrenderer/scene/hw_drawinfo.h"
 #include "hwrenderer/data/flatvertices.h"
 #include "hwrenderer/data/hw_viewpointbuffer.h"
@@ -301,8 +300,9 @@ namespace s3d
 
     void ApplyVPUniforms(HWDrawInfo* di)
     {
+        auto& renderState = *screen->RenderState();
         di->VPUniforms.CalcDependencies();
-        di->vpIndex = screen->mViewpoints->SetViewpoint(gl_RenderState, &di->VPUniforms);
+        di->vpIndex = screen->mViewpoints->SetViewpoint(renderState, &di->VPUniforms);
     }
 
     void OpenXRDeviceEyePose::AdjustHud() const
@@ -386,23 +386,23 @@ namespace s3d
     }
 
     /* hand is 1 for left (offhand) and 0 for right (mainhand) */
-    void OpenXRDeviceMode::AdjustPlayerSprites(int hand) const
+    void OpenXRDeviceMode::AdjustPlayerSprites(FRenderState &state, int hand) const
     {
-        if (GetWeaponTransform(&gl_RenderState.mModelMatrix, hand))
+        if (GetWeaponTransform(&state.mModelMatrix, hand))
         {
             float scale = 0.000625f * vr_weaponScale * vr_2dweaponScale;
-            gl_RenderState.mModelMatrix.scale(scale, -scale, scale);
-            gl_RenderState.mModelMatrix.translate(-viewwidth / 2, -viewheight * 3 / 4, 0.0f); // What dis?!
+            state.mModelMatrix.scale(scale, -scale, scale);
+            state.mModelMatrix.translate(-viewwidth / 2, -viewheight * 3 / 4, 0.0f); // What dis?!
 
             float offsetFactor = 40.f;
-            gl_RenderState.mModelMatrix.translate(vr_2dweaponOffsetX * offsetFactor, -vr_2dweaponOffsetY * offsetFactor, vr_2dweaponOffsetZ * offsetFactor);
+            state.mModelMatrix.translate(vr_2dweaponOffsetX * offsetFactor, -vr_2dweaponOffsetY * offsetFactor, vr_2dweaponOffsetZ * offsetFactor);
         }
-        gl_RenderState.EnableModelMatrix(true);
+        state.EnableModelMatrix(true);
     }
 
-    void OpenXRDeviceMode::UnAdjustPlayerSprites() const {
+    void OpenXRDeviceMode::UnAdjustPlayerSprites(FRenderState &state) const {
 
-        gl_RenderState.EnableModelMatrix(false);
+        state.EnableModelMatrix(false);
     }
 
     //---------------------------------------------------------------------------

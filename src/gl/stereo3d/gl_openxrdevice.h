@@ -70,8 +70,8 @@ public:
 	virtual bool IsVR() const override { return true; }
 	virtual void Present() const override;
 	virtual void AdjustViewport(DFrameBuffer* screen) const override;
-	virtual void AdjustPlayerSprites(int hand = 0) const override;
-	virtual void UnAdjustPlayerSprites() const override;
+	virtual void AdjustPlayerSprites(FRenderState &state, int hand = 0) const override;
+	virtual void UnAdjustPlayerSprites(FRenderState &state) const override;
 
 	virtual bool GetHandTransform(int hand, VSMatrix* out) const override;
 	virtual bool RenderPlayerSpritesInScene() const { return true; }

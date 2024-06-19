@@ -40,12 +40,11 @@
 #include "g_game.h" // G_Add...
 #include "p_local.h" // P_TryMove
 #include "gl_renderer.h"
-#include "gl_renderstate.h"
-#include "gl_renderbuffers.h"
 #include "v_2ddrawer.h" // crosshair
 #include "models.h"
 #include "hw_material.h"
 #include "hw_models.h"
+#include "hw_renderstate.h"
 #include "g_levellocals.h" // pixelstretch
 #include "g_statusbar/sbar.h"
 #include "c_cvars.h"
@@ -482,9 +481,9 @@ namespace s3d
 
 				auto tex = new FControllerTexture(pTexture);
 				pFTex = MakeGameTexture(tex, "Controllers", ::ETextureType::Any);
-
+				auto& renderState = *screen->RenderState();
 				auto* di = HWDrawInfo::StartDrawInfo(r_viewpoint.ViewLevel, nullptr, r_viewpoint, nullptr);
-				FHWModelRenderer renderer(di, gl_RenderState, -1);
+				FHWModelRenderer renderer(di, renderState, -1);
 				BuildVertexBuffer(&renderer);
 				di->EndDrawInfo();
 				return true;
@@ -952,8 +951,9 @@ namespace s3d
 
 	void ApplyVPUniforms(HWDrawInfo* di)
 	{
+		auto& renderState = *screen->RenderState();
 		di->VPUniforms.CalcDependencies();
-		di->vpIndex = screen->mViewpoints->SetViewpoint(gl_RenderState, &di->VPUniforms);
+		di->vpIndex = screen->mViewpoints->SetViewpoint(renderState, &di->VPUniforms);
 	}
 
 	template<class TYPE>
@@ -1214,24 +1214,24 @@ namespace s3d
 		screen->mScreenViewport.height = sceneHeight;
 	}
 
-	void OpenVRMode::AdjustPlayerSprites(int hand) const
+	void OpenVRMode::AdjustPlayerSprites(FRenderState &state, int hand) const
 	{
-		if (GetWeaponTransform(&gl_RenderState.mModelMatrix, hand))
+		if (GetWeaponTransform(&state.mModelMatrix, hand))
 		{
 			// TODO scale need to be fixed
 			float scale = 0.00125f * vr_weaponScale * vr_2dweaponScale;
-			gl_RenderState.mModelMatrix.scale(scale, -scale, scale);
-			gl_RenderState.mModelMatrix.translate(-viewwidth / 2, -viewheight * 3 / 4, 0.0f);
+			state.mModelMatrix.scale(scale, -scale, scale);
+			state.mModelMatrix.translate(-viewwidth / 2, -viewheight * 3 / 4, 0.0f);
 
 			float offsetFactor = 40.f;
-			gl_RenderState.mModelMatrix.translate(vr_2dweaponOffsetX * offsetFactor, -vr_2dweaponOffsetY * offsetFactor, vr_2dweaponOffsetZ * offsetFactor);
+			state.mModelMatrix.translate(vr_2dweaponOffsetX * offsetFactor, -vr_2dweaponOffsetY * offsetFactor, vr_2dweaponOffsetZ * offsetFactor);
 		}
-		gl_RenderState.EnableModelMatrix(true);
+		state.EnableModelMatrix(true);
 	}
 
-	void OpenVRMode::UnAdjustPlayerSprites() const {
+	void OpenVRMode::UnAdjustPlayerSprites(FRenderState &state) const {
 
-		gl_RenderState.EnableModelMatrix(false);
+		state.EnableModelMatrix(false);
 	}
 
 	void OpenVRMode::AdjustCrossHair() const
