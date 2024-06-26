@@ -2725,8 +2725,8 @@ static const char *DoomButtons[] =
 	"showscores" ,
 	"speed" ,
 	"use" ,
-	"mh_reload",
-	"moveup" };
+	"moveup",
+	"mh_reload" };
 
 CVAR(Bool, lookspring, true, CVAR_ARCHIVE);	// Generate centerview when -mlook encountered?
 EXTERN_CVAR(String, language)
