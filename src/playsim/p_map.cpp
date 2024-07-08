@@ -5096,12 +5096,38 @@ int P_LineTrace(AActor *t1, DAngle angle, double distance,
 	TData.ThruSpecies = !!(flags & TRF_THRUSPECIES);
 	TData.ThruActors = !!(flags & TRF_THRUACTORS);
 	TData.NumPortals = 0;
+	DVector3 fromPos;
 	DVector3 direction;
+	DVector3 yoffsetDir;
+	DVector3 zoffsetDir;
 	double pc = pitch.Cos();
 	direction = { pc * angle.Cos(), pc * angle.Sin(), -pitch.Sin() };
 	DVector3 startpos;
 	double startz = t1->Z() - t1->Floorclip;
 	startz += sz;
+
+	if (flags & TRF_USEWEAPON && t1->player != NULL && t1->player->mo->OverrideAttackPosDir)
+	{
+		if (flags & TRF_ISOFFHAND)
+		{
+			fromPos = t1->player->mo->OffhandPos;
+			direction = t1->player->mo->OffhandDir(t1, angle, pitch);
+			yoffsetDir = t1->player->mo->OffhandDir(t1, angle - DAngle::fromDeg(90.), pitch);
+			zoffsetDir = t1->player->mo->OffhandDir(t1, angle, pitch + DAngle::fromDeg(90.));
+		}
+		else 
+		{
+			fromPos = t1->player->mo->AttackPos;
+			direction = t1->player->mo->AttackDir(t1, angle, pitch);
+			yoffsetDir = t1->player->mo->AttackDir(t1, angle - DAngle::fromDeg(90.), pitch);
+			zoffsetDir = t1->player->mo->AttackDir(t1, angle, pitch + DAngle::fromDeg(90.));
+		}
+	}
+	else
+	{
+		fromPos = t1->PosAtZ(startz);
+	}
+
 	if ( flags & TRF_ABSPOSITION )
 	{
 		startpos = DVector3(offsetforward, offsetside, sz);
@@ -5112,7 +5138,30 @@ int P_LineTrace(AActor *t1, DAngle angle, double distance,
 	}
 	else if ( (offsetforward == 0.0) && (offsetside == 0.0) )
 	{
-		startpos = t1->PosAtZ(startz);
+		startpos = fromPos;
+	}
+	else if (flags & TRF_USEWEAPON && t1->player != NULL && t1->player->mo->OverrideAttackPosDir)
+	{
+		startpos += DVector3(
+			offsetforward * direction.Angle().Cos() * direction.Pitch().Cos(),
+			offsetforward * direction.Angle().Sin() * direction.Pitch().Cos(),
+			offsetforward * -direction.Pitch().Sin()
+		);
+
+		if (!use_action_spawn_yzoffset)
+			offsetside = sz = 0;
+
+		startpos += DVector3(
+			offsetside * yoffsetDir.Angle().Cos() * yoffsetDir.Pitch().Cos(),
+			offsetside * yoffsetDir.Angle().Sin() * yoffsetDir.Pitch().Cos(),
+			offsetside * -yoffsetDir.Pitch().Sin()
+		);
+
+		startpos += DVector3(
+			sz * zoffsetDir.Pitch().Cos() * zoffsetDir.Angle().Cos(), 
+			sz * zoffsetDir.Pitch().Cos() * zoffsetDir.Angle().Sin(),
+			sz * -zoffsetDir.Pitch().Sin()
+		);
 	}
 	else
 	{
