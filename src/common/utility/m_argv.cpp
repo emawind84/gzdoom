@@ -262,16 +262,21 @@ FString FArgs::TakeValue(const char *check)
 
 void FArgs::RemoveArgs(const char *check)
 {
-	int i = CheckParm(check);
-
-	if (i > 0 && i < (int)Argv.Size() - 1)
+	int i = 0;
+	do
 	{
-		do 
+		i = CheckParm(check);
+
+		if (i > 0 && i < (int)Argv.Size() - 1)
 		{
-			RemoveArg(i);
+			do 
+			{
+				RemoveArg(i);
+			}
+			while (Argv[i][0] != '+' && Argv[i][0] != '-' && i < (int)Argv.Size() - 1);
 		}
-		while (Argv[i][0] != '+' && Argv[i][0] != '-' && i < (int)Argv.Size() - 1);
 	}
+	while (i > 0);
 }
 
 //===========================================================================
