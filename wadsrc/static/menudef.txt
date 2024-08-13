@@ -2766,9 +2766,9 @@ OptionValue "CinemaScreenFollow"
 {
 	0, "Disabled"
 	1, "Stationary"	
-	//2, "Follow Head movement"	
-	//3, "Follow Main Hand"	
-	//4, "Follwo Offhand"
+	2, "Follow Head movement"	
+	3, "Follow Main Hand"	
+	4, "Follow Offhand"
 }
 
 OptionValue "CinemaScreenBG"
