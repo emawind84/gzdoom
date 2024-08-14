@@ -722,15 +722,15 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	}
 	else
 	{
-		if (buttonMap.ButtonDown(Button_Forward))
+		if (!vrmode->IsVR() && buttonMap.ButtonDown(Button_Forward))
 			forward += (vr_move_speed * (speed ? vr_run_multiplier : 1.0));
-		if (buttonMap.ButtonDown(Button_Back))
+		if (!vrmode->IsVR() && buttonMap.ButtonDown(Button_Back))
 			forward -= (vr_move_speed * (speed ? vr_run_multiplier : 1.0));
 	}
 
-	if (buttonMap.ButtonDown(Button_MoveRight))
+	if (!vrmode->IsVR() && buttonMap.ButtonDown(Button_MoveRight))
 		side += sidemove[speed];
-	if (buttonMap.ButtonDown(Button_MoveLeft))
+	if (!vrmode->IsVR() && buttonMap.ButtonDown(Button_MoveLeft))
 		side -= sidemove[speed];
 
 	// buttons
@@ -801,7 +801,16 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	{
 		forward += xs_CRoundToInt(mousey * m_forward);
 	}
-
+#ifdef USE_OPENXR
+	if (!vr_teleport) {
+		float joyforward=0;
+		float joyside=0;
+		float dummy=0;
+		VR_GetMove(&joyforward, &joyside, &dummy, &dummy, &dummy, &dummy, &dummy, &dummy);
+		side += joyint(joyside * (vr_move_speed * (speed ? vr_run_multiplier : 1.0)));
+		forward += joyint(joyforward * (vr_move_speed * (speed ? vr_run_multiplier : 1.0)));
+	}
+#endif
 	if (vr_teleport)
 	{
 		side = forward = 0;
