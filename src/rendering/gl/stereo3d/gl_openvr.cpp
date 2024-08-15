@@ -1787,7 +1787,7 @@ namespace s3d
 				static int increaseSnap = true;
 				static int decreaseSnap = true;
 
-				float joy = pPrimaryTrackedRemoteNew->rAxis[axisJoystick].x;
+				float joy = -I_OpenVRGetYaw();
 				if (vr_snapTurn <= 10.0f && abs(joy) > 0.05f)
 				{
 					increaseSnap = false;
@@ -1822,20 +1822,6 @@ namespace s3d
 				else if (snapTurn > 180.0f) {
 					snapTurn -= 360.f;
 				}
-			}
-
-			// Smooth turning is activated only when snap turning is turned off
-			if(!vr_snap_turning && axisJoystick != -1)
-			{
-				//To feel smooth, yaw changes need to accumulate over the (sub) tic (i.e. render frame, not per tic)
-				unsigned int time = I_msTime();
-				static unsigned int lastTime = time;
-
-				unsigned int delta = time - lastTime;
-				lastTime = time;
-
-				float yaw = -pPrimaryTrackedRemoteNew->rAxis[axisJoystick].x;
-				G_AddViewAngle(joyint(-1280 * yaw * delta * 30 / 1000), true);
 			}
 
 			//Menu button - invoke menu
