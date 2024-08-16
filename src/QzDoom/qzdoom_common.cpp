@@ -3,7 +3,6 @@
 #include "hw_vrmodes.h"
 
 EXTERN_CVAR(Float, fov)
-EXTERN_CVAR(Bool, vr_snap_turning);
 EXTERN_CVAR(Int, vr_overlayscreen);
 EXTERN_CVAR(Bool, vr_overlayscreen_always);
 
@@ -117,7 +116,7 @@ void VR_GetMove(float *joy_forward, float *joy_side, float *hmd_forward, float *
     *hmd_forward = positional_movementForward;
     *hmd_side = positional_movementSideways;
     *up = 0.0f;
-    *yaw = VR_UseScreenLayer() ? cinemamodeYaw : hmdorientation[YAW] + (vr_snap_turning ? snapTurn : 0.);
+    *yaw = VR_UseScreenLayer() ? cinemamodeYaw : hmdorientation[YAW] + snapTurn;
 	*pitch = VR_UseScreenLayer() ? cinemamodePitch : hmdorientation[PITCH];
 	*roll = VR_UseScreenLayer() ? 0.0f : hmdorientation[ROLL];
 }

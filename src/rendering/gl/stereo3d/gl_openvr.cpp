@@ -224,7 +224,6 @@ EXTERN_CVAR(Bool, vr_two_handed_weapons);
 EXTERN_CVAR(Bool, vr_enable_haptics);
 EXTERN_CVAR(Float, vr_kill_momentum);
 EXTERN_CVAR(Bool, vr_crouch_use_button);
-EXTERN_CVAR(Bool, vr_snap_turning);
 EXTERN_CVAR(Float, vr_snapTurn);
 
 EXTERN_CVAR(Float, vr_2dweaponScale)
