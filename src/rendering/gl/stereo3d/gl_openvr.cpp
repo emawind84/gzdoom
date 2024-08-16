@@ -86,6 +86,7 @@ namespace openvr {
 void I_StartupOpenVR();
 double P_XYMovement(AActor* mo, DVector2 scroll);
 float I_OpenVRGetYaw();
+float I_OpenVRGetPitch();
 float I_OpenVRGetDirectionalMove();
 
 float length(float x, float y);
@@ -1655,13 +1656,15 @@ namespace s3d
 
 		//In cinema mode, right-stick controls mouse
 		const float mouseSpeed = 3.0f;
-		if (VR_UseScreenLayer() && !dominantGripPushedNew && axisJoystick != -1)
+		if (VR_UseScreenLayer() && !dominantGripPushedNew)
 		{
-			if (fabs(pPrimaryTrackedRemoteNew->rAxis[axisJoystick].x) > 0.1f) {
-				cinemamodeYaw -= mouseSpeed * pPrimaryTrackedRemoteNew->rAxis[axisJoystick].x;
+			float yaw = -I_OpenVRGetYaw();
+			if (fabs(yaw) > 0.1f) {
+				cinemamodeYaw -= mouseSpeed * yaw;
 			}
-			if (fabs(pPrimaryTrackedRemoteNew->rAxis[axisJoystick].y) > 0.1f) {
-				cinemamodePitch += mouseSpeed * pPrimaryTrackedRemoteNew->rAxis[axisJoystick].y;
+			float pitch = I_OpenVRGetPitch();
+			if (fabs(pitch) > 0.1f) {
+				cinemamodePitch += mouseSpeed * pitch;
 			}
 		}
 

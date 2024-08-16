@@ -138,6 +138,24 @@ public:
 
 		return yaw;
 	}
+
+	float GetPitch()
+	{
+		VRControllerState_t& onState = s3d::OpenVR_GetState(1);
+		VRControllerState_t& offState = s3d::OpenVR_GetState(0);
+
+		float pitch = 0.0f;
+
+		for (int i = 0; i < NUM_AXES; i++)
+		{
+			if (Axes[i].GameAxis == JOYAXIS_Pitch)
+			{
+				pitch += GetAxisValue(i, offState, onState);
+			}
+		}
+
+		return pitch;
+	}
 	
 	float GetDirectionalMove()
 	{
@@ -308,6 +326,10 @@ public:
 	{
 		return m_device.GetYaw();
 	}
+	float GetPitch()
+	{
+		return m_device.GetPitch();
+	}
 	float GetDirectionalMove()
 	{
 		return m_device.GetDirectionalMove();
@@ -343,6 +365,15 @@ float I_OpenVRGetYaw()
 	if (JoyDevices[INPUT_OpenVR] != NULL)
 	{
 		return ((FOpenVRJoystickManager*)JoyDevices[INPUT_OpenVR])->GetYaw();
+	}
+	return 0;
+}
+
+float I_OpenVRGetPitch()
+{
+	if (JoyDevices[INPUT_OpenVR] != NULL)
+	{
+		return ((FOpenVRJoystickManager*)JoyDevices[INPUT_OpenVR])->GetPitch();
 	}
 	return 0;
 }
