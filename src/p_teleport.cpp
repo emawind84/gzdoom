@@ -423,7 +423,7 @@ bool EV_Teleport (int tid, int tag, line_t *line, int side, AActor *thing, int f
 			{
 				// Rotate thing according to difference in angles (or not - Boom got the direction wrong here.)
 				thing->Angles.Yaw += angle;
-
+				if (thing->player) resetDoomYaw = true;
 				// Rotate thing's velocity to come out of exit just like it entered
 				thing->Vel.X = vx*c - vy*s;
 				thing->Vel.Y = vy*c + vx*s;
@@ -616,6 +616,9 @@ bool EV_SilentLineTeleport (line_t *line, int side, AActor *thing, int id, INTBO
 
 				// Reset the delta to have the same dynamics as before
 				player->deltaviewheight = deltaviewheight;
+
+				// reset vr headset yaw
+				resetDoomYaw = true;
 			}
 
 			return true;
