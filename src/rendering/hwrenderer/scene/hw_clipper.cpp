@@ -484,11 +484,11 @@ angle_t Clipper::PointToPseudoOrthoPitch(double x, double y, double z)
 		yproj *= viewpoint->ScreenProj;
 		if (fabs(yproj) <= 1.5)
 		{
-			return PitchToPseudo(viewpoint->Angles.Pitch.Degrees() - yproj * 0.5 * viewpoint->FieldOfView.Degrees() );
+			return PitchToPseudo(viewpoint->Angles.Pitch.Degrees() - yproj * 0.5 * viewpoint->GetFieldOfView().Degrees() );
 		}
 		else
 		{
-			double a2 = 0.75*viewpoint->FieldOfView.Degrees();
+			double a2 = 0.75*viewpoint->GetFieldOfView().Degrees();
 			a2 *= ( yproj > 0.0 ? -1.0 : 1.0 );
 			return PitchToPseudo(viewpoint->Angles.Pitch.Degrees() + a2 );
 		}

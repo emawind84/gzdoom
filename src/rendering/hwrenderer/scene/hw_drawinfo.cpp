@@ -459,7 +459,7 @@ void HWDrawInfo::CreateScene(bool drawpsprites)
 	Viewpoint.FrustAngle = a1;
 	if (Viewpoint.IsAllowedOoB()) // No need for vertical clipper if viewpoint not allowed out of bounds
 	{
-		double a2 = 20.0 + 0.5*Viewpoint.FieldOfView.Degrees(); // FrustumPitch for vertical clipping
+		double a2 = 20.0 + 0.5*Viewpoint.GetFieldOfView().Degrees(); // FrustumPitch for vertical clipping
 		if (a2 > 179.0) a2 = 179.0;
 		vClipper->SafeAddClipRangeDegPitches(vp.HWAngles.Pitch.Degrees() - a2, vp.HWAngles.Pitch.Degrees() + a2); // clip the suplex range
 	}

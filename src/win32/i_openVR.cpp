@@ -285,6 +285,20 @@ public:
 	{
 	}
 
+	bool AllowsEnabledInBackground()
+	{
+		return true;
+	}
+
+	bool GetEnabledInBackground()
+	{
+		return true;
+	}
+
+	void SetEnabledInBackground(bool enabled)
+	{
+	}
+
 	FString GetIdentifier()
 	{
 		return "OpenVR";

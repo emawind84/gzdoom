@@ -41,7 +41,7 @@ public:
 
 	OpenXRDeviceEyePose(int eye);
 	virtual ~OpenXRDeviceEyePose() override;
-	virtual VSMatrix GetProjection(FLOATTYPE fov, FLOATTYPE aspectRatio, FLOATTYPE fovRatio) const override;
+	virtual VSMatrix GetProjection(FLOATTYPE fov, FLOATTYPE aspectRatio, FLOATTYPE fovRatio, bool iso_ortho) const override;
 	DVector3 GetViewShift(FRenderViewpoint& vp) const override;
 	virtual void AdjustHud() const override;
 	virtual void AdjustBlend(HWDrawInfo* di) const override;
