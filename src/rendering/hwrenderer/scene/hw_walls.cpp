@@ -89,6 +89,7 @@ void SetSplitPlanes(FRenderState& state, const secplane_t& top, const secplane_t
 
 void HWWall::RenderWall(FRenderState &state, int textured)
 {
+	if (seg->sidedef->Flags & WALLF_DITHERTRANS) state.SetEffect(EFF_DITHERTRANS);
 	assert(vertcount > 0);
 	state.SetLightIndex(dynlightindex);
 
@@ -99,6 +100,11 @@ void HWWall::RenderWall(FRenderState &state, int textured)
 	state.Draw(DT_TriangleFan, vertindex, vertcount);
 	vertexcount += vertcount;
 	wallVerticesPerEye += vertcount;
+	if (seg->sidedef->Flags & WALLF_DITHERTRANS)
+	{
+		state.SetEffect(EFF_NONE);
+		seg->sidedef->Flags &= ~WALLF_DITHERTRANS; // reset this every frame
+	}
 }
 
 //==========================================================================
@@ -2212,6 +2218,8 @@ void HWWall::Process(HWWallDispatcher *di, seg_t *seg, sector_t * frontsector, s
 	}
 
 	bool isportal = seg->linedef->isVisualPortal() && seg->sidedef == seg->linedef->sidedef[0];
+	// Don't render portal insides if in orthographic mode
+	if (di->di) isportal &= !(di->di->Viewpoint.IsOrtho());
 
 	//return;
 	// [GZ] 3D middle textures are necessarily two-sided, even if they lack the explicit two-sided flag

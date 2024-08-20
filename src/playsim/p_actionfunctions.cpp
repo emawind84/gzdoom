@@ -1331,7 +1331,7 @@ DEFINE_ACTION_FUNCTION(AActor, A_Print)
 	PARAM_FLOAT	(time);
 	PARAM_NAME	(fontname);
 
-	if (text[0] == '$') text = GStrings(&text[1]);
+	if (text[0] == '$') text = GStrings.GetString(&text[1]);
 	if (self->CheckLocalView() ||
 		(self->target != NULL && self->target->CheckLocalView()))
 	{
@@ -1369,7 +1369,7 @@ DEFINE_ACTION_FUNCTION(AActor, A_PrintBold)
 	float saved = con_midtime;
 	FFont *font = NULL;
 	
-	if (text[0] == '$') text = GStrings(&text[1]);
+	if (text[0] == '$') text = GStrings.GetString(&text[1]);
 	if (fontname != NAME_None)
 	{
 		font = V_GetFont(fontname.GetChars());
@@ -1398,7 +1398,7 @@ DEFINE_ACTION_FUNCTION(AActor, A_Log)
 
 	if (local && !self->CheckLocalView()) return 0;
 
-	if (text[0] == '$') text = GStrings(&text[1]);
+	if (text[0] == '$') text = GStrings.GetString(&text[1]);
 	FString formatted = strbin1(text.GetChars());
 	Printf("%s\n", formatted.GetChars());
 	return 0;
@@ -5275,18 +5275,20 @@ void SetAnimationInternal(AActor * self, FName animName, double framerate, int s
 	self->modelData->curAnim.startFrame = startFrame < 0 ? animStart : animStart + startFrame;
 	self->modelData->curAnim.loopFrame = loopFrame < 0 ? animStart : animStart + loopFrame;
 	self->modelData->curAnim.flags = (flags&SAF_LOOP) ? ANIMOVERRIDE_LOOP : 0;
-	self->modelData->curAnim.switchTic = tic;
 	self->modelData->curAnim.framerate = (float)framerate;
 
 	if(!(flags & SAF_INSTANT))
 	{
 		self->modelData->prevAnim.startFrame = getCurrentFrame(self->modelData->prevAnim, tic);
 		
-		self->modelData->curAnim.startTic = floor(tic) + interpolateTics;
+		int startTic = floor(tic) + interpolateTics;
+		self->modelData->curAnim.startTic = startTic;
+		self->modelData->curAnim.switchOffset = startTic - tic;
 	}
 	else
 	{
 		self->modelData->curAnim.startTic = tic;
+		self->modelData->curAnim.switchOffset = 0;
 	}
 }
 
@@ -5335,7 +5337,7 @@ void SetAnimationFrameRateInternal(AActor * self, double framerate, double ticFr
 
 	self->modelData->curAnim.startFrame = frame;
 	self->modelData->curAnim.startTic = tic;
-	self->modelData->curAnim.switchTic = tic;
+	self->modelData->curAnim.switchOffset = 0;
 	self->modelData->curAnim.framerate = (float)framerate;
 }
 

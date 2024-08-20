@@ -325,7 +325,7 @@ IWad
 	Autoname = "doom.id.doom1.bfg"
 	Game = "Doom"
 	Config = "Doom"
-	IWADName = "doom.wad", 2
+	IWADName = "doombfg.wad", 2
 	Mapinfo = "mapinfo/ultdoom.txt"
 	Compatibility = "Shorttex", "nosectionmerge"
 	MustContain = "E1M1","E2M1","E2M2","E2M3","E2M4","E2M5","E2M6","E2M7","E2M8","E2M9",
@@ -333,6 +333,24 @@ IWad
 		          "DPHOOF","BFGGA0","HEADA1","CYBRA1","SPIDA1D1", "E4M2",
 		          "DMENUPIC", "M_ACPT", "M_CAN", "M_EXITO", "M_CHG"
 	BannerColors = "54 54 54", "a8 a8 a8"
+	IgnoreTitlePatches = 1
+}
+
+IWad
+{
+	Name = "DOOM: KEX Edition"
+	Autoname = "doom.id.doom1.kex"
+	Game = "Doom"
+	Config = "Doom"
+	IWADName = "doomkex.wad", 2
+	Mapinfo = "mapinfo/ultdoom.txt"
+	Compatibility = "Shorttex", "nosectionmerge"
+	MustContain = "E1M1","E2M1","E2M2","E2M3","E2M4","E2M5","E2M6","E2M7","E2M8","E2M9",
+		          "E3M1","E3M2","E3M3","E3M4","E3M5","E3M6","E3M7","E3M8","E3M9",
+		          "DPHOOF","BFGGA0","HEADA1","CYBRA1","SPIDA1D1", "E4M2",
+		          "DMENUPIC", "GAMECONF"
+	Load = "extras.wad"
+	BannerColors = "00 7c 00", "a8 a8 a8"
 	IgnoreTitlePatches = 1
 }
 
@@ -374,7 +392,7 @@ IWad
 	Autoname = "doom.id.doom1.ultimate.xbox"
 	Game = "Doom"
 	Config = "Doom"
-	IWADName = "doom.wad"
+	IWADName = "doomxbox.wad"
 	Mapinfo = "mapinfo/doomxbox.txt"
 	Compatibility = "Shorttex", "nosectionmerge"
 	MustContain = "E1M1","E2M1","E2M2","E2M3","E2M4","E2M5","E2M6","E2M7","E2M8","E2M9",
@@ -445,6 +463,21 @@ IWad
 
 IWad
 {
+	Name = "Final Doom: TNT - Evilution: KEX Edition"
+	Autoname = "doom.id.doom2.tnt.kex"
+	Game = "Doom"
+	Config = "Doom"
+	IWADName = "tntkex.wad"
+	Mapinfo = "mapinfo/tnt.txt"
+	Compatibility = "Shorttex", "Stairs"
+	MustContain = "MAP01", "REDTNT2", "GAMECONF"
+	BannerColors = "a8 00 00", "a8 a8 a8"
+	Load = "extras.wad"
+	IgnoreTitlePatches = 1
+}
+
+IWad
+{
 	Name = "Final Doom: TNT - Evilution"
 	Autoname = "doom.id.doom2.tnt"
 	Game = "Doom"
@@ -468,6 +501,21 @@ IWad
 	Compatibility = "Shorttex"
 	MustContain = "MAP01", "CAMO1", "DMAPINFO"
 	BannerColors = "00 7c 00", "a8 a8 a8"
+	IgnoreTitlePatches = 1
+}
+
+IWad
+{
+	Name = "Final Doom: Plutonia Experiment: KEX Edition"
+	Autoname = "doom.id.doom2.plutonia.kex"
+	Game = "Doom"
+	Config = "Doom"
+	IWADName = "plutoniakex.wad"
+	Mapinfo = "mapinfo/plutonia.txt"
+	Compatibility = "Shorttex"
+	MustContain = "MAP01", "CAMO1", "GAMECONF"
+	BannerColors = "a8 00 00", "a8 a8 a8"
+	Load = "extras.wad"
 	IgnoreTitlePatches = 1
 }
 
@@ -506,13 +554,28 @@ IWad
 	Autoname = "doom.id.doom2.bfg"
 	Game = "Doom"
 	Config = "Doom"
-	IWADName = "doom2.wad"
+	IWADName = "doom2bfg.wad"
 	Mapinfo = "mapinfo/doom2bfg.txt"
 	Compatibility = "Shorttex", "nosectionmerge"
 	MustContain = "MAP01", "DMENUPIC", "M_ACPT", "M_CAN", "M_EXITO", "M_CHG"
 	BannerColors = "a8 00 00", "a8 a8 a8"
 	Load = "nerve.wad"
 	IgnoreTitlePatches = 1
+}
+
+IWad
+{
+	Name = "DOOM 2: KEX Edition"
+	Autoname = "doom.id.doom2.kex"
+	Game = "Doom"
+	Config = "Doom"
+	IWADName = "doom2kex.wad", 2
+	Mapinfo = "mapinfo/doom2.txt"
+	Compatibility = "Shorttex", "nosectionmerge"
+	MustContain = "MAP01", "DMENUPIC", "GAMECONF"
+	BannerColors = "00 7c 00", "a8 a8 a8"
+	IgnoreTitlePatches = 1
+	Load = "extras.wad"
 }
 
 IWad
@@ -536,7 +599,7 @@ IWad
 	Autoname = "doom.id.doom2.commercial.xbox"
 	Game = "Doom"
 	Config = "Doom"
-	IWADName = "doom2.wad", 1
+	IWADName = "doom2xbox.wad", 1
 	Mapinfo = "mapinfo/doom2xbox.txt"
 	Compatibility = "Shorttex", "nosectionmerge"
 	MustContain = "MAP01", "MAP33", "CWILV32"
@@ -579,11 +642,15 @@ Names
 {
 	"doom_complete.pk3"
 	"doom2.wad"
+	"doom2xbox.wad"
 	"doom2unity.wad"
+	"doom2kex.wad"
 	"doom2f.wad"
 	"doomu.wad"
 	"doom.wad"
+	"doomxbox.wad"
 	"doomunity.wad"
+	"doomkex.wad"
 	"doom1.wad"
 	"bfgdoom.wad"
 	"bfgdoom2.wad"
@@ -593,8 +660,10 @@ Names
 	"doom2xbox.wad"
 	"plutonia.wad"
 	"plutoniaunity.wad"
+	"plutoniakex.wad"
 	"tnt.wad"
 	"tntunity.wad"
+	"tntkex.wad"
 	"freedoom1.wad"
 	"freedoom2.wad"
 	"freedoomu.wad"
@@ -630,20 +699,24 @@ Order	// Order in the IWAD selection box
 	"DOOM: Complete: WadSmoosh"
 	"DOOM 2: Hell on Earth"
 	"DOOM 2: L'Enfer sur Terre"
+	"DOOM 2: BFG Edition"
+	"DOOM 2: XBox Edition"
+	"DOOM 2: KEX Edition"
+	"DOOM 2: Unity Edition"
 	"The Ultimate DOOM"
 	"Sigil of Baphomet"
 	"DOOM Registered"
 	"DOOM Shareware"
 	"DOOM: BFG Edition"
-	"DOOM 2: BFG Edition"
 	"DOOM: XBox Edition"
-	"DOOM 2: XBox Edition"
+	"DOOM: KEX Edition"
 	"DOOM: Unity Edition"
-	"DOOM 2: Unity Edition"
 	"Final Doom: Plutonia Experiment"
 	"Final Doom: Plutonia Experiment: Unity Edition"
+	"Final Doom: Plutonia Experiment: KEX Edition"
 	"Final Doom: TNT - Evilution"
 	"Final Doom: TNT - Evilution: Unity Edition"
+	"Final Doom: TNT - Evilution: KEX Edition"
 	"Freedoom: Phase 1"
 	"Freedoom: Phase 2"
 	"FreeDM"

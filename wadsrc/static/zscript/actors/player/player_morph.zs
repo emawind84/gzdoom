@@ -129,9 +129,6 @@ extend class PlayerPawn
 			return false;
 		}
 
-		PreMorph(morphed, false);
-		morphed.PreMorph(self, true);
-
 		morphed.EndAllPowerupEffects();
 
 		if ((style & MRF_TRANSFERTRANSLATION) && !morphed.bDontTranslate)
@@ -260,9 +257,6 @@ extend class PlayerPawn
 		if (!MorphInto(alt))
 			return false;
 
-		PreUnmorph(alt, false);		// This body's about to be left.
-		alt.PreUnmorph(self, true);	// This one's about to become current.
-
 		alt.EndAllPowerupEffects();
 
 		// Remove the morph power if the morph is being undone prematurely.
@@ -325,6 +319,7 @@ extend class PlayerPawn
 		if (level2)
 			level2.Destroy();
 
+		WeaponSlots.SetupWeaponSlots(alt);
 		let morphWeap = p.ReadyWeapon;
 		p.ReadyWeapon = p.OffhandWeapon = null;
 		p.PendingWeapon = WP_NOCHANGE;
@@ -355,7 +350,7 @@ extend class PlayerPawn
 		}
 
 		// Reset the base AC of the player's Hexen armor back to its default.
-		let hexArmor = HexenArmor(alt.FindInventory("HexenArmor"));
+		let hexArmor = HexenArmor(alt.FindInventory("HexenArmor", true));
 		if (hexArmor)
 			hexArmor.Slots[4] = alt.HexenArmor[0];
 

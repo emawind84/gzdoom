@@ -71,3 +71,6 @@ EXTERN_CVAR(Bool, gl_notexturefill)
 EXTERN_CVAR(Bool, gl_no_persistent_buffer)
 EXTERN_CVAR(Bool, gl_no_clip_planes)
 EXTERN_CVAR(Bool, gl_no_ssbo)
+
+EXTERN_CVAR(Bool, r_radarclipper)
+EXTERN_CVAR(Bool, r_dithertransparency)

@@ -154,7 +154,7 @@ class PlayerPawn : Actor
 			if (health > 0) Height = FullHeight;
 		}
 
-		if (player && bWeaponLevel2Ended)
+		if (player && bWeaponLevel2Ended && !(player.cheats & CF_PREDICTING))
 		{
 			bWeaponLevel2Ended = false;
 			if (player.ReadyWeapon != NULL && player.ReadyWeapon.bPowered_Up)
@@ -183,6 +183,9 @@ class PlayerPawn : Actor
 
 	override void BeginPlay()
 	{
+		// Force create this since players can predict.
+		SetViewPos((0.0, 0.0, 0.0));
+
 		Super.BeginPlay ();
 		ChangeStatNum (STAT_PLAYER);
 		FullHeight = Height;
@@ -2019,8 +2022,8 @@ class PlayerPawn : Actor
 		// it provides player class based protection that should not affect
 		// any other protection item.
 		let myclass = GetClass();
-		GiveInventoryType('HexenArmor');
-		let harmor = HexenArmor(FindInventory('HexenArmor'));
+		GiveInventoryType(GetHexenArmorClass());
+		let harmor = HexenArmor(FindInventory('HexenArmor', true));
 
 		harmor.Slots[4] = self.HexenArmor[0];
 		for (int i = 0; i < 4; ++i)
@@ -2031,7 +2034,7 @@ class PlayerPawn : Actor
 		// BasicArmor must come right after that. It should not affect any
 		// other protection item as well but needs to process the damage
 		// before the HexenArmor does.
-		GiveInventoryType('BasicArmor');
+		GiveInventoryType(GetBasicArmorClass());
 
 		// Now add the items from the DECORATE definition
 		let di = GetDropItems();
@@ -2058,6 +2061,7 @@ class PlayerPawn : Actor
 					{
 						item = Inventory(Spawn(ti));
 						item.bIgnoreSkill = true;	// no skill multipliers here
+						item.bDropped = item.bNeverLocal = true; // Avoid possible copies.
 						item.Amount = di.Amount;
 						let weap = Weapon(item);
 						if (weap)
@@ -2868,13 +2872,23 @@ class PSprite : Object native play
 	{
 		if (processPending)
 		{
-			// drop tic count and possibly change state
-			if (Tics != -1)	// a -1 tic count never changes
+			if (Caller)
 			{
-				Tics--;
-				// [BC] Apply double firing speed.
-				if (bPowDouble && Tics && (Owner.mo.FindInventory ("PowerDoubleFiringSpeed", true))) Tics--;
-				if (!Tics && Caller != null) SetState(CurState.NextState);
+				Caller.PSpriteTick(self);
+				if (bDestroyed)
+					return;
+			}
+
+			if (processPending)
+			{
+				// drop tic count and possibly change state
+				if (Tics != -1)	// a -1 tic count never changes
+				{
+					Tics--;
+					// [BC] Apply double firing speed.
+					if (bPowDouble && Tics && (Owner.mo.FindInventory ("PowerDoubleFiringSpeed", true))) Tics--;
+					if (!Tics && Caller != null) SetState(CurState.NextState);
+				}
 			}
 		}
 	}
@@ -3012,7 +3026,7 @@ struct PlayerInfo native play	// self is what internally is known as player_t
 	native void SetSubtitleNumber (int text, Sound sound_id = 0);
 	native bool Resurrect();
 
-	native clearscope String GetUserName() const;
+	native clearscope String GetUserName(uint charLimit = 0u) const;
 	native clearscope Color GetColor() const;
 	native clearscope Color GetDisplayColor() const;
 	native clearscope int GetColorSet() const;
@@ -3134,7 +3148,17 @@ struct PlayerSkin native
 
 struct Team native
 {
-	const NoTeam = 255;
-	const Max = 16;
+	const NOTEAM = 255;
+	const MAX = 16;
+
 	native String mName;
+
+	native static bool IsValid(uint teamIndex);
+	native play static bool ChangeTeam(uint playerNumber, uint newTeamIndex);
+
+	native Color GetPlayerColor() const;
+	native int GetTextColor() const;
+	native TextureID GetLogo() const;
+	native string GetLogoName() const;
+	native bool AllowsCustomPlayerColor() const;
 }
