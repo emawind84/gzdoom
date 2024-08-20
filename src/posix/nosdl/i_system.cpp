@@ -318,7 +318,7 @@ void I_PrintStr(const char *cp)
 	if (StartWindow) RedrawProgressBar(ProgressBarCurPos,ProgressBarMaxPos);
 }
 
-int I_PickIWad (WadStuff *wads, int numwads, bool showwin, int defaultiwad, int&)
+int I_PickIWad (WadStuff *wads, int numwads, bool showwin, int defaultiwad, int&, FString&)
 {
 	int i;
 
