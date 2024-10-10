@@ -31,15 +31,15 @@ jobs:
           build_type: Release
 
         - name: macOS
-          os: macos-12
+          os: macos-14
           extra_options:
-          deps_cmdline: brew install libvpx webp
+          deps_cmdline: brew install libvpx
           build_type: Release
 
         - name: macOS
-          os: macos-12
+          os: macos-14
           extra_options: -G Xcode -DDYN_OPENAL=OFF
-          deps_cmdline: brew install libvpx webp
+          deps_cmdline: brew install libvpx
           build_type: Debug
 
         - name: Linux GCC 9
@@ -142,7 +142,7 @@ jobs:
 
     - name: Upload Package
       if: runner.os == 'Windows'  # Remove to store packages of all targets
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: build/package
         name: ${{ matrix.config.name }} ${{ matrix.config.build_type }}
