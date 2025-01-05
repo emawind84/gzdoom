@@ -1323,6 +1323,7 @@ namespace s3d
 
 	/* virtual */
 	void OpenVRMode::Present() const {
+		GLRenderer->mBuffers->BlitToEyeTexture(GLRenderer->mBuffers->CurrentEye(), false);
 		// TODO: For performance, don't render to the desktop screen here
 		if (doRenderToDesktop && vr_desktop_view != -1) {
 			GLRenderer->mBuffers->BindOutputFB();
@@ -2329,10 +2330,10 @@ namespace s3d
 				GLRenderer->mBuffers->BindCurrentFB();
 				glClearColor(0.f, 0.f, 0.f, 1.0f);
 				glClear(GL_COLOR_BUFFER_BIT);
-				if (eyeCount - eye_ix > 1)
+				//if (eyeCount - eye_ix > 1)
 					GLRenderer->mBuffers->NextEye(eyeCount);
 			}
-			GLRenderer->mBuffers->BlitToEyeTexture(GLRenderer->mBuffers->CurrentEye(), false);
+			//GLRenderer->mBuffers->BlitToEyeTexture(GLRenderer->mBuffers->CurrentEye(), false);
 			
 			vrCompositor->WaitGetPoses(
 				poses, k_unMaxTrackedDeviceCount, // current pose

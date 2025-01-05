@@ -141,10 +141,8 @@ void FGLRenderer::Flush()
 			}
 
 			screen->Draw2D(false);
-			if (eyeCount - eye_ix > 1)
-				mBuffers->NextEye(eyeCount);
+			mBuffers->NextEye(eyeCount);
 		}
-		mBuffers->BlitToEyeTexture(mBuffers->CurrentEye(), false);
 		twod->Clear();
 
 		FGLPostProcessState savedState;
