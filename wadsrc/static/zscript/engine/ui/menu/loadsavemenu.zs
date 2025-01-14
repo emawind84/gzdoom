@@ -485,8 +485,8 @@ class SaveMenu : LoadSaveMenu
 	{
 		Super.Init(parent, desc);
 		manager.InsertNewSaveNode();
-		TopItem = 0;
 		Selected = manager.ExtractSaveData (-1);
+		TopItem = MAX(0, Selected - listboxRows + 1);
 		UpdateSaveComment();
 	}
 
@@ -625,8 +625,8 @@ class LoadMenu : LoadSaveMenu
 	override void Init(Menu parent, ListMenuDescriptor desc)
 	{
 		Super.Init(parent, desc);
-		TopItem = 0;
 		Selected = manager.ExtractSaveData (-1);
+		TopItem = MAX(0, Selected - listboxRows + 1);
 		UpdateSaveComment();
 	}
 

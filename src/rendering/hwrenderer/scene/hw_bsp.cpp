@@ -44,6 +44,8 @@
 #include "hw_vertexbuilder.h"
 #include "hw_walldispatcher.h"
 
+#include "p_visualthinker.h"
+
 #ifdef ARCH_IA32
 #include <immintrin.h>
 #endif // ARCH_IA32
@@ -301,12 +303,12 @@ void HWDrawInfo::AddLine (seg_t *seg, bool portalclip)
 	angle_t startAngleR = clipperr.PointToPseudoAngle(seg->v2->fX(), seg->v2->fY());
 	angle_t endAngleR = clipperr.PointToPseudoAngle(seg->v1->fX(), seg->v1->fY());
 
-	if(r_radarclipper && !(Level->flags3 & LEVEL3_NOFOGOFWAR) && (startAngleR - endAngleR >= ANGLE_180))
+	if(Viewpoint.IsAllowedOoB() && r_radarclipper && !(Level->flags3 & LEVEL3_NOFOGOFWAR) && (startAngleR - endAngleR >= ANGLE_180))
 	{
 		if (!seg->backsector) clipperr.SafeAddClipRange(startAngleR, endAngleR);
 		else if((seg->sidedef != nullptr) && !uint8_t(seg->sidedef->Flags & WALLF_POLYOBJ) && (currentsector->sectornum != seg->backsector->sectornum))
 		{
-			if (in_area == area_default) in_area = hw_CheckViewArea(seg->v2, seg->v1, seg->frontsector, seg->backsector);
+			if (in_area == area_default) in_area = hw_CheckViewArea(seg->v1, seg->v2, seg->frontsector, seg->backsector);
 			backsector = hw_FakeFlat(seg->backsector, in_area, true);
 			if (hw_CheckClip(seg->sidedef, currentsector, backsector)) clipperr.SafeAddClipRange(startAngleR, endAngleR);
 		}
@@ -339,25 +341,28 @@ void HWDrawInfo::AddLine (seg_t *seg, bool portalclip)
 		return;
 	}
 
-	auto &clipperv = *vClipper;
-	angle_t startPitch = clipperv.PointToPseudoPitch(seg->v1->fX(), seg->v1->fY(), currentsector->floorplane.ZatPoint(seg->v1));
-	angle_t endPitch = clipperv.PointToPseudoPitch(seg->v1->fX(), seg->v1->fY(), currentsector->ceilingplane.ZatPoint(seg->v1));
-	angle_t startPitch2 = clipperv.PointToPseudoPitch(seg->v2->fX(), seg->v2->fY(), currentsector->floorplane.ZatPoint(seg->v2));
-	angle_t endPitch2 = clipperv.PointToPseudoPitch(seg->v2->fX(), seg->v2->fY(), currentsector->ceilingplane.ZatPoint(seg->v2));
-	angle_t temp;
-	// Wall can be tilted from viewpoint perspective. Find vertical extent on screen in psuedopitch units (0 to 2, bottom to top)
-	if(int(startPitch) > int(startPitch2)) // Handle zero crossing
+	if (Viewpoint.IsAllowedOoB()) // No need for vertical clipping if viewpoint not allowed out of bounds
 	{
-		temp = startPitch; startPitch = startPitch2; startPitch2 = temp; // exchange
-	}
-	if(int(endPitch) > int(endPitch2)) // Handle zero crossing
-	{
-		temp = endPitch; endPitch = endPitch2; endPitch2 = temp; // exchange
-	}
+		auto &clipperv = *vClipper;
+		angle_t startPitch = clipperv.PointToPseudoPitch(seg->v1->fX(), seg->v1->fY(), currentsector->floorplane.ZatPoint(seg->v1));
+		angle_t endPitch = clipperv.PointToPseudoPitch(seg->v1->fX(), seg->v1->fY(), currentsector->ceilingplane.ZatPoint(seg->v1));
+		angle_t startPitch2 = clipperv.PointToPseudoPitch(seg->v2->fX(), seg->v2->fY(), currentsector->floorplane.ZatPoint(seg->v2));
+		angle_t endPitch2 = clipperv.PointToPseudoPitch(seg->v2->fX(), seg->v2->fY(), currentsector->ceilingplane.ZatPoint(seg->v2));
+		angle_t temp;
+		// Wall can be tilted from viewpoint perspective. Find vertical extent on screen in psuedopitch units (0 to 2, bottom to top)
+		if(int(startPitch) > int(startPitch2)) // Handle zero crossing
+		{
+			temp = startPitch; startPitch = startPitch2; startPitch2 = temp; // exchange
+		}
+		if(int(endPitch) > int(endPitch2)) // Handle zero crossing
+		{
+			temp = endPitch; endPitch = endPitch2; endPitch2 = temp; // exchange
+		}
 
-	if (!clipperv.SafeCheckRange(startPitch, endPitch2))
-	{
-		return;
+		if (!clipperv.SafeCheckRange(startPitch, endPitch2))
+		{
+			return;
+		}
 	}
 
 	if (!r_radarclipper || (Level->flags3 & LEVEL3_NOFOGOFWAR) || clipperr.SafeCheckRange(startAngleR, endAngleR))
@@ -696,10 +701,9 @@ void HWDrawInfo::RenderParticles(subsector_t *sub, sector_t *front)
 			int clipres = mClipPortal->ClipPoint(sp->PT.Pos.XY());
 			if (clipres == PClip_InFront) continue;
 		}
-		
-		assert(sp->spr);
 
-		sp->spr->ProcessParticle(this, &sp->PT, front, sp);
+		HWSprite sprite;
+		sprite.ProcessParticle(this, &sp->PT, front, sp);
 	}
 	for (int i = Level->ParticlesInSubsec[sub->Index()]; i != NO_PARTICLE; i = Level->Particles[i].snext)
 	{
@@ -766,7 +770,7 @@ void HWDrawInfo::DoSubsector(subsector_t * sub)
 		int count = sub->numlines;
 		seg_t * seg = sub->firstline;
 		bool anglevisible = false;
-		bool pitchvisible = false;
+		bool pitchvisible = !(Viewpoint.IsAllowedOoB()); // No vertical clipping if viewpoint is not allowed out of bounds
 		bool radarvisible = false;
 		angle_t pitchtemp;
 		angle_t pitchmin = ANGLE_90;
@@ -783,15 +787,21 @@ void HWDrawInfo::DoSubsector(subsector_t * sub)
 				angle_t endAngleR = clipperr.PointToPseudoAngle(seg->v1->fX(), seg->v1->fY());
 				if (startAngleR-endAngleR >= ANGLE_180)
 					radarvisible |= (clipperr.SafeCheckRange(startAngleR, endAngleR) || (Level->flags3 & LEVEL3_NOFOGOFWAR) || ((sub->flags & SSECMF_DRAWN) && !deathmatch));
-				pitchmin = clipperv.PointToPseudoPitch(seg->v1->fX(), seg->v1->fY(), sector->floorplane.ZatPoint(seg->v1));
-				pitchmax = clipperv.PointToPseudoPitch(seg->v1->fX(), seg->v1->fY(), sector->ceilingplane.ZatPoint(seg->v1));
-				pitchvisible |= clipperv.SafeCheckRange(pitchmin, pitchmax);
+				if (!pitchvisible)
+				{
+					pitchmin = clipperv.PointToPseudoPitch(seg->v1->fX(), seg->v1->fY(), sector->floorplane.ZatPoint(seg->v1));
+					pitchmax = clipperv.PointToPseudoPitch(seg->v1->fX(), seg->v1->fY(), sector->ceilingplane.ZatPoint(seg->v1));
+					pitchvisible |= clipperv.SafeCheckRange(pitchmin, pitchmax);
+				}
 				if (pitchvisible && anglevisible && radarvisible) break;
-				pitchtemp = clipperv.PointToPseudoPitch(seg->v2->fX(), seg->v2->fY(), sector->floorplane.ZatPoint(seg->v2));
-				if (int(pitchmin) > int(pitchtemp)) pitchmin = pitchtemp;
-				pitchtemp = clipperv.PointToPseudoPitch(seg->v2->fX(), seg->v2->fY(), sector->ceilingplane.ZatPoint(seg->v2));
-				if (int(pitchmax) < int(pitchtemp)) pitchmax = pitchtemp;
-				pitchvisible |= clipperv.SafeCheckRange(pitchmin, pitchmax);
+				if (!pitchvisible)
+				{
+					pitchtemp = clipperv.PointToPseudoPitch(seg->v2->fX(), seg->v2->fY(), sector->floorplane.ZatPoint(seg->v2));
+					if (int(pitchmin) > int(pitchtemp)) pitchmin = pitchtemp;
+					pitchtemp = clipperv.PointToPseudoPitch(seg->v2->fX(), seg->v2->fY(), sector->ceilingplane.ZatPoint(seg->v2));
+					if (int(pitchmax) < int(pitchtemp)) pitchmax = pitchtemp;
+					pitchvisible |= clipperv.SafeCheckRange(pitchmin, pitchmax);
+				}
 				if (pitchvisible && anglevisible && radarvisible) break;
 			}
 			seg++;
@@ -1013,7 +1023,7 @@ void HWDrawInfo::RenderOrthoNoFog()
 		double vxdbl = Viewpoint.camera->X();
 		double vydbl = Viewpoint.camera->Y();
 		double ext = Viewpoint.camera->ViewPos->Offset.Length() ?
-			3.0 * Viewpoint.camera->ViewPos->Offset.Length() : 100.0;
+			3.0 * Viewpoint.camera->ViewPos->Offset.Length() * tan (Viewpoint.FieldOfView.Radians()*0.5) : 100.0;
 		FBoundingBox viewbox(vxdbl, vydbl, ext);
 
 		for (unsigned int kk = 0; kk < Level->subsectors.Size(); kk++)
@@ -1034,7 +1044,7 @@ void HWDrawInfo::RenderBSP(void *node, bool drawpsprites)
 	// Give the DrawInfo the viewpoint in fixed point because that's what the nodes are.
 	viewx = FLOAT2FIXED(Viewpoint.Pos.X);
 	viewy = FLOAT2FIXED(Viewpoint.Pos.Y);
-	if (r_radarclipper && !(Level->flags3 & LEVEL3_NOFOGOFWAR) && Viewpoint.IsAllowedOoB() && (Viewpoint.camera->ViewPos->Flags & VPSF_ABSOLUTEOFFSET))
+	if (r_radarclipper && !(Level->flags3 & LEVEL3_NOFOGOFWAR) && Viewpoint.IsAllowedOoB())
 	{
 		if (Viewpoint.camera->tracer != NULL)
 		{

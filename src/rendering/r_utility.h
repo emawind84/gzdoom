@@ -43,6 +43,7 @@ struct FRenderViewpoint
 	AActor			*camera;		// camera actor
 	sector_t		*sector;		// [RH] keep track of sector viewing from
 	double			ScreenProj;	// Screen projection factor for orthographic projection
+	double			ScreenProjX;	// Same for X-axis (screenspace)
 
 	double			TicFrac;		// fraction of tic for interpolation
 	uint32_t		FrameTime;		// current frame's time in tics.

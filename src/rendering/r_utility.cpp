@@ -98,8 +98,8 @@ struct InterpolationViewer
 
 // PRIVATE DATA DECLARATIONS -----------------------------------------------
 static TArray<InterpolationViewer> PastViewers;
-static FRandom pr_torchflicker ("TorchFlicker");
-static FRandom pr_hom;
+static FCRandom pr_torchflicker ("TorchFlicker");
+static FCRandom pr_hom;
 bool NoInterpolateView;	// GL needs access to this.
 static TArray<DVector3a> InterpolationPath;
 
@@ -175,6 +175,7 @@ FRenderViewpoint::FRenderViewpoint()
 	sector = nullptr;
 	FieldOfView =  DAngle::fromDeg(90.); // Angles in the SCREENWIDTH wide window
 	ScreenProj = 0.0;
+	ScreenProjX = 0.0;
 	TicFrac = 0.0;
 	FrameTime = 0;
 	extralight = 0;
@@ -487,7 +488,8 @@ bool P_NoInterpolation(player_t const *player, AActor const *actor)
 		&& player->mo->reactiontime == 0
 		&& !NoInterpolateView
 		&& !paused
-		&& !LocalKeyboardTurner;
+		&& !LocalKeyboardTurner
+		&& !player->mo->isFrozen();
 }
 
 //==========================================================================
@@ -728,7 +730,10 @@ void FRenderViewpoint::SetViewAngle(const FViewWindow& viewWindow)
 	HWAngles.Yaw = FAngle::fromDeg(270.0 - Angles.Yaw.Degrees());
 
 	if (IsOrtho() && (camera->ViewPos->Offset.XY().Length() > 0.0))
-		ScreenProj = 1.34396 / camera->ViewPos->Offset.Length(); // [DVR] Estimated. +/-1 should be top/bottom of screen.
+	{
+		ScreenProj = 1.34396 / camera->ViewPos->Offset.Length() / tan (FieldOfView.Radians()*0.5); // [DVR] Estimated. +/-1 should be top/bottom of screen.
+		ScreenProjX = ScreenProj * 0.5 / viewWindow.WidescreenRatio;
+	}
 
 }
 

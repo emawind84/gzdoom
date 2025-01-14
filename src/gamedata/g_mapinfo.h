@@ -269,8 +269,9 @@ enum ELevelFlags : unsigned int
 	LEVEL3_NOSHADOWMAP			= 0x00010000,	// disables shadowmaps for a given level.
 	LEVEL3_AVOIDMELEE			= 0x00020000,	// global flag needed for proper MBF support.
 	LEVEL3_NOJUMPDOWN			= 0x00040000,	// only for MBF21. Inverse of MBF's dog_jumping flag.
-	LEVEL3_LIGHTCREATED		= 0x00080000,	// a light had been created in the last frame
+	LEVEL3_LIGHTCREATED			= 0x00080000,	// a light had been created in the last frame
 	LEVEL3_NOFOGOFWAR			= 0x00100000,	// disables effect of r_radarclipper CVAR on this map
+	LEVEL3_SECRET				= 0x00200000,   // level is a secret level
 };
 
 
@@ -323,6 +324,7 @@ struct FExitText
 struct level_info_t
 {
 	int			levelnum;
+	int			broken_id24_levelnum;
 	
 	FString		MapName;
 	FString		NextMap;
@@ -348,6 +350,7 @@ struct level_info_t
 	FString		LightningSound = "world/thunder";
 	FString		Music;
 	FString		LevelName;
+	FString		MapLabel;
 	FString		AuthorName;
 	int8_t		WallVertLight, WallHorizLight;
 	int			musicorder;
@@ -389,6 +392,8 @@ struct level_info_t
 
 	FString		EnterPic;
 	FString		ExitPic;
+	FString		EnterAnim;
+	FString		ExitAnim;
 	FString 	InterMusic;
 	int			intermusicorder;
 	TMap <FName, std::pair<FString, int> > MapInterMusic;
@@ -488,6 +493,8 @@ level_info_t *FindLevelInfo (const char *mapname, bool allowdefault=true);
 level_info_t *FindLevelByNum (int num);
 level_info_t *CheckLevelRedirect (level_info_t *info);
 
+bool SecretLevelVisited();
+
 FString CalcMapName (int episode, int level);
 
 void G_ClearMapinfo();
@@ -510,6 +517,7 @@ enum ESkillProperty
 	SKILLP_PlayerRespawn,
 	SKILLP_SpawnMulti,
 	SKILLP_InstantReaction,
+	SKILLP_SpawnMultiCoopOnly,
 };
 enum EFSkillProperty	// floating point properties
 {
@@ -555,6 +563,7 @@ struct FSkillInfo
 	int SpawnFilter;
 	bool SpawnMulti;
 	bool InstantReaction;
+	bool SpawnMultiCoopOnly;
 	int ACSReturn;
 	FString MenuName;
 	FString PicName;

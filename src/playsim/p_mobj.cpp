@@ -175,6 +175,7 @@ IMPLEMENT_POINTERS_START(AActor)
 	IMPLEMENT_POINTER(target)
 	IMPLEMENT_POINTER(lastenemy)
 	IMPLEMENT_POINTER(tracer)
+	IMPLEMENT_POINTER(damagesource)
 	IMPLEMENT_POINTER(goal)
 	IMPLEMENT_POINTER(LastLookActor)
 	IMPLEMENT_POINTER(Inventory)
@@ -224,6 +225,7 @@ void AActor::Serialize(FSerializer &arc)
 		A("angles", Angles)
 		A("frame", frame)
 		A("scale", Scale)
+		A("nolocalrender", NoLocalRender) // Note: This will probably be removed later since a better solution is needed
 		A("renderstyle", RenderStyle)
 		A("renderflags", renderflags)
 		A("renderflags2", renderflags2)
@@ -296,6 +298,7 @@ void AActor::Serialize(FSerializer &arc)
 		A("inventoryid", InventoryID)
 		A("floatbobphase", FloatBobPhase)
 		A("floatbobstrength", FloatBobStrength)
+		A("floatbobfactor", FloatBobFactor)
 		A("translation", Translation)
 		A("bloodcolor", BloodColor)
 		A("bloodtranslation", BloodTranslation)
@@ -324,6 +327,7 @@ void AActor::Serialize(FSerializer &arc)
 		A("wallbouncefactor", wallbouncefactor)
 		A("bouncecount", bouncecount)
 		A("maxtargetrange", maxtargetrange)
+		A("missilechancemult", missilechancemult)
 		A("meleethreshold", meleethreshold)
 		A("meleerange", meleerange)
 		A("damagetype", DamageType)
@@ -405,7 +409,8 @@ void AActor::Serialize(FSerializer &arc)
 		("unmorphtime", UnmorphTime)
 		("morphflags", MorphFlags)
 		("premorphproperties", PremorphProperties)
-		("morphexitflash", MorphExitFlash);
+		("morphexitflash", MorphExitFlash)
+		("damagesource", damagesource);
 
 
 		SerializeTerrain(arc, "floorterrain", floorterrain, &def->floorterrain);
@@ -805,7 +810,7 @@ DEFINE_ACTION_FUNCTION(AActor, GiveInventoryType)
 
 void AActor::CopyFriendliness (AActor *other, bool changeTarget, bool resetHealth)
 {
-	Level->total_monsters -= CountsAsKill();
+	if (health > 0) Level->total_monsters -= CountsAsKill();
 	TIDtoHate = other->TIDtoHate;
 	LastLookActor = other->LastLookActor;
 	LastLookPlayerNumber = other->LastLookPlayerNumber;
@@ -820,7 +825,7 @@ void AActor::CopyFriendliness (AActor *other, bool changeTarget, bool resetHealt
 		LastHeard = target = other->target;
 	}	
 	if (resetHealth) health = SpawnHealth();	
-	Level->total_monsters += CountsAsKill();
+	if (health > 0) Level->total_monsters += CountsAsKill();
 }
 
 DEFINE_ACTION_FUNCTION(AActor, CopyFriendliness)
@@ -1461,7 +1466,7 @@ FSerializer &Serialize(FSerializer &arc, const char *key, AnimModelOverride &amo
 	return arc;
 }
 
-FSerializer &Serialize(FSerializer &arc, const char *key, struct AnimOverride &ao, struct AnimOverride *def)
+FSerializer &Serialize(FSerializer &arc, const char *key, struct ModelAnim &ao, struct ModelAnim *def)
 {
 	arc.BeginObject(key);
 	arc("firstFrame", ao.firstFrame);
@@ -1472,6 +1477,64 @@ FSerializer &Serialize(FSerializer &arc, const char *key, struct AnimOverride &a
 	arc("framerate", ao.framerate);
 	arc("startTic", ao.startTic);
 	arc("switchOffset", ao.switchOffset);
+	arc.EndObject();
+	return arc;
+}
+
+FSerializer &Serialize(FSerializer &arc, const char *key, ModelAnimFrame &ao, ModelAnimFrame *def)
+{
+	arc.BeginObject(key);
+	if(arc.isReading())
+	{
+		if(arc.HasKey("firstFrame"))
+		{ // legacy save, clear interpolation
+			ao = nullptr;
+		}
+		else
+		{
+			FString type = "nullptr";
+			arc("type", type);
+			if(type.Compare("nullptr") == 0)
+			{
+				ao = nullptr;
+			}
+			else if(type.Compare("interp") == 0)
+			{
+				ModelAnimFrameInterp tmp;
+				arc("inter", tmp.inter);
+				arc("frame1", tmp.frame1);
+				arc("frame2", tmp.frame2);
+				ao = tmp;
+			}
+			else if(type.Compare("precalcIQM") == 0)
+			{
+				//TODO, unreachable
+				ao = nullptr;
+			}
+		}
+	}
+	else // if(arc.isWriting())
+	{
+		if(std::holds_alternative<std::nullptr_t>(ao))
+		{
+			FString tmp = "nullptr";
+			arc("type", tmp);
+		}
+		else if(std::holds_alternative<ModelAnimFrameInterp>(ao))
+		{
+			FString type = "interp";
+			arc("type", type);
+			arc("inter", std::get<ModelAnimFrameInterp>(ao).inter);
+			arc("frame1", std::get<ModelAnimFrameInterp>(ao).frame1);
+			arc("frame2", std::get<ModelAnimFrameInterp>(ao).frame2);
+		}
+		else if(std::holds_alternative<ModelAnimFramePrecalculatedIQM>(ao))
+		{
+			//TODO
+			FString type = "nullptr";
+			arc("type", type);
+		}
+	}
 	arc.EndObject();
 	return arc;
 }
@@ -3884,7 +3947,7 @@ void AActor::Tick ()
 				special2++;
 			}
 
-			if(flags9 & MF9_DECOUPLEDANIMATIONS && modelData && !(modelData->curAnim.flags & ANIMOVERRIDE_NONE))
+			if(flags9 & MF9_DECOUPLEDANIMATIONS && modelData && !(modelData->curAnim.flags & MODELANIM_NONE))
 			{
 				modelData->curAnim.startTic += 1;
 			}
@@ -3937,7 +4000,7 @@ void AActor::Tick ()
 				special2++;
 			}
 
-			if(flags9 & MF9_DECOUPLEDANIMATIONS && modelData && !(modelData->curAnim.flags & ANIMOVERRIDE_NONE))
+			if(flags9 & MF9_DECOUPLEDANIMATIONS && modelData && !(modelData->curAnim.flags & MODELANIM_NONE))
 			{
 				modelData->curAnim.startTic += 1;
 			}
@@ -4393,6 +4456,14 @@ void AActor::Tick ()
 		P_DamageMobj(this, nullptr, nullptr, TELEFRAG_DAMAGE, NAME_InstantDeath);
 		// must have been removed
 		if (ObjectFlags & OF_EuthanizeMe) return;
+	}
+	//[inkoalawetrust] Genericized level damage handling that makes sector, 3D floor, and TERRAIN flat damage affect monsters and other NPCs too.
+	P_ActorOnSpecial3DFloor(this); //3D floors must be checked separately to see if their control sector allows non-player damage
+	if (checkForSpecialSector(this,Sector))
+	{
+		P_ActorInSpecialSector(this,Sector);
+		if (!isAbove(Sector->floorplane.ZatPoint(this)) || waterlevel) // Actor must be touching the floor for TERRAIN flats.
+			P_ActorOnSpecialFlat(this, P_GetThingFloorType(this));
 	}
 
 	if (tics != -1)
@@ -5546,16 +5617,13 @@ AActor *FLevelLocals::SpawnPlayer (FPlayerStart *mthing, int playernum, int flag
 
 	PlayerSpawnPickClass(playernum);
 
-	if (( dmflags2 & DF2_SAME_SPAWN_SPOT ) &&
-		( p->playerstate == PST_REBORN ) &&
-		( deathmatch == false ) &&
-		( gameaction != ga_worlddone ) &&
-		( p->mo != NULL ) && 
-		( !(p->mo->Sector->Flags & SECF_NORESPAWN) ) &&
-		( NULL != p->attacker ) &&							// don't respawn on damaging floors
-		( p->mo->Sector->damageamount < TELEFRAG_DAMAGE ))	// this really should be a bit smarter...
+	if ((dmflags2 & DF2_SAME_SPAWN_SPOT) && !deathmatch
+		&& p->mo != nullptr && p->playerstate == PST_REBORN
+		&& gameaction != ga_worlddone
+		&& !(p->mo->Sector->Flags & SECF_NORESPAWN)
+		&& p->LastDamageType != NAME_Suicide)
 	{
-		spawn = p->mo->Pos();
+		spawn = p->LastSafePos;
 		SpawnAngle = p->mo->Angles.Yaw;
 	}
 	else
@@ -5780,6 +5848,7 @@ AActor *FLevelLocals::SpawnMapThing (FMapThing *mthing, int position)
 	AActor *mobj;
 
 	bool spawnmulti = G_SkillProperty(SKILLP_SpawnMulti) || !!(dmflags2 & DF2_ALWAYS_SPAWN_MULTI);
+	bool spawnmulti_cooponly = G_SkillProperty(SKILLP_SpawnMultiCoopOnly);
 
 	if (mthing->EdNum == 0 || mthing->EdNum == -1)
 		return NULL;
@@ -5860,9 +5929,9 @@ AActor *FLevelLocals::SpawnMapThing (FMapThing *mthing, int position)
 		{
 			mask = MTF_COOPERATIVE;
 		}
-		else if (spawnmulti)
+		else if (spawnmulti || spawnmulti_cooponly)
 		{
-			mask = MTF_COOPERATIVE|MTF_SINGLE;
+			mask = spawnmulti_cooponly ? MTF_COOPERATIVE : (MTF_COOPERATIVE|MTF_SINGLE);
 		}
 		else
 		{
@@ -6240,8 +6309,14 @@ AActor *P_SpawnPuff (AActor *source, PClassActor *pufftype, const DVector3 &pos1
 	if ( puff && (puff->flags5 & MF5_PUFFGETSOWNER))
 		puff->target = source;
 	
+	// [AA] Track the source of the attack unconditionally in a separate field.
+	puff->damagesource = source;
+	
 	// Angle is the opposite of the hit direction (i.e. the puff faces the source.)
 	puff->Angles.Yaw = hitdir + DAngle::fromDeg(180);
+
+	// [AA] Mark the spawned actor as a puff with a flag.
+	puff->flags9 |= MF9_ISPUFF;
 
 	// If a puff has a crash state and an actor was not hit,
 	// it will enter the crash state. This is used by the StrifeSpark
@@ -6576,7 +6651,13 @@ int P_GetThingFloorType (AActor *thing)
 // Returns true if hit liquid and splashed, false if not.
 //---------------------------------------------------------------------------
 
-bool P_HitWater (AActor * thing, sector_t * sec, const DVector3 &pos, bool checkabove, bool alert, bool force)
+enum HitWaterFlags
+{
+	THW_SMALL	= 1 << 0,
+	THW_NOVEL	= 1 << 1,
+};
+
+bool P_HitWater (AActor * thing, sector_t * sec, const DVector3 &pos, bool checkabove, bool alert, bool force, int flags)
 {
 	if (thing->player && (thing->player->cheats & CF_PREDICTING))
 		return false;
@@ -6664,13 +6745,13 @@ foundone:
 
 	// Don't splash for living things with small vertical velocities.
 	// There are levels where the constant splashing from the monsters gets extremely annoying
-	if (((thing->flags3&MF3_ISMONSTER || thing->player) && thing->Vel.Z >= -6) && !force)
+	if (!(flags & THW_NOVEL) && ((thing->flags3 & MF3_ISMONSTER || thing->player) && thing->Vel.Z >= -6) && !force)
 		return Terrains[terrainnum].IsLiquid;
 
 	splash = &Splashes[splashnum];
 
 	// Small splash for small masses
-	if (thing->Mass < 10)
+	if (flags & THW_SMALL || thing->Mass < 10)
 		smallsplash = true;
 
 	if (!(thing->flags3 & MF3_DONTSPLASH))
@@ -6735,7 +6816,8 @@ DEFINE_ACTION_FUNCTION(AActor, HitWater)
 	PARAM_BOOL(checkabove);
 	PARAM_BOOL(alert);
 	PARAM_BOOL(force);
-	ACTION_RETURN_BOOL(P_HitWater(self, sec, DVector3(x, y, z), checkabove, alert, force));
+	PARAM_INT(flags);
+	ACTION_RETURN_BOOL(P_HitWater(self, sec, DVector3(x, y, z), checkabove, alert, force, flags));
 }
 
 
@@ -7852,6 +7934,19 @@ void AActor::Revive()
 	health = SpawnHealth();
 	target = nullptr;
 	lastenemy = nullptr;
+
+	// Make sure to clear poison damage.
+	PoisonDamageReceived = 0;
+	PoisonDamageTypeReceived = NAME_None;
+	PoisonDurationReceived = 0;
+	PoisonPeriodReceived = 0;
+	Poisoner = nullptr;
+	if (player != nullptr)
+	{
+		player->poisoncount = 0;
+		player->poisoner = nullptr;
+		player->poisontype = player->poisonpaintype = NAME_None;
+	}
 
 	// [RH] If it's a monster, it gets to count as another kill
 	if (CountsAsKill())
