@@ -5191,6 +5191,7 @@ enum ESetAnimationFlags
 
 void SetAnimationInternal(AActor * self, FName animName, double framerate, int startFrame, int loopFrame, int endFrame, int interpolateTics, int flags, double ticFrac)
 {
+
 	if(!self) ThrowAbortException(X_READ_NIL, "In function parameter self");
 
 	if(!(self->flags9 & MF9_DECOUPLEDANIMATIONS))
@@ -5237,43 +5238,46 @@ void SetAnimationInternal(AActor * self, FName animName, double framerate, int s
 
 	if(!(flags & SAF_INSTANT))
 	{
-		if(self->modelData->curAnim.startTic > tic)
-		{
-			ModelAnimFrameInterp to;
-			float inter;
-
-			calcFrames(self->modelData->curAnim, tic, to, inter);
-
-			const TArray<TRS>* animationData = nullptr;
-
-			int animationid = -1;
-
-			const FSpriteModelFrame * smf = &BaseSpriteModelFrames[self->GetClass()];
-
-			if (self->modelData->animationIDs.Size() > 0 && self->modelData->animationIDs[0] >= 0)
+		if((self->modelData->curAnim.startTic - self->modelData->curAnim.switchOffset) != int(floor(tic)))
+		{ // don't change interpolation data if animation switch happened in the same tic
+			if(self->modelData->curAnim.startTic > tic)
 			{
-				animationid = self->modelData->animationIDs[0];
+				ModelAnimFrameInterp to;
+				float inter;
+
+				calcFrames(self->modelData->curAnim, tic, to, inter);
+
+				const TArray<TRS>* animationData = nullptr;
+
+				int animationid = -1;
+
+				const FSpriteModelFrame * smf = &BaseSpriteModelFrames[self->GetClass()];
+
+				if (self->modelData->animationIDs.Size() > 0 && self->modelData->animationIDs[0] >= 0)
+				{
+					animationid = self->modelData->animationIDs[0];
+				}
+				else if(smf->modelsAmount > 0)
+				{
+					animationid = smf->animationIDs[0];
+				}
+
+				FModel* animation = mdl;
+
+				if (animationid >= 0)
+				{
+					animation = Models[animationid];
+					animationData = animation->AttachAnimationData();
+				}
+
+				self->modelData->prevAnim = animation->PrecalculateFrame(self->modelData->prevAnim, to, inter, animationData, self->boneComponentData, 0);
 			}
-			else if(smf->modelsAmount > 0)
+			else
 			{
-				animationid = smf->animationIDs[0];
+				self->modelData->prevAnim = ModelAnimFrameInterp{}; 
+
+				calcFrame(self->modelData->curAnim, tic, std::get<ModelAnimFrameInterp>(self->modelData->prevAnim));
 			}
-
-			FModel* animation = mdl;
-
-			if (animationid >= 0)
-			{
-				animation = Models[animationid];
-				animationData = animation->AttachAnimationData();
-			}
-
-			self->modelData->prevAnim = animation->PrecalculateFrame(self->modelData->prevAnim, to, inter, animationData, self->boneComponentData, 0);
-		}
-		else
-		{
-			self->modelData->prevAnim = ModelAnimFrameInterp{}; 
-
-			calcFrame(self->modelData->curAnim, tic, std::get<ModelAnimFrameInterp>(self->modelData->prevAnim));
 		}
 	}
 	else
@@ -5585,7 +5589,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(AActor, A_ChangeModel, ChangeModelNative)
 
 DEFINE_ACTION_FUNCTION_NATIVE(AActor, SetAnimation, SetAnimationNative)
 {
-	PARAM_ACTION_PROLOGUE(AActor);
+	PARAM_SELF_PROLOGUE(AActor);
 	PARAM_NAME(animName);
 	PARAM_FLOAT(framerate);
 	PARAM_INT(startFrame);
@@ -5601,7 +5605,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(AActor, SetAnimation, SetAnimationNative)
 
 DEFINE_ACTION_FUNCTION_NATIVE(AActor, SetAnimationUI, SetAnimationUINative)
 {
-	PARAM_ACTION_PROLOGUE(AActor);
+	PARAM_SELF_PROLOGUE(AActor);
 	PARAM_NAME(animName);
 	PARAM_FLOAT(framerate);
 	PARAM_INT(startFrame);
@@ -5617,7 +5621,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(AActor, SetAnimationUI, SetAnimationUINative)
 
 DEFINE_ACTION_FUNCTION_NATIVE(AActor, SetAnimationFrameRate, SetAnimationFrameRateNative)
 {
-	PARAM_ACTION_PROLOGUE(AActor);
+	PARAM_SELF_PROLOGUE(AActor);
 	PARAM_FLOAT(framerate);
 	
 	SetAnimationFrameRateInternal(self, framerate, 1);
@@ -5627,7 +5631,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(AActor, SetAnimationFrameRate, SetAnimationFrameRa
 
 DEFINE_ACTION_FUNCTION_NATIVE(AActor, SetAnimationFrameRateUI, SetAnimationFrameRateUINative)
 {
-	PARAM_ACTION_PROLOGUE(AActor);
+	PARAM_SELF_PROLOGUE(AActor);
 	PARAM_FLOAT(framerate);
 	
 	SetAnimationFrameRateInternal(self, framerate, I_GetTimeFrac());
@@ -5637,7 +5641,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(AActor, SetAnimationFrameRateUI, SetAnimationFrame
 
 DEFINE_ACTION_FUNCTION_NATIVE(AActor, SetModelFlag, SetModelFlag)
 {
-	PARAM_ACTION_PROLOGUE(AActor);
+	PARAM_SELF_PROLOGUE(AActor);
 	PARAM_INT(flag);
 
 	SetModelFlag(self, flag);
@@ -5647,7 +5651,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(AActor, SetModelFlag, SetModelFlag)
 
 DEFINE_ACTION_FUNCTION_NATIVE(AActor, ClearModelFlag, ClearModelFlag)
 {
-	PARAM_ACTION_PROLOGUE(AActor);
+	PARAM_SELF_PROLOGUE(AActor);
 	PARAM_INT(flag);
 
 	ClearModelFlag(self, flag);
@@ -5657,7 +5661,7 @@ DEFINE_ACTION_FUNCTION_NATIVE(AActor, ClearModelFlag, ClearModelFlag)
 
 DEFINE_ACTION_FUNCTION_NATIVE(AActor, ResetModelFlags, ResetModelFlags)
 {
-	PARAM_ACTION_PROLOGUE(AActor);
+	PARAM_SELF_PROLOGUE(AActor);
 	
 	ResetModelFlags(self);
 

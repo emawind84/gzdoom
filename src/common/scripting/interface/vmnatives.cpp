@@ -1718,7 +1718,7 @@ DEFINE_ACTION_FUNCTION(DScriptScanner, ScriptError)
 {
 	PARAM_SELF_PROLOGUE(DScriptScanner);
 
-	FString s = FStringFormat(VM_ARGS_NAMES);
+	FString s = FStringFormat(VM_ARGS_NAMES, 1);
 	self->wrapped.ScriptError("%s", s.GetChars());
 	return 0;
 }
@@ -1727,7 +1727,7 @@ DEFINE_ACTION_FUNCTION(DScriptScanner, ScriptMessage)
 {
 	PARAM_SELF_PROLOGUE(DScriptScanner);
 
-	FString s = FStringFormat(VM_ARGS_NAMES);
+	FString s = FStringFormat(VM_ARGS_NAMES, 1);
 	self->wrapped.ScriptMessage("%s", s.GetChars());
 	return 0;
 }
