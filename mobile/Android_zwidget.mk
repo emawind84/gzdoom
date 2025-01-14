@@ -38,7 +38,7 @@ LOCAL_SRC_FILES =  	\
 	src/widgets/checkboxlabel/checkboxlabel.cpp \
 	src/widgets/listview/listview.cpp \
 	src/widgets/tabwidget/tabwidget.cpp \
-	src/window/window.cpp \
+	# src/window/window.cpp \
 
 
 
