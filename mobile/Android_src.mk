@@ -83,14 +83,13 @@ LOCAL_C_INCLUDES := \
     	$(GZDOOM_TOP_PATH)/src/scripting \
     	$(GZDOOM_TOP_PATH)/src/scripting/zscript \
     	$(GZDOOM_TOP_PATH)/src/rendering \
-    	$(GZDOOM_TOP_PATH)/src/../libraries/glslang/glslang/Public \
-    	$(GZDOOM_TOP_PATH)/src/../libraries/glslang/spirv   	 \
     	$(GZDOOM_TOP_PATH)/src/common/platform/posix \
 		$(GZDOOM_TOP_PATH)/src/posix/nosdl \
     	$(GZDOOM_TOP_PATH)/libraries/lzma/C \
         $(GZDOOM_TOP_PATH)/libraries/bzip2 \
         $(GZDOOM_TOP_PATH)/libraries/miniz \
         $(GZDOOM_TOP_PATH)/libraries/webp/include \
+		$(GZDOOM_TOP_PATH)/libraries/ZWidget/include \
         $(GZDOOM_TOP_PATH)/libraries/discordrpc/include \
 \
  $(SUPPORT_LIBS)/openal/include/AL \
@@ -364,6 +363,7 @@ PCH_SOURCES = \
 	common/startscreen/startscreen_strife.cpp \
 	common/startscreen/startscreen_generic.cpp \
 	common/startscreen/endoom.cpp \
+	common/widgets/widgetresourcedata.cpp \
 	common/fonts/singlelumpfont.cpp \
 	common/fonts/singlepicfont.cpp \
 	common/fonts/specialfont.cpp \
@@ -383,6 +383,7 @@ PCH_SOURCES = \
 	common/textures/multipatchtexturebuilder.cpp \
 	common/textures/skyboxtexture.cpp \
 	common/textures/animtexture.cpp \
+	common/textures/firetexture.cpp \
 	common/textures/v_collection.cpp \
 	common/textures/formats/automaptexture.cpp \
 	common/textures/formats/brightmaptexture.cpp \
@@ -616,7 +617,7 @@ LOCAL_LDLIBS +=  -lEGL
 # This is stop a linker warning for mp123 lib failing build
 #LOCAL_LDLIBS += -Wl,--no-warn-shared-textrel
 
-LOCAL_STATIC_LIBRARIES :=  lzma_gl3 bzip2_gl3 vpx_player webpmux
+LOCAL_STATIC_LIBRARIES :=  lzma_gl3 bzip2_gl3 vpx_player webpmux zwidget
 LOCAL_SHARED_LIBRARIES :=  openal openxr_loader zmusic
 
 #Strip unused functions/data
