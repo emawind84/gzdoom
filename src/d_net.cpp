@@ -72,6 +72,7 @@
 #include "d_main.h"
 #include "i_interface.h"
 #include "savegamemanager.h"
+#include "hw_vrmodes.h"
 
 EXTERN_CVAR (Int, disableautosave)
 EXTERN_CVAR (Int, autosavecount)
@@ -1857,6 +1858,12 @@ void TryRunTics (void)
 	int 		numplaying;
 
 	bool doWait = (cl_capfps || pauseext || (r_NoInterpolate && !M_IsAnimated()));
+
+	auto vrmode = VRMode::GetVRMode();
+	if (vrmode->IsVR())
+	{
+		doWait = false;
+	}
 
 	// get real tics
 	if (doWait)
