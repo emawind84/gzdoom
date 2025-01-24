@@ -265,11 +265,13 @@ CUSTOM_CVAR (Float, turbo, 100.f, CVAR_NOINITCALL)
 	else
 	{
 		double scale = self * 0.01;
+		double vr_walk_scale = vr_move_speed / gameinfo.normforwardmove[0];
+		double vr_run_scale = vr_run_multiplier * vr_move_speed / gameinfo.normforwardmove[1];
 
-		forwardmove[0] = (int)(gameinfo.normforwardmove[0]*scale);
-		forwardmove[1] = (int)(gameinfo.normforwardmove[1]*scale);
-		sidemove[0] = (int)(gameinfo.normsidemove[0]*scale);
-		sidemove[1] = (int)(gameinfo.normsidemove[1]*scale);
+		forwardmove[0] = (int)(gameinfo.normforwardmove[0]*scale * vr_walk_scale);
+		forwardmove[1] = (int)(gameinfo.normforwardmove[1]*scale * vr_run_scale);
+		sidemove[0] = (int)(gameinfo.normsidemove[0]*scale * vr_walk_scale);
+		sidemove[1] = (int)(gameinfo.normsidemove[1]*scale * vr_run_scale);
 	}
 }
 
@@ -673,9 +675,9 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	if (strafe)
 	{
 		if (buttonMap.ButtonDown(Button_Right))
-			side += (vr_move_speed * (speed ? vr_run_multiplier : 1.0));
+			side += sidemove[speed];
 		if (buttonMap.ButtonDown(Button_Left))
-			side -= (vr_move_speed * (speed ? vr_run_multiplier : 1.0));
+			side -= sidemove[speed];
 	}
 	else
 	{
@@ -718,9 +720,9 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	else
 	{
 		if (!vrmode->IsVR() && buttonMap.ButtonDown(Button_Forward))
-			forward += (vr_move_speed * (speed ? vr_run_multiplier : 1.0));
+			forward += forwardmove[speed];
 		if (!vrmode->IsVR() && buttonMap.ButtonDown(Button_Back))
-			forward -= (vr_move_speed * (speed ? vr_run_multiplier : 1.0));
+			forward -= forwardmove[speed];
 	}
 
 	if (!vrmode->IsVR() && buttonMap.ButtonDown(Button_MoveRight))
@@ -787,8 +789,8 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 		G_AddViewAngle(joyint(-1280 * joyaxes[JOYAXIS_Yaw]));
 	}
 
-	side -= joyint((vr_move_speed * (speed ? vr_run_multiplier : 1.0)) * joyaxes[JOYAXIS_Side]);
-	forward += joyint(joyaxes[JOYAXIS_Forward] * (vr_move_speed * (speed ? vr_run_multiplier : 1.0)));
+	side -= joyint(sidemove[speed] * joyaxes[JOYAXIS_Side]);
+	forward += joyint(joyaxes[JOYAXIS_Forward] * forwardmove[speed]);
 	fly += joyint(joyaxes[JOYAXIS_Up] * 2048);
 
 	// Handle mice.
@@ -802,8 +804,8 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 		float joyside=0;
 		float dummy=0;
 		VR_GetMove(&joyforward, &joyside, &dummy, &dummy, &dummy, &dummy, &dummy, &dummy);
-		side += joyint(joyside * (vr_move_speed * (speed ? vr_run_multiplier : 1.0)));
-		forward += joyint(joyforward * (vr_move_speed * (speed ? vr_run_multiplier : 1.0)));
+		side += joyint(joyside * sidemove[speed]);
+		forward += joyint(joyforward * forwardmove[speed]);
 	}
 #endif
 	if (vr_teleport)

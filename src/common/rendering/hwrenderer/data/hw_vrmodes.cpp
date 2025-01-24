@@ -112,8 +112,6 @@ CVAR(Float, vr_2dweaponOffsetY, 0.f, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CVAR(Float, vr_2dweaponOffsetZ, 0.f, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CVAR(Float, vr_2dweaponScale, 1.0f, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
 CVAR(Float, vr_snapTurn, 45.0f, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
-CVAR(Int, vr_move_speed, 19, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
-CVAR(Float, vr_run_multiplier, 1.5, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CVAR(Bool, vr_switch_sticks, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CVAR(Bool, vr_use_alternate_mapping, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CVAR(Bool, vr_secondary_button_mappings, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
@@ -149,6 +147,16 @@ CVARD(Bool, vr_override_weap_pos, false, 0, "Only used for testing VR environmen
 CVARD(Bool, vr_render_weap_in_scene, false, 0, "Only used for testing VR environment on PC");
 
 EXTERN_CVAR(Bool, puristmode);
+EXTERN_CVAR(Float, turbo);
+
+CUSTOM_CVAR(Int, vr_move_speed, 19, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL)
+{
+	turbo->Callback();
+}
+CUSTOM_CVAR(Float, vr_run_multiplier, 1.684, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL)
+{
+	turbo->Callback();
+}
 
 #define isqrt2 0.7071067812f
 
