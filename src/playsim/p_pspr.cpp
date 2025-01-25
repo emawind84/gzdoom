@@ -661,7 +661,6 @@ void P_BringUpWeapon (player_t *player)
 
 void P_BobWeapon (player_t *player, float *x, float *y, double ticfrac)
 {
-#if !defined(USE_OPENVR) && !defined(USE_OPENXR)
 	IFVIRTUALPTRNAME(player->mo, NAME_PlayerPawn, BobWeapon)
 	{
 		VMValue param[] = { player->mo, ticfrac };
@@ -681,17 +680,18 @@ void P_BobWeapon (player_t *player, float *x, float *y, double ticfrac)
 			inv = nextinv;
 		}
 
-		*x = (float)result.X;
-		*y = (float)result.Y;
-		return;
+		if (!player->PlayInVR)
+		{
+			*x = (float)result.X;
+			*y = (float)result.Y;
+			return;
+		}
 	}
-#endif
 	*x = *y = 0;
 }
 
 void P_BobWeapon3D (player_t *player, FVector3 *translation, FVector3 *rotation, double ticfrac)
 {
-#if !defined(USE_OPENVR) && !defined(USE_OPENXR)
 	IFVIRTUALPTRNAME(player->mo, NAME_PlayerPawn, BobWeapon3D)
 	{
 		VMValue param[] = { player->mo, ticfrac };
@@ -713,15 +713,17 @@ void P_BobWeapon3D (player_t *player, FVector3 *translation, FVector3 *rotation,
 			inv = nextinv;
 		}
 
-		translation->X = (float)t.X;
-		translation->Y = (float)t.Y;
-		translation->Z = (float)t.Z;
-		rotation->X = (float)r.X;
-		rotation->Y = (float)r.Y;
-		rotation->Z = (float)r.Z;
-		return;
+		if (!player->PlayInVR)
+		{
+			translation->X = (float)t.X;
+			translation->Y = (float)t.Y;
+			translation->Z = (float)t.Z;
+			rotation->X = (float)r.X;
+			rotation->Y = (float)r.Y;
+			rotation->Z = (float)r.Z;
+			return;
+		}
 	}
-#endif
 	*translation = *rotation = {};
 }
 
