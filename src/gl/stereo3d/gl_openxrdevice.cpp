@@ -563,6 +563,7 @@ namespace s3d
         {
             if (player && player->mo)
             {
+                player->PlayInVR = true;
                 double pixelstretch = level.info ? level.info->pixelstretch : 1.2;
 
                 if (!vr_crouch_use_button)

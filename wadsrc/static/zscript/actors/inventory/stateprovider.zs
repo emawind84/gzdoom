@@ -363,7 +363,7 @@ class StateProvider : Inventory
 				else			A_StartSound(weapon.AttackSound, CHAN_WEAPON);
 			}
 
-			if (!(flags & CPF_NOTURN))
+			if (!player.PlayInVR && !(flags & CPF_NOTURN))
 			{
 				// turn to face target
 				self.Angle = t.angleFromSource;

@@ -468,6 +468,8 @@ public:
 	void SetFOV(float fov);
 	bool HasWeaponsInSlot(int slot) const;
 	bool Resurrect();
+
+	bool PlayInVR = false;	// Identifies if this player is playing in VR
 };
 
 // Bookkeeping on players - state.

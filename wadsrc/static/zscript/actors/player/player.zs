@@ -2941,6 +2941,7 @@ struct PlayerInfo native play	// self is what internally is known as player_t
 	native @WeaponSlots weapons;
 	native @UserCmd cmd;
 	native readonly @UserCmd original_cmd;
+	native readonly bool PlayInVR;
 
 	native bool PoisonPlayer(Actor poisoner, Actor source, int poison);
 	native void PoisonDamage(Actor source, int damage, bool playPainSound);
