@@ -60,7 +60,7 @@ class Staff : HereticWeapon
 		double ang = angle + Random2[StaffAtk]() * (5.625 / 256);
 		double slope = AimLineAttack (ang, DEFMELEERANGE, flags: alflags);
 		LineAttack (ang, DEFMELEERANGE, slope, damage, 'Melee', puff, laflags, t);
-		if (t.linetarget)
+		if (!player.PlayInVR && t.linetarget)
 		{
 			//S_StartSound(player.mo, sfx_stfhit);
 			// turn to face target

@@ -76,7 +76,7 @@ class PunchDagger : StrifeWeapon
 		LineAttack (angle, 80., pitch, damage, 'Melee', "StrifeSpark", laflags, t);
 
 		// turn to face target
-		if (t.linetarget)
+		if (!player.PlayInVR && t.linetarget)
 		{
 			A_StartSound (t.linetarget.bNoBlood ? sound("misc/metalhit") : sound("misc/meathit"), CHAN_WEAPON);
 			angle = t.angleFromSource;

@@ -1857,6 +1857,7 @@ DEFINE_FIELD_X(PlayerInfo, player_t, userinfo)
 DEFINE_FIELD_X(PlayerInfo, player_t, weapons)
 DEFINE_FIELD_NAMED_X(PlayerInfo, player_t, cmd.ucmd.buttons, buttons)
 DEFINE_FIELD_X(PlayerInfo, player_t, SoundClass)
+DEFINE_FIELD_X(PlayerInfo, player_t, PlayInVR)
 
 DEFINE_FIELD_X(UserCmd, usercmd_t, buttons)
 DEFINE_FIELD_X(UserCmd, usercmd_t, pitch)

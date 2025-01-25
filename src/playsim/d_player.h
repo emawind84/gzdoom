@@ -479,6 +479,8 @@ public:
 	// Scaled angle adjustment info. Not for direct manipulation.
 	DRotator angleTargets;
 	DRotator angleAppliedAmounts;
+
+	bool PlayInVR = false;	// Identifies if this player is playing in VR
 };
 
 // Bookkeeping on players - state.
