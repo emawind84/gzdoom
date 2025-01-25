@@ -176,7 +176,12 @@ class Mauler2 : Mauler
 		
 		SpawnPlayerMissile ("MaulerTorpedo", aimflags:hand ? ALF_ISOFFHAND : 0);
 		DamageMobj (self, null, 20, 'Disintegrate');
-		Thrust(7.8125, Angle+180.);
+
+		if (vr_recoil)
+		{
+			player.keepmomentum = true;
+			Thrust(7.8125, Angle+180.);
+		}
 	}
 }
 

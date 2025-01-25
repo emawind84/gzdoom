@@ -60,7 +60,12 @@ class PhoenixRod : Weapon
 				return;
 		}
 		SpawnPlayerMissile ("PhoenixFX1", aimflags: alflags);
-		Thrust(4, angle + 180);
+
+		if (vr_recoil)
+		{
+			player.keepmomentum = true;
+			Thrust(4, angle + 180);
+		}
 	}
 
 	
