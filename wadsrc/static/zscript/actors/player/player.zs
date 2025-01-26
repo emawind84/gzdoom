@@ -1323,9 +1323,17 @@ class PlayerPawn : Actor
 		// [RH] 180-degree turn overrides all other yaws
 		if (player.turnticks)
 		{
-			player.turnticks--;
-			Angle += (180. / TURN180_TICKS);
-			player.resetDoomYaw = true;
+			if (player.PlayInVR)
+			{
+				player.turnticks = 0;
+				Angle += 180.;
+				player.resetDoomYaw = true;
+			}
+			else 
+			{
+				player.turnticks--;
+				Angle += (180. / TURN180_TICKS);
+			}
 		}
 		else
 		{
