@@ -1693,7 +1693,7 @@ class PlayerPawn : Actor
 		}
 		CheckCheats();
 
-		if (bJustAttacked)
+		if (bJustAttacked && (!player.PlayInVR || vanilla_melee_attack))
 		{ // Chainsaw/Gauntlets attack auto forward motion
 			cmd.yaw = 0;
 			cmd.forwardmove = 0xc800/2;

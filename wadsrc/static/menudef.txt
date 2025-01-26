@@ -3511,4 +3511,8 @@ OptionMenu "ExperimentalMenu"
 	Slider "Keep momentum threshold",   "vr_momentum_threshold", 0.1, 2, 0.1
 	StaticText "Small recoil require smaller threshold to move the player", "Brown"
 	StaticText "A value under one fix the motorcycle handling in Ashes 2063", "Brown"
+	StaticText " "
+	Option "Vanilla melee attack", "vanilla_melee_attack", "OnOff"
+	StaticText "Turn to face target and auto forward motion", "Brown"
+	StaticText "during melee attack (Chainsaw/Gauntlets)", "Brown"
 }
