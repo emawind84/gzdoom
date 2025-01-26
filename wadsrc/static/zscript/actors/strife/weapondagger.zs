@@ -71,9 +71,9 @@ class PunchDagger : StrifeWeapon
 			}
 		}
 
-		double angle = angle + random2[JabDagger]() * (5.625 / 256);
-		double pitch = AimLineAttack (angle, 80., flags: alflags);
-		LineAttack (angle, 80., pitch, damage, 'Melee', "StrifeSpark", laflags, t);
+		double ang = angle + random2[JabDagger]() * (5.625 / 256);
+		double pitch = AimLineAttack (ang, 80., flags: alflags);
+		LineAttack (ang, 80., pitch, damage, 'Melee', "StrifeSpark", laflags, t);
 
 		// turn to face target
 		if (!player.PlayInVR && t.linetarget)
