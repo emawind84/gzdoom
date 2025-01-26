@@ -40,6 +40,7 @@ extend class Actor
 
 	void AdjustPlayerAngle(FTranslatedLineTarget t)
 	{
+		double ang = angle;
 		double difference = deltaangle(angle, t.angleFromSource);
 		if (abs(difference) > MAX_ANGLE_ADJUST)
 		{
@@ -55,6 +56,10 @@ extend class Actor
 		else
 		{
 			angle = t.angleFromSource;
+		}
+		if (player.PlayInVR)
+		{
+			angle = ang;
 		}
 	}
 	

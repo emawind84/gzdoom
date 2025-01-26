@@ -90,7 +90,7 @@ class Beak : Weapon
 		double ang = angle;
 		double slope = AimLineAttack (ang, DEFMELEERANGE);
 		LineAttack (ang, DEFMELEERANGE, slope, damage, 'Melee', "BeakPuff", true, t);
-		if (t.linetarget)
+		if (!player.PlayInVR && t.linetarget)
 		{
 			angle = t.angleFromSource;
 		}
