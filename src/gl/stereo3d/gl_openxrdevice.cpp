@@ -536,9 +536,10 @@ namespace s3d
         //Some crazy stuff to ascertain the actual yaw that doom is using at the right times!
         if (gamestate != GS_LEVEL || menuactive != MENU_Off 
         || ConsoleState == c_down || ConsoleState == c_falling 
+        || (player && player->mo && player->mo->reactiontime > 0)
         || (player && player->playerstate == PST_DEAD)
         || (player && player->resetDoomYaw)
-        || paused 
+        || paused
         )
         {
             resetDoomYaw = true;
