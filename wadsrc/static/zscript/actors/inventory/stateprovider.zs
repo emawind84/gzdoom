@@ -399,10 +399,11 @@ class StateProvider : Inventory
 				else			A_StartSound(weapon.AttackSound, CHAN_WEAPON);
 			}
 
-			if (!player.PlayInVR && !(flags & CPF_NOTURN))
+			if ((!player.PlayInVR || vanilla_melee_attack) && !(flags & CPF_NOTURN))
 			{
 				// turn to face target
 				self.Angle = t.angleFromSource;
+				player.resetDoomYaw = true;
 			}
 
 			if (flags & CPF_PULLIN) self.bJustAttacked = true;

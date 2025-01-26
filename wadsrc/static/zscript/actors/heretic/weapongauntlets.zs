@@ -129,7 +129,7 @@ class Gauntlets : Weapon
 			A_StartSound ("weapons/gauntletshit", CHAN_AUTO);
 		}
 
-		if (!player.PlayInVR)
+		if (!player.PlayInVR || vanilla_melee_attack)
 		{
 			// turn to face target
 			ang = t.angleFromSource;
@@ -149,6 +149,7 @@ class Gauntlets : Weapon
 				else
 					angle += 4.5;
 			}
+			player.resetDoomYaw = true;
 		}
 		bJustAttacked = true;
 	}

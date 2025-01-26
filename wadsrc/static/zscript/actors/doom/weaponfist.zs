@@ -78,10 +78,11 @@ extend class Actor
 		LineAttack (ang, range, pitch, damage, 'Melee', "BulletPuff", laflags, t);
 
 		// turn to face target
-		if (!playInVR && t.linetarget)
+		if ((player != null && !player.PlayInVR || vanilla_melee_attack) && t.linetarget)
 		{
 			A_StartSound ("*fist", CHAN_WEAPON);
 			angle = t.angleFromSource;
+			if (player != null) player.resetDoomYaw = true;
 		}
 	}
 

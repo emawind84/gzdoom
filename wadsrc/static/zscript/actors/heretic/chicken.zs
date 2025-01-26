@@ -90,9 +90,10 @@ class Beak : Weapon
 		double ang = angle;
 		double slope = AimLineAttack (ang, DEFMELEERANGE);
 		LineAttack (ang, DEFMELEERANGE, slope, damage, 'Melee', "BeakPuff", true, t);
-		if (!player.PlayInVR && t.linetarget)
+		if ((!player.PlayInVR || vanilla_melee_attack) && t.linetarget)
 		{
 			angle = t.angleFromSource;
+			player.resetDoomYaw = true;
 		}
 		A_StartSound ("chicken/peck", CHAN_VOICE);
 		player.chickenPeck = 12;

@@ -57,9 +57,10 @@ extend class Actor
 		{
 			angle = t.angleFromSource;
 		}
-		if (player.PlayInVR)
+		if (!player.PlayInVR || vanilla_melee_attack)
 		{
 			angle = ang;
+			player.resetDoomYaw = true;
 		}
 	}
 	
