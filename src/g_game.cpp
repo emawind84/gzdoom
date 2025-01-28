@@ -127,10 +127,12 @@ CVAR (Bool, cl_waitforsave, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
 CVAR (Bool, enablescriptscreenshot, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
 CVAR (Bool, puristmode, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
 CVAR (Bool, vanilla_melee_attack, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG);
+CVAR(Bool, use_walk_multiplier, false, 0)
 EXTERN_CVAR (Float, con_midtime);
 EXTERN_CVAR(Bool, vr_teleport);
 EXTERN_CVAR(Int, vr_move_speed);
 EXTERN_CVAR(Float, vr_run_multiplier);
+EXTERN_CVAR(Float, vr_walk_multiplier);
 
 //==========================================================================
 //
@@ -263,16 +265,25 @@ CUSTOM_CVAR (Float, turbo, 100.f, CVAR_NOINITCALL)
 	{
 		self = 255.f;
 	}
-	else
+	// else
 	{
-		double scale = self * 0.01;
-		double vr_walk_scale = vr_move_speed / gameinfo.normforwardmove[0];
-		double vr_run_scale = vr_run_multiplier * vr_move_speed / gameinfo.normforwardmove[1];
+		double scale = turbo * 0.01;
 
-		forwardmove[0] = (int)(gameinfo.normforwardmove[0]*scale * vr_walk_scale);
-		forwardmove[1] = (int)(gameinfo.normforwardmove[1]*scale * vr_run_scale);
-		sidemove[0] = (int)(gameinfo.normsidemove[0]*scale * vr_walk_scale);
-		sidemove[1] = (int)(gameinfo.normsidemove[1]*scale * vr_run_scale);
+		double walk_mult = 1.;
+		if (vr_move_speed > 0)
+		{
+			use_walk_multiplier = false;
+			walk_mult = vr_move_speed / gameinfo.normforwardmove[0];
+		}
+		else {
+			use_walk_multiplier = true;
+			walk_mult = vr_walk_multiplier;
+		}
+
+		forwardmove[0] = (int)(gameinfo.normforwardmove[0]*scale * walk_mult);
+		forwardmove[1] = (int)(gameinfo.normforwardmove[1]*scale * walk_mult * vr_run_multiplier);
+		sidemove[0] = (int)(gameinfo.normsidemove[0]*scale * walk_mult);
+		sidemove[1] = (int)(gameinfo.normsidemove[1]*scale * walk_mult * vr_run_multiplier);
 	}
 }
 
@@ -800,7 +811,7 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 		forward += xs_CRoundToInt(mousey * m_forward);
 	}
 #ifdef USE_OPENXR
-	if (!vr_teleport) {
+	if (vrmode->IsVR() && !vr_teleport) {
 		float joyforward=0;
 		float joyside=0;
 		float dummy=0;
@@ -809,7 +820,7 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 		forward += joyint(joyforward * forwardmove[speed]);
 	}
 #endif
-	if (vr_teleport)
+	if (vrmode->IsVR() && vr_teleport)
 	{
 		side = forward = 0;
 	}
@@ -837,8 +848,9 @@ void G_BuildTiccmd (ticcmd_t *cmd)
 	else if (side < -MAXPLMOVE)
 		side = -MAXPLMOVE;
 
-	cmd->ucmd.forwardmove += forward;
-	cmd->ucmd.sidemove += side;
+
+	cmd->ucmd.forwardmove += clamp(forward, -127, 127);
+	cmd->ucmd.sidemove += clamp(side, -127, 127);
 	cmd->ucmd.yaw = LocalViewAngle >> 16;
 	cmd->ucmd.upmove = fly;
 	LocalViewAngle = 0;

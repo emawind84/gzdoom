@@ -2904,13 +2904,15 @@ OptionMenu VROptionsMenu protected
 	Option "Use Teleport",		        "vr_teleport", "OnOff"
 	Option "Slidey movement (Momentum)","vr_momentum", "OnOff"
 	Option "Crouch using button",       "vr_crouch_use_button", "OnOff"
-	Slider "Walking Speed",		        "vr_move_speed", 5, 50, 1, 2
-	Slider "Run Multiplier",	        "vr_run_multiplier", 0.0, 5.0, 0.1, 2
+	ScaleSlider "Walk Speed",           "vr_move_speed", 0, 50, 1, "Multiplier active"
+	Slider "Walk Multiplier",           "vr_walk_multiplier", 0.5, 2.0, 0.01, 2, use_walk_multiplier
+	Slider "Run Multiplier",	        "vr_run_multiplier", 0.5, 2.0, 0.01, 2
+	StaticText "Set the walking speed to 0 to use the multiplier", brown
 	StaticText ""
 	Slider "Snap-turn Angle",		    "vr_snapTurn", 0.0, 90.0, 1.0, 2
 	StaticText "Set Snap-Turn <= 10 for \"Smooth\" Turn", "Brown"
 	StaticText " "
-	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar vr_move_use_offhand vr_teleport vr_momentum vr_crouch_use_button vr_move_speed vr_run_multiplier vr_snapTurn"
+	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar vr_move_use_offhand vr_teleport vr_momentum vr_crouch_use_button vr_move_speed vr_walk_multiplier vr_run_multiplier vr_snapTurn"
 
 	StaticText ""
 	StaticText "Haptics", gold

@@ -153,7 +153,11 @@ CUSTOM_CVAR(Int, vr_move_speed, 19, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOIN
 {
 	turbo->Callback();
 }
-CUSTOM_CVAR(Float, vr_run_multiplier, 1.684, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL)
+CUSTOM_CVAR(Float, vr_run_multiplier, 1.0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL)
+{
+	turbo->Callback();
+}
+CUSTOM_CVAR(Float, vr_walk_multiplier, 1.0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL)
 {
 	turbo->Callback();
 }
