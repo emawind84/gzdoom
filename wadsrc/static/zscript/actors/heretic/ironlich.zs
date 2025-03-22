@@ -308,6 +308,10 @@ class Whirlwind : Actor
 			target.angle += Random2[WhirlwindDamage]() * (360 / 4096.);
 			target.Vel.X += Random2[WhirlwindDamage]() / 64.;
 			target.Vel.Y += Random2[WhirlwindDamage]() / 64.;
+			if (target.player)
+			{
+				target.player.resetDoomYaw = true;
+			}
 		}
 
 		if ((Level.maptime & 16) && !target.bBoss && !target.bDontThrust)
