@@ -46,16 +46,16 @@ extend class Actor
 		{
 			if (difference > 0)
 			{
-				angle += MAX_ANGLE_ADJUST;
+				ang += MAX_ANGLE_ADJUST;
 			}
 			else
 			{
-				angle -= MAX_ANGLE_ADJUST;
+				ang -= MAX_ANGLE_ADJUST;
 			}
 		}
 		else
 		{
-			angle = t.angleFromSource;
+			ang = t.angleFromSource;
 		}
 		if (!player.PlayInVR || vanilla_melee_attack)
 		{
