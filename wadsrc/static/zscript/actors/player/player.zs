@@ -1328,6 +1328,9 @@ class PlayerPawn : Actor
 			Angle += cmd.yaw * (360./65536.);
 		}
 
+		// only turning possible when player frozen
+		if (reactiontime) return;
+
 		player.onground = (pos.z <= floorz + 2) || bOnMobj || bMBFBouncer || (player.cheats & CF_NOCLIP2);
 
 		double friction, movefactor;
@@ -1583,11 +1586,14 @@ class PlayerPawn : Actor
 		{ // Player is frozen
 			reactiontime--;
 		}
-		else if (menuactive == Menu.Off)
+		if (menuactive == Menu.Off)
 		{
 			MovePlayer();
-			CheckJump();
-			CheckMoveUpDown();
+			if (reactiontime == 0)
+			{
+				CheckJump();
+				CheckMoveUpDown();
+			}
 		}
 	}
 

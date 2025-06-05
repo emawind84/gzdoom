@@ -544,20 +544,19 @@ namespace s3d
         player_t* player = r_viewpoint.camera ? r_viewpoint.camera->player : nullptr;
 
         //Some crazy stuff to ascertain the actual yaw that doom is using at the right times!
-        if (getGameState() != GS_LEVEL || getMenuState() != MENU_Off 
+        if (gamestate == GS_LEVEL && resetDoomYaw && r_viewpoint.camera != nullptr)
+        {
+            doomYaw = (float)r_viewpoint.camera->Angles.Yaw.Degrees;
+            resetDoomYaw = false;
+        }
+        else if (gamestate != GS_LEVEL || menuactive != MENU_Off 
         || ConsoleState == c_down || ConsoleState == c_falling 
-        || (player && player->mo && player->mo->reactiontime > 0)
         || (player && player->playerstate == PST_DEAD)
         || (player && player->resetDoomYaw)
         || paused
         )
         {
             resetDoomYaw = true;
-        }
-        else if (getGameState() == GS_LEVEL && resetDoomYaw && r_viewpoint.camera != nullptr)
-        {
-            doomYaw = (float)r_viewpoint.camera->Angles.Yaw.Degrees;
-            resetDoomYaw = false;
         }
 
         if (gamestate == GS_LEVEL && getMenuState() == MENU_Off)
