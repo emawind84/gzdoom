@@ -507,8 +507,8 @@ namespace s3d
 	OpenVRHaptics::OpenVRHaptics(openvr::VR_IVRSystem_FnTable* vrSystem)
 		: vrSystem(vrSystem)
 	{
-		controllerIDs[0] = vrSystem->GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole::ETrackedControllerRole_TrackedControllerRole_LeftHand);
-		controllerIDs[1] = vrSystem->GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole::ETrackedControllerRole_TrackedControllerRole_RightHand);
+		controllerIDs[0] = openvr::k_unTrackedDeviceIndexInvalid;
+		controllerIDs[1] = openvr::k_unTrackedDeviceIndexInvalid;
 	}
 
 	void OpenVRHaptics::Vibrate(float duration, int channel, float intensity)
@@ -521,6 +521,13 @@ namespace s3d
 
 		vibration_channel_duration[channel] = duration;
 		vibration_channel_intensity[channel] = intensity;
+	}
+
+	void OpenVRHaptics::UpdateControllerId(int role, openvr::TrackedDeviceIndex_t deviceIndex)
+	{
+		if (role < 0 || role >= 2)
+			return;
+		controllerIDs[role] = deviceIndex;
 	}
 
 	using namespace std::chrono;
@@ -537,6 +544,12 @@ namespace s3d
 		lastFrameTime = timestamp;
 
 		for (int i = 0; i < 2; ++i) {
+			if (controllerIDs[i] == openvr::k_unTrackedDeviceIndexInvalid || vrSystem == nullptr) {
+				vibration_channel_duration[i] = 0.0f;
+				vibration_channel_intensity[i] = 0.0f;
+				continue;
+			}
+
 			if (vibration_channel_duration[i] > 0.0f ||
 				vibration_channel_duration[i] == -1.0f) {
 
@@ -1137,12 +1150,6 @@ namespace s3d
 	{
 		vr::EVRInitError eError;
 
-		vr::VR_Init(&eError, vr::EVRApplicationType::VRApplication_Overlay);;
-		if (eError != EVRInitError_VRInitError_None) {
-			std::string errMsg = vr::VR_GetVRInitErrorAsEnglishDescription(eError);
-			return;
-		}
-
 		const std::string comp_key = std::string("FnTable:") + std::string(IVROverlay_Version);
 		vrOverlay = (VR_IVROverlay_FnTable*)vr::VR_GetGenericInterface(comp_key.c_str(), &eError);
 		if (vrOverlay == nullptr)
@@ -1153,6 +1160,9 @@ namespace s3d
 
 	void OpenVRMode::UpdateOverlaySettings() const
 	{
+		if (vrOverlay == nullptr || overlayHandle == 0)
+			return;
+
 		float overlayDrawDistance = - 2.5f - vr_overlayscreen_dist;
 		float overlayVerticalPosition = 1.5f + vr_overlayscreen_vpos;
 
@@ -1163,8 +1173,8 @@ namespace s3d
 		};
 
 		bool rightHanded = vr_control_scheme < 10;
-		TrackedDeviceIndex_t mainhandOverlayIndex = controllers[rightHanded ? 1 : 0].active ? controllers[rightHanded ? 1 : 0].index : openvr::vr::k_unTrackedDeviceIndex_Hmd;
-		TrackedDeviceIndex_t offhandOverlayIndex = controllers[rightHanded ? 0 : 1].active ? controllers[rightHanded ? 0 : 1].index : openvr::vr::k_unTrackedDeviceIndex_Hmd;
+		TrackedDeviceIndex_t mainhandOverlayIndex = controllers[rightHanded ? 1 : 0].active ? controllers[rightHanded ? 1 : 0].index : openvr::k_unTrackedDeviceIndex_Hmd;
+		TrackedDeviceIndex_t offhandOverlayIndex = controllers[rightHanded ? 0 : 1].active ? controllers[rightHanded ? 0 : 1].index : openvr::k_unTrackedDeviceIndex_Hmd;
 
 		//int overlayscreen_pos = vr_overlayscreen;
 		// when overlay follow-mode is set to the controllers it makes more sense to lock it in stationary position
@@ -1180,13 +1190,13 @@ namespace s3d
 							0.0f, 0.0f, 1.0f, overlayDrawDistance
 			};
 
-			auto oTracking = (ETrackingUniverseOrigin)openvr::vr::TrackingUniverseStanding;
+			auto oTracking = (ETrackingUniverseOrigin)openvr::ETrackingUniverseOrigin_TrackingUniverseStanding;
 			vrOverlay->SetOverlayTransformAbsolute(overlayHandle, oTracking, &oAbsTransform);
 			break;
 		}
 
 		case 2: // overlay follows head movement
-			vrOverlay->SetOverlayTransformTrackedDeviceRelative(overlayHandle, openvr::vr::k_unTrackedDeviceIndex_Hmd, &vrOverlayTransform);
+			vrOverlay->SetOverlayTransformTrackedDeviceRelative(overlayHandle, openvr::k_unTrackedDeviceIndex_Hmd, &vrOverlayTransform);
 			break;
 
 		case 3: // overlay follows main hand movement
@@ -2294,7 +2304,7 @@ namespace s3d
 	{
 		super::SetUp();
 
-		if (vrCompositor == nullptr)
+		if (vrCompositor == nullptr || vrSystem == nullptr || !hmdWasFound)
 			return;
 
 		// Set VR-appropriate settings
@@ -2336,10 +2346,12 @@ namespace s3d
 			}
 			//GLRenderer->mBuffers->BlitToEyeTexture(GLRenderer->mBuffers->CurrentEye(), false);
 			
-			vrCompositor->WaitGetPoses(
-				poses, k_unMaxTrackedDeviceCount, // current pose
-				nullptr, 0 // future pose?
-			);
+			if (vrCompositor != nullptr) {
+				vrCompositor->WaitGetPoses(
+					poses, k_unMaxTrackedDeviceCount, // current pose
+					nullptr, 0 // future pose?
+				);
+			}
 		}
 
 		TrackedDevicePose_t& hmdPose0 = poses[k_unTrackedDeviceIndex_Hmd];
@@ -2370,7 +2382,7 @@ namespace s3d
 				if (device_class != ETrackedDeviceClass_TrackedDeviceClass_Controller)
 					continue; // controllers only, please
 
-				int role = vrSystem->GetControllerRoleForTrackedDeviceIndex(i) - ETrackedControllerRole_TrackedControllerRole_LeftHand;
+				int role = vrSystem->GetControllerRoleForTrackedDeviceIndex(i) - openvr::ETrackedControllerRole_TrackedControllerRole_LeftHand;
 				if (role >= 0 && role < MAX_ROLES)
 				{
 					char model_chars[101];
@@ -2386,6 +2398,10 @@ namespace s3d
 					controllers[role].index = i;
 					controllers[role].active = true;
 					controllers[role].pose = pose;
+					if (haptics != nullptr)
+					{
+						haptics->UpdateControllerId(role, i);
+					}
 					if (controllerMeshes[model_name].isLoaded())
 					{
 						controllers[role].model = &controllerMeshes[model_name];

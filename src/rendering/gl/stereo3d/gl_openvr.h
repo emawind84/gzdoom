@@ -80,11 +80,12 @@ public:
 	OpenVRHaptics(openvr::VR_IVRSystem_FnTable* vrSystem);
 
 	void Vibrate(float duration, int channel, float intensity);
+	void UpdateControllerId(int role, openvr::TrackedDeviceIndex_t deviceIndex);
 	void ProcessHaptics();
 
 private:
 	openvr::VR_IVRSystem_FnTable* vrSystem;
-	uint32_t controllerIDs[2];
+	openvr::TrackedDeviceIndex_t controllerIDs[2];
 	//0 = left, 1 = right
 	float vibration_channel_duration[2] = { 0.0f, 0.0f };
 	float vibration_channel_intensity[2] = { 0.0f, 0.0f };
