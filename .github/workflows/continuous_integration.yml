@@ -99,6 +99,9 @@ jobs:
     
     - name: Install Dependencies
       shell: bash
+      env:
+        ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
+        ACTIONS_CACHE_URL: ${{ env.ACTIONS_CACHE_URL }}
       run: |
         if [[ -n "${{ matrix.config.deps_cmdline }}" ]]; then
           eval ${{ matrix.config.deps_cmdline }}
@@ -114,6 +117,9 @@ jobs:
 
     - name: Configure
       shell: bash
+      env:
+        ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
+        ACTIONS_CACHE_URL: ${{ env.ACTIONS_CACHE_URL }}
       run: >
         cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} 
         -DCMAKE_PREFIX_PATH=`pwd`/build/zmusic_install -DPK3_QUIET_ZIPDIR=ON
