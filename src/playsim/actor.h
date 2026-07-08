@@ -1657,6 +1657,8 @@ public:
 	DAngle   OffhandRoll;
 
 	DVector3 (*OffhandDir)(AActor* actor, DAngle yaw, DAngle pitch);
+
+	DVector3 HmdPosition;
 };
 
 class FActorIterator
