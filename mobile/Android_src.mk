@@ -622,7 +622,7 @@ LOCAL_SHARED_LIBRARIES :=  openal openxr_loader zmusic
 
 #Strip unused functions/data
 LOCAL_CFLAGS += -fvisibility=hidden -fdata-sections -ffunction-sections  -fPIC
-LOCAL_LDFLAGS += -Wl,--gc-sections -flto
+LOCAL_LDFLAGS += -Wl,--gc-sections -flto -Wl,-z,nostart-stop-gc
 
 include $(BUILD_SHARED_LIBRARY)
 

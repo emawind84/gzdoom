@@ -6,7 +6,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := lzma_gl3
 
-LOCAL_CFLAGS = -Wall -fomit-frame-pointer -D_7ZIP_ST -DZ7_PPMD_SUPPORT
+LOCAL_CFLAGS = -Wall -fomit-frame-pointer -D_7ZIP_ST -DZ7_PPMD_SUPPORT -march=armv8-a+crypto
 
 LOCAL_C_INCLUDES :=
 
@@ -43,6 +43,7 @@ LOCAL_SRC_FILES =  \
 	C/Ppmd7Dec.c \
 	C/Ppmd7Enc.c \
 	C/Sha256.c \
+	C/Sha256Opt.c \
 	C/Sort.c \
 	C/SwapBytes.c \
 	C/Threads.c \
