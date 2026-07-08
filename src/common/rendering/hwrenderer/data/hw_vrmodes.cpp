@@ -164,6 +164,13 @@ CUSTOM_CVAR(Float, vr_walk_multiplier, 1.0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | C
 
 #define isqrt2 0.7071067812f
 
+extern vec3_t weaponoffset;
+extern vec3_t weaponangles;
+extern vec3_t offhandoffset;
+extern vec3_t offhandangles;
+extern vec3_t hmdorientation;
+extern vec3_t hmdPosition;
+
 VRMode::VRMode(int eyeCount, float horizontalViewportScale,
 	float verticalViewportScale, float weaponProjectionScale, VREyeInfo eyes[2])
 {
@@ -424,6 +431,7 @@ void VRMode::SetUp() const
 		player->mo->AttackPos = player->mo->OffhandPos = player->mo->PosAtZ(shootz);
 		player->mo->AttackAngle = player->mo->OffhandAngle = r_viewpoint.Angles.Yaw - DAngle::fromDeg(90.);
 		player->mo->AttackPitch = player->mo->OffhandPitch = - r_viewpoint.Angles.Pitch;
+		player->mo->HmdPosition = DVector3(hmdPosition[0], hmdPosition[1], hmdPosition[2]);
 	}
 }
 
@@ -499,13 +507,6 @@ double normalizeAngle(double angle) {
 	}
 	return angle;
 }
-
-extern vec3_t weaponoffset;
-extern vec3_t weaponangles;
-extern vec3_t offhandoffset;
-extern vec3_t offhandangles;
-extern vec3_t hmdorientation;
-extern vec3_t hmdPosition;
 
 ADD_STAT(vrstats)
 {

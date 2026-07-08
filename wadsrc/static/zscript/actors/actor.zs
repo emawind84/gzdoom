@@ -274,6 +274,7 @@ class Actor : Thinker native
 	native readonly double OffhandRoll;
 	native readonly double OffhandAngle;
 	native readonly bool OverrideAttackPosDir;
+	native readonly vector3 HmdPosition;
 
 	meta String Obituary;		// Player was killed by this actor
 	meta String HitObituary;		// Player was killed by this actor in melee
