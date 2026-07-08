@@ -675,6 +675,7 @@ namespace s3d
                     player->mo->SetZ(oldZ);
                 }
                 player->mo->Vel = vel;
+                player->mo->HmdPosition = DVector3(hmdPosition[0], hmdPosition[1], hmdPosition[2]);
             }
             updateHmdPose();
         }
