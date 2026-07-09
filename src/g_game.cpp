@@ -1547,6 +1547,7 @@ void FLevelLocals::PlayerReborn (int player)
 	p->ohattackdown = true;
 	p->original_oldbuttons = ~0;
 	p->playerstate = PST_LIVE;
+	p->resetDoomYaw = true;
 	NetworkEntityManager::SetClientNetworkEntity(p->mo, p - players);
 
 	if (gamestate != GS_TITLELEVEL)
