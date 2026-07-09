@@ -2447,8 +2447,7 @@ namespace s3d
 				resetDoomYaw = false;
 			}
 			else if (gamestate != GS_LEVEL || menuactive != MENU_Off 
-			|| ConsoleState == c_down || ConsoleState == c_falling 
-			|| (player && player->playerstate == PST_DEAD)
+			|| ConsoleState == c_down || ConsoleState == c_falling
 			|| (player && player->resetDoomYaw)
 			|| paused 
 			)
