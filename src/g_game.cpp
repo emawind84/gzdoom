@@ -1435,6 +1435,7 @@ void G_PlayerReborn (int player)
 	p->ohattackdown = true;
 	p->original_oldbuttons = ~0;
 	p->playerstate = PST_LIVE;
+	p->resetDoomYaw = true;
 
 	if (gamestate != GS_TITLELEVEL)
 	{
