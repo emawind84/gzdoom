@@ -64,7 +64,7 @@ CVAR (Int, m_showinputgrid, 0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CVAR(Bool, m_blockcontrollers, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 
 CVAR (Float, snd_menuvolume, 0.6f, CVAR_ARCHIVE)
-CVAR(Int, m_use_mouse, 2, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
+CVAR(Int, m_use_mouse, 1, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 CVAR(Int, m_show_backbutton, 0, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 CVAR(Bool, m_cleanscale, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 // Option Search
@@ -654,8 +654,48 @@ bool M_Responder (event_t *ev)
 				// do we want mouse input?
 				if (ev->subtype >= EV_GUI_FirstMouseEvent && ev->subtype <= EV_GUI_LastMouseEvent)
 				{
-						if (!m_use_mouse)
+					if (!m_use_mouse)
+					{
+						LastMousePos.HeldButtons.Clear();
+						LastMousePos.LastUpdate = -1;
+						return true;
+					}
+
+					const EGUIEvent t = static_cast<EGUIEvent>(ev->subtype);
+					if (t == EV_GUI_LButtonDown || t == EV_GUI_MButtonDown || t == EV_GUI_RButtonDown ||
+						t == EV_GUI_BackButtonDown || t == EV_GUI_FwdButtonDown)
+					{
+						if (LastMousePos.HeldButtons.Find(t) >= LastMousePos.HeldButtons.Size())
+						{
+							LastMousePos.HeldButtons.Push(t);
+						}
+					}
+					else if (t == EV_GUI_LButtonUp || t == EV_GUI_MButtonUp || t == EV_GUI_RButtonUp ||
+					         t == EV_GUI_BackButtonUp || t == EV_GUI_FwdButtonUp)
+					{
+						LastMousePos.HeldButtons.Delete(LastMousePos.HeldButtons.Find(static_cast<EGUIEvent>(ev->subtype - 1)));
+					}
+
+					// Ignore subtle mouse movements to make the menu less finnicky.
+					if (ev->subtype == EV_GUI_MouseMove)
+					{
+						static const int DormantTimer = GameTicRate * 3;
+						// If the mouse moved < 1% of the screen's height, it's probably the mouse itself bugging out.
+						const float limit = screen->GetHeight() * 0.01f;
+						if (LastMousePos.LastUpdate < 0 || LastMousePos.HeldButtons.Size() ||
+							MenuTime - LastMousePos.LastUpdate <= DormantTimer ||
+							fabs(LastMousePos.LastX - ev->data1) >= limit || fabs(LastMousePos.LastY - ev->data2) >= limit)
+						{
+							LastMousePos.LastX = ev->data1;
+							LastMousePos.LastY = ev->data2;
+						}
+						else
+						{
 							return true;
+						}
+					}
+
+					LastMousePos.LastUpdate = MenuTime;
 				}
 
 				// pass everything else on to the current menu

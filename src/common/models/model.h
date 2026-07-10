@@ -103,6 +103,8 @@ public:
 
 	virtual const TArray<VSMatrix>* CalculateBones(const ModelAnimFrame &from, const ModelAnimFrameInterp &to, float inter, const TArray<TRS>* animationData) { return nullptr; };
 
+	virtual const TArray<VSMatrix>* GetBasePose() {return nullptr;}
+
 	void SetVertexBuffer(int type, IModelVertexBuffer *buffer) { mVBuf[type] = buffer; }
 	IModelVertexBuffer *GetVertexBuffer(int type) const { return mVBuf[type]; }
 	void DestroyVertexBuffer();

@@ -47,9 +47,11 @@ CVAR(Bool, m_quickexit, false, CVAR_ARCHIVE)
 typedef void(*hfunc)();
 DEFINE_ACTION_FUNCTION(DMessageBoxMenu, CallHandler)
 {
-	PARAM_PROLOGUE;
-	PARAM_POINTERTYPE(Handler, hfunc);
-	Handler();
+	PARAM_SELF_PROLOGUE(DMenu);
+	PARAM_POINTER(unused, void);
+	auto handler = reinterpret_cast<hfunc>(self->PointerVar<void>(NAME_InternalHandler));
+	if (handler != nullptr)
+		handler();
 	return 0;
 }
 
@@ -68,6 +70,7 @@ DMenu *CreateMessageBoxMenu(DMenu *parent, const char *message, int messagemode,
 
 	IFVIRTUALPTRNAME(p, NAME_MessageBoxMenu, Init)
 	{
+		p->PointerVar<void>(NAME_InternalHandler) = reinterpret_cast<void*>(handler);
 		VMValue params[] = { p, parent, &namestr, messagemode, playsound, action.GetIndex(), reinterpret_cast<void*>(handler) };
 		VMCall(func, params, countof(params), nullptr, 0);
 		return (DMenu*)p;

@@ -70,7 +70,7 @@ int		nomusic = 0;
 // Maximum volume of MOD/stream music.
 //==========================================================================
 
-CUSTOM_CVARD(Float, snd_musicvolume, 0.5, CVAR_ARCHIVE|CVAR_GLOBALCONFIG, "controls music volume")
+CUSTOM_CVARD(Float, snd_musicvolume, 1.0f, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL, "controls music volume")
 {
 	if (self < 0.f)
 		self = 0.f;
@@ -97,7 +97,7 @@ CUSTOM_CVARD(Float, snd_musicvolume, 0.5, CVAR_ARCHIVE|CVAR_GLOBALCONFIG, "contr
 	}
 }
 
-CUSTOM_CVARD(Bool, mus_enabled, true, CVAR_ARCHIVE|CVAR_GLOBALCONFIG, "enables/disables music")
+CUSTOM_CVARD(Bool, mus_enabled, true, CVAR_ARCHIVE | CVAR_GLOBALCONFIG | CVAR_NOINITCALL, "enables/disables music")
 {
 	if (self) S_RestartMusic();
 	else S_StopMusic(true);
@@ -222,6 +222,7 @@ void I_InitMusic(int musicstate)
     I_InitSoundFonts();
 
 	snd_musicvolume->Callback ();
+	mus_enabled->Callback();
 
 	nomusic = musicstate;
 

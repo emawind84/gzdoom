@@ -30,7 +30,10 @@
 **---------------------------------------------------------------------------
 **
 */
-#include <SDL.h>
+
+#include <SDL2/SDL.h>
+#include <cstdint>
+#include <cstdlib>
 
 #include "basics.h"
 #include "cmdlib.h"

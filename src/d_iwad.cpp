@@ -747,7 +747,7 @@ int FIWadManager::IdentifyVersion (std::vector<std::string>&wadfiles, const char
 					  "2. Edit your ~/Library/Preferences/" GAMENAMELOWERCASE ".ini and add the directories\n"
 					  "of your iwads to the list beneath [IWADSearch.Directories]");
 #else
-					  "1. Place one or more of these wads in ~/.config/" GAMENAMELOWERCASE "/.\n"
+					  "1. Place one or more of these wads in ~/.local/share/games/" GAMENAMELOWERCASE "/.\n"
 					  "2. Edit your ~/.config/" GAMENAMELOWERCASE "/" GAMENAMELOWERCASE ".ini and add the directories of your\n"
 					  "iwads to the list beneath [IWADSearch.Directories]");
 #endif

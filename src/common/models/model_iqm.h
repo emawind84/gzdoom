@@ -158,6 +158,8 @@ private:
 	TArray<VSMatrix> baseframe;
 	TArray<VSMatrix> inversebaseframe;
 	TArray<TRS> TRSData;
+public:
+	virtual const TArray<VSMatrix>* GetBasePose() { return &baseframe; }
 };
 
 struct IQMReadErrorException { };

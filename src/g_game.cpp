@@ -1298,6 +1298,12 @@ void G_Ticker ()
 			savegamefile = "";
 			savedescription = "";
 			break;
+		case ga_quicksave:
+			G_DoSaveGame(true, true, savegamefile, savedescription.GetChars());
+			gameaction = ga_nothing;
+			savegamefile = "";
+			savedescription = "";
+			break;
 		case ga_autosave:
 			G_DoAutoSave ();
 			gameaction = ga_nothing;
@@ -2126,6 +2132,7 @@ void C_SerializeCVars(FSerializer& arc, const char* label, uint32_t filter)
 
 void SetupLoadingCVars();
 void FinishLoadingCVars();
+bool CheckGZDoomSaveCompat(FString &engine, FString &software);
 
 void G_DoLoadGame ()
 {
@@ -2170,7 +2177,17 @@ void G_DoLoadGame ()
 	arc("Engine", engine);
 	arc("Current Map", map);
 
+	#if LOAD_GZDOOM_4142_SAVES
+	FString software = arc.GetString("Software");
+	bool gzdoom_compat_ok = false;
+	if(engine.Compare("GZDOOM") == 0)
+	{
+		gzdoom_compat_ok = CheckGZDoomSaveCompat(engine, software);
+	}
+	if (engine.CompareNoCase(GAMESIG) != 0 && !gzdoom_compat_ok)
+	#else
 	if (engine.CompareNoCase(GAMESIG) != 0)
+	#endif
 	{
 		// Make a special case for the message printed for old savegames that don't
 		// have this information.
@@ -2303,9 +2320,9 @@ void G_DoLoadGame ()
 // Called by the menu task.
 // Description is a 24 byte text string
 //
-void G_SaveGame (const char *filename, const char *description)
+void G_SaveGame (const char *filename, const char *description, bool quick)
 {
-	if (sendsave || gameaction == ga_savegame)
+	if (sendsave || gameaction == ga_savegame || gameaction == ga_quicksave)
 	{
 		Printf ("%s\n", GStrings.GetString("TXT_SAVEPENDING"));
 	}
@@ -2325,7 +2342,17 @@ void G_SaveGame (const char *filename, const char *description)
 	{
 		savegamefile = filename;
 		savedescription = description;
-		sendsave = true;
+		if (quick)
+		{
+			sendsave = false;
+			gameaction = ga_quicksave;
+		}
+		else
+		{
+			sendsave = true;
+			if (gameaction == ga_quicksave)
+				gameaction = ga_nothing;
+		}
 	}
 }
 
@@ -2414,7 +2441,7 @@ void G_DoQuickSave ()
 
 	readableTime = myasctime ();
 	description.Format("Quicksave %s", readableTime);
-	G_DoSaveGame (true, true, file, description.GetChars());
+	G_SaveGame(file.GetChars(), description.GetChars(), true);
 }
 
 

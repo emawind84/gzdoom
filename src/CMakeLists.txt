@@ -187,7 +187,9 @@ endif()
 
 # Set up flags for MSVC
 if (MSVC)
-	set( CMAKE_CXX_FLAGS "/MP ${CMAKE_CXX_FLAGS}" )
+	if (NOT CMAKE_GENERATOR MATCHES "Ninja")
+		set( CMAKE_CXX_FLAGS "/MP ${CMAKE_CXX_FLAGS}" )
+	endif()
 endif (MSVC)
 
 # Set up flags for GCC
@@ -269,7 +271,7 @@ if( DEM_CMAKE_COMPILER_IS_GNUCXX_COMPATIBLE )
 		set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC" )
 		set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC" )
 	endif()
-	
+
 	if(${CMAKE_SYSTEM_NAME} MATCHES "NetBSD")
 		set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ljemalloc")
 	endif()
@@ -496,7 +498,7 @@ if (MSVC AND ${TARGET_ARCHITECTURE} MATCHES "arm")
 	set (PLAT_WIN32_SOURCES ${PLAT_WIN32_SOURCES} common/platform/win32/i_crash_arm.cpp )
 	add_definitions( -DNO_SSE -D__ARM__ -DRAPIDJSON_ENDIAN=RAPIDJSON_LITTLEENDIAN)
 endif()
-	
+
 set( PLAT_POSIX_SOURCES
 	posix/i_steam.cpp
 	common/platform/posix/i_system_posix.cpp )
@@ -808,7 +810,7 @@ set( FASTMATH_SOURCES
 	rendering/hwrenderer/scene/hw_weapon.cpp
 	common/utility/matrix.cpp
 )
-	
+
 #Vulkan stuff must go into a separate list because it needs to be disabled for some platforms
 set (VULKAN_SOURCES
 	common/rendering/vulkan/system/vk_renderdevice.cpp
@@ -1085,7 +1087,7 @@ set (PCH_SOURCES
 	common/fonts/font.cpp
 	common/fonts/hexfont.cpp
 	common/fonts/v_font.cpp
-	common/fonts/v_text.cpp	
+	common/fonts/v_text.cpp
 	common/textures/hw_ihwtexture.cpp
 	common/textures/hw_material.cpp
 	common/textures/bitmap.cpp
@@ -1195,7 +1197,7 @@ set (PCH_SOURCES
 	common/menu/menudef.cpp
 	common/menu/savegamemanager.cpp
 	common/statusbar/base_sbar.cpp
-	
+
 	common/rendering/v_framebuffer.cpp
 	common/rendering/v_video.cpp
 	common/rendering/r_thread.cpp
@@ -1323,6 +1325,8 @@ set( GAME_NONPCH_SOURCES ${GAME_SOURCES} )
 list( REMOVE_ITEM GAME_NONPCH_SOURCES ${PCH_SOURCES} )
 
 add_executable( zdoom WIN32 MACOSX_BUNDLE ${GAME_SOURCES} )
+
+target_include_directories( zdoom PRIVATE ${CMAKE_BINARY_DIR} )
 
 target_precompile_headers( zdoom PRIVATE g_pch.h )
 
@@ -1487,11 +1491,31 @@ endif()
 if( WIN32 )
 	set( INSTALL_SOUNDFONT_PATH . CACHE STRING "Directory where soundfonts and WOPL/WOPN banks will be placed during install." )
 else()
-	set( INSTALL_SOUNDFONT_PATH share/games/doom CACHE STRING "Directory where soundfonts and WOPL/WOPN banks will be placed during install." )
+	set( INSTALL_SOUNDFONT_PATH share/games/${ZDOOM_EXE_NAME} CACHE STRING "Directory where soundfonts and WOPL/WOPN banks will be placed during install." )
 endif()
 install(DIRECTORY "${PROJECT_BINARY_DIR}/soundfonts" "${PROJECT_BINARY_DIR}/fm_banks"
 		DESTINATION ${INSTALL_SOUNDFONT_PATH}
 		COMPONENT "Soundfont resources")
+
+# Install Linux desktop launcher, icon and metadata
+if( UNIX AND NOT APPLE )
+	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/posix/freedesktop/org.zdoom.UZDoom.desktop
+			DESTINATION share/applications
+			PERMISSIONS WORLD_EXECUTE WORLD_READ GROUP_READ GROUP_EXECUTE OWNER_READ OWNER_WRITE OWNER_EXECUTE)
+	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/posix/freedesktop/org.zdoom.UZDoom.metainfo.xml
+			DESTINATION share/metainfo
+			PERMISSIONS WORLD_READ GROUP_READ GROUP_EXECUTE OWNER_READ OWNER_WRITE)
+	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/posix/freedesktop/org.zdoom.UZDoom.svg
+			DESTINATION share/icons/hicolor/scalable/apps
+			PERMISSIONS WORLD_READ GROUP_READ GROUP_EXECUTE OWNER_READ OWNER_WRITE)
+	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/posix/freedesktop/org.zdoom.UZDoom-mime.xml
+			DESTINATION share/mime/packages
+			PERMISSIONS WORLD_READ GROUP_READ GROUP_EXECUTE OWNER_READ OWNER_WRITE)
+	# note:
+	# A post-install script would most likely need to run the following to register the desktop and mime files with the system
+	# update-mime-database /usr/local/share/mime
+	# update-desktop-database
+endif()
 
 if( DEM_CMAKE_COMPILER_IS_GNUCXX_COMPATIBLE )
 	# Need to enable intrinsics for these files.

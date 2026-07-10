@@ -17,7 +17,11 @@ struct ticcmd_t;
 struct WadStuff;
 
 #ifndef SHARE_DIR
-#define SHARE_DIR "/usr/local/share/"
+#ifdef __HAIKU__
+#define SHARE_DIR "/boot/system/data"
+#else
+#define SHARE_DIR "/usr/local/share"
+#endif
 #endif
 
 void CalculateCPUSpeed(void);

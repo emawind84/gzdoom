@@ -32,6 +32,8 @@
 #include "gametype.h"
 #include "startupinfo.h"
 #include "c_cvars.h"
+#include "v_video.h"
+#include <csignal>
 
 extern bool		advancedemo;
 EXTERN_CVAR(Bool, hud_toggled);
@@ -154,11 +156,20 @@ public:
 
 };
 
+EXTERN_CVAR(Int, gl_texture_filter)
 EXTERN_CVAR(Int, vid_rendermode)
 
 inline bool V_IsHardwareRenderer()
 {
 	return vid_rendermode == 4;
+}
+
+// Unfortunately Intel forces on filtering if mipmapping is enabled, so None modes of filtering
+// need to outright disable it.
+inline bool V_DisableIntelMipmap()
+{
+	constexpr char Intel[] = "Intel";
+	return !stricmp(screen->vendorstring, Intel) && (gl_texture_filter == 1 || gl_texture_filter == 5 || gl_texture_filter == 6);
 }
 
 inline bool V_IsTrueColor()

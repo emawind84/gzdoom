@@ -67,7 +67,12 @@ uint8_t FSamplerManager::Bind(int texunit, int num, int lastval)
 {
 
 	int filter = sysCallbacks.DisableTextureFilter && sysCallbacks.DisableTextureFilter() ? 0 : gl_texture_filter;
-	bool anisoAvailable = gles.anistropicFilterAvailable && (!sysCallbacks.DisableTextureFilter || !sysCallbacks.DisableTextureFilter());
+	bool anisoAvailable = gles.anistropicFilterAvailable &&
+	                      (!sysCallbacks.DisableTextureFilter || !sysCallbacks.DisableTextureFilter());
+	float aniso =
+		filter <= 0 || (sysCallbacks.DisableAnisotropicFiltering && sysCallbacks.DisableAnisotropicFiltering())
+			? 1.0f
+			: gl_texture_filter_anisotropic;
 
 	glActiveTexture(GL_TEXTURE0 + texunit);
 	switch (num)
@@ -80,7 +85,7 @@ uint8_t FSamplerManager::Bind(int texunit, int num, int lastval)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TexFilter[filter].minfilter);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TexFilter[filter].magfilter);
 			if (anisoAvailable)
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_texture_filter_anisotropic);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
 		}
 		break;
 
@@ -92,7 +97,7 @@ uint8_t FSamplerManager::Bind(int texunit, int num, int lastval)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TexFilter[filter].minfilter);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TexFilter[filter].magfilter);
 			if (anisoAvailable)
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_texture_filter_anisotropic);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
 		}
 		break;
 
@@ -104,7 +109,7 @@ uint8_t FSamplerManager::Bind(int texunit, int num, int lastval)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TexFilter[filter].minfilter);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TexFilter[filter].magfilter);
 			if (anisoAvailable)
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_texture_filter_anisotropic);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
 		}
 		break;
 
@@ -116,7 +121,7 @@ uint8_t FSamplerManager::Bind(int texunit, int num, int lastval)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TexFilter[filter].minfilter);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TexFilter[filter].magfilter);
 			if (anisoAvailable)
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_texture_filter_anisotropic);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
 		}
 		break;
 

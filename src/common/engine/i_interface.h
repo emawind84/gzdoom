@@ -48,6 +48,7 @@ struct SystemCallbacks
 	FConfigFile* (*GetConfig)();
 	bool (*WantEscape)();
 	FTranslationID(*RemapTranslation)(FTranslationID trans);
+	bool (*DisableAnisotropicFiltering)();
 };
 
 extern SystemCallbacks sysCallbacks;

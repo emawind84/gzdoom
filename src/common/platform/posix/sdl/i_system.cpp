@@ -5,6 +5,7 @@
 **---------------------------------------------------------------------------
 ** Copyright 1999-2016 Randy Heit
 ** Copyright 2019-2020 Christoph Oelckers
+** Copyright 2017-2025 GZDoom Maintainers and Contributors
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -34,18 +35,18 @@
 */
 
 #include <dirent.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <fnmatch.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
-#include <stdarg.h>
 #include <fcntl.h>
+#include <stdarg.h>
+#include <sys/ioctl.h>
 #include <time.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
 
 #ifdef __linux__
 #include <asm/unistd.h>
@@ -53,19 +54,23 @@
 #include <sys/mman.h>
 #endif
 
-#include <SDL.h>
+#if defined(__sun) || defined(__sun__)
+#include <termios.h>
+#endif
 
-#include "version.h"
-#include "cmdlib.h"
-#include "m_argv.h"
-#include "i_sound.h"
-#include "i_interface.h"
-#include "v_font.h"
+#include <SDL2/SDL.h>
+
 #include "c_cvars.h"
-#include "palutil.h"
-#include "st_start.h"
-#include "printf.h"
+#include "cmdlib.h"
+#include "i_interface.h"
+#include "i_sound.h"
 #include "launcherwindow.h"
+#include "m_argv.h"
+#include "palutil.h"
+#include "printf.h"
+#include "st_start.h"
+#include "v_font.h"
+#include "version.h"
 
 #ifndef NO_GTK
 bool I_GtkAvailable ();
@@ -392,7 +397,11 @@ void I_OpenShellFolder(const char* infolder)
 	{
 		if (longsavemessages)
 			Printf("Opening folder: %s\n", infolder);
-		std::system("xdg-open .");
+		#ifdef __HAIKU__
+			std::system("open .");
+		#else
+			std::system("xdg-open .");
+		#endif
 		chdir(curdir);
 	}
 	else

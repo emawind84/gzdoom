@@ -90,7 +90,7 @@ EXTERN_CVAR (Bool, am_showlevelname)
 EXTERN_CVAR(Bool, inter_subtitles)
 EXTERN_CVAR(Bool, ui_screenborder_classic_scaling)
 
-CVAR(Int, hud_scale, 0, CVAR_ARCHIVE);
+CVAR(Int, hud_scale, -1, CVAR_ARCHIVE);
 CVAR(Bool, log_vgafont, false, CVAR_ARCHIVE)
 CVAR(Bool, hud_oldscale, true, CVAR_ARCHIVE)
 
@@ -106,7 +106,7 @@ CVAR (Flag, pf_hazard,		paletteflash, PF_HAZARD)
 
 
 // Stretch status bar to full screen width?
-CUSTOM_CVAR (Int, st_scale, 0, CVAR_ARCHIVE)
+CUSTOM_CVAR (Int, st_scale, -1, CVAR_ARCHIVE)
 {
 	if (self < -1)
 	{

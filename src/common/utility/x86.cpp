@@ -2,8 +2,9 @@
 **
 **
 **---------------------------------------------------------------------------
-** Copyright 2005-2016 Randy Heit
+** Copyright 2005-2016 Marisa Heit
 ** Copyright 2005-2016 Christoph Oelckers
+** Copyright 2025 UZDoom Maintainers
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -42,7 +43,7 @@ CPUInfo CPU;
 void CheckCPUID(CPUInfo *cpu)
 {
 	memset(cpu, 0, sizeof(*cpu));
-	cpu->DataL1LineSize = 32;	// Assume a 32-byte cache line
+	cpu->DataL1LineSize = CPUInfo::AssumedDefaultCacheLineSizeBytes;
 }
 
 FString DumpCPUInfo(const CPUInfo *cpu, bool brief)
@@ -72,7 +73,7 @@ void CheckCPUID(CPUInfo *cpu)
 
 	memset(cpu, 0, sizeof(*cpu));
 
-	cpu->DataL1LineSize = 32;	// Assume a 32-byte cache line
+	cpu->DataL1LineSize = CPUInfo::AssumedDefaultCacheLineSizeBytes;
 
 	// Get vendor ID
 	__cpuid(foo, 0);

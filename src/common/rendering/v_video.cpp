@@ -251,25 +251,12 @@ void DCanvas::Resize(int width, int height, bool optimizepitch)
 	}
 	else
 	{
-		// If we couldn't figure out the CPU's L1 cache line size, assume
-		// it's 32 bytes wide.
 		if (CPU.DataL1LineSize == 0)
 		{
-			CPU.DataL1LineSize = 32;
+			CPU.DataL1LineSize = CPUInfo::AssumedDefaultCacheLineSizeBytes;
 		}
-		// The Athlon and P3 have very different caches, apparently.
-		// I am going to generalize the Athlon's performance to all AMD
-		// processors and the P3's to all non-AMD processors. I don't know
-		// how smart that is, but I don't have a vast plethora of
-		// processors to test with.
-		if (CPU.bIsAMD)
-		{
-			Pitch = width + CPU.DataL1LineSize;
-		}
-		else
-		{
-			Pitch = width + max(0, CPU.DataL1LineSize - 8);
-		}
+		
+		Pitch = width + CPU.DataL1LineSize;
 	}
 	int bytes_per_pixel = Bgra ? 4 : 1;
 	Pixels.Resize(Pitch * height * bytes_per_pixel);

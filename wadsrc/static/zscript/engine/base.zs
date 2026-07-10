@@ -265,7 +265,7 @@ struct MusPlayingInfo native
 	native String name;
 	native int baseorder;
 	native bool loop;
-	native voidptr handle;
+	native readonly voidptr handle;
 	
 };
 
@@ -964,16 +964,16 @@ struct QuatStruct native unsafe(internal)
 	native static Quat NLerp(Quat from, Quat to, double t);
 	native static Quat FromAngles(double yaw, double pitch, double roll);
 	native static Quat AxisAngle(Vector3 xyz, double angle);
-	native Quat Conjugate();
-	native Quat Inverse();
 	// native double Length();
 	// native double LengthSquared();
 	// native Quat Unit();
+	// native Quat Conjugate();
+	// native Quat Inverse();
 }
 
 struct ScriptSavedPos
 {
-	voidptr SavedScriptPtr;
+	readonly voidptr SavedScriptPtr;
 	int SavedScriptLine;
 }
 

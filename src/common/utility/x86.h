@@ -4,6 +4,11 @@
 #include "basics.h"
 #include "zstring.h"
 
+#ifdef __cpp_lib_hardware_interference_size
+#include "version"
+#include <new>
+#endif
+
 struct CPUInfo	// 92 bytes
 {
 	union
@@ -223,6 +228,11 @@ struct CPUInfo	// 92 bytes
 		};
 		uint32_t AMD_DataL1Info;
 	};
+#ifdef __cpp_lib_hardware_interference_size
+	static inline constexpr size_t AssumedDefaultCacheLineSizeBytes = std::hardware_destructive_interference_size;
+#else
+	static inline constexpr size_t AssumedDefaultCacheLineSizeBytes = 64;
+#endif
 };
 
 

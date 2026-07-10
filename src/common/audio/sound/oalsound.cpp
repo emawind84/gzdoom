@@ -62,7 +62,7 @@ CVAR (Bool, snd_efx, false, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 CVAR (String, snd_alresampler, "Default", CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
 
 #ifdef _WIN32
-#define OPENALLIB "openal32.dll"
+#define OPENALLIB "soft_oal.dll"
 #elif defined(__OpenBSD__)
 #define OPENALLIB "libopenal.so"
 #else

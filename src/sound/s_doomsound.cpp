@@ -212,6 +212,7 @@ void S_Init()
 
 	I_InitSound();
 	I_InitMusic(Args->CheckParm("-nomusic") || Args->CheckParm("-nosound"));
+	snd_mastervolume->Callback();
 
 	// Heretic and Hexen have sound curve lookup tables. Doom does not.
 	int curvelump = fileSystem.CheckNumForName("SNDCURVE");

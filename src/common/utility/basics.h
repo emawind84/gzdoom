@@ -1,8 +1,13 @@
 #pragma once
 
+#include <algorithm>
 #include <stddef.h>
 #include <stdint.h>
-#include <algorithm>
+#include <type_traits>
+
+#if defined(_M_X64) || defined(__x86_64__) || defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
+#include <xmmintrin.h>
+#endif
 
 #define MAXWIDTH 12000
 #define MAXHEIGHT 5000
@@ -68,4 +73,17 @@ const double M_PI = 3.14159265358979323846;	// matches value in gcc v2 math.h
 
 using std::min;
 using std::max;
-using std::clamp;
+//using std::clamp;
+
+template<typename T>
+T clamp(T val, T minval, T maxval)
+{
+    return std::max<T>(std::min<T>(val, maxval), minval);
+}
+
+static inline void PrefetchL3(const void* Address)
+{
+#if defined(_M_X64) || defined(__x86_64__) || defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
+    _mm_prefetch(static_cast<const char*>(Address), _MM_HINT_T1);
+#endif
+}

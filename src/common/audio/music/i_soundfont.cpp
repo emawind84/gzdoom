@@ -47,6 +47,8 @@
 #include "configfile.h"
 #include "printf.h"
 
+#define SF_LOG(type, path) DPrintf(DMSG_SPAMMY, "SF." type ": %s\n", path);
+
 //==========================================================================
 //
 //
@@ -338,7 +340,11 @@ void FSoundFontManager::ProcessOneFile(const char* fn)
 	for (auto &sfi : soundfonts)
 	{
 		// We already got a soundfont with this name. Do not add again.
-		if (!sfi.mName.CompareNoCase(fb)) return;
+		if (sfi.mName.CompareNoCase(fb) == 0)
+		{
+			SF_LOG("s", fn);
+			return;
+		}
 	}
 
 	FileReader fr;
@@ -349,21 +355,25 @@ void FSoundFontManager::ProcessOneFile(const char* fn)
 		fr.Read(head, 16);
 		if (!memcmp(head, "RIFF", 4) && !memcmp(head+8, "sfbkLIST", 8))
 		{
+			SF_LOG("riff", fn);
 			FSoundFontInfo sft = { fb, fbe, fn, SF_SF2 };
 			soundfonts.Push(sft);
 		}
 		if (!memcmp(head, "WOPL3-BANK\0", 11))
 		{
+			SF_LOG("wopl", fn);
 			FSoundFontInfo sft = { fb, fbe, fn, SF_WOPL };
 			soundfonts.Push(sft);
 		}
 		if (!memcmp(head, "WOPN2-BANK\0", 11) || !memcmp(head, "WOPN2-B2NK\0", 11))
 		{
+			SF_LOG("wopn", fn);
 			FSoundFontInfo sft = { fb, fbe, fn, SF_WOPN };
 			soundfonts.Push(sft);
 		}
 		else if (!memcmp(head, "PK", 2))
 		{
+			SF_LOG("zip", fn);
 			auto zip = FResourceFile::OpenResourceFile(fn, true);
 			if (zip != nullptr)
 			{
@@ -401,6 +411,8 @@ void FSoundFontManager::CollectSoundfonts()
 		{
 			if (stricmp (key, "Path") == 0)
 			{
+				SF_LOG("d", value);
+
 				FileSys::FileList list;
 
 				FString dir;
@@ -532,4 +544,4 @@ void I_InitSoundFonts()
 	sfmanager.CollectSoundfonts();
 }
 
-
+#undef SF_LOG

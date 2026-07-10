@@ -2688,7 +2688,7 @@ class PlayerPawn : Actor
 		if (!player) return (0, 0);
 		let weapon = player.ReadyWeapon;
 
-		if (weapon == null || weapon.bDontBob)
+		if (weapon == null || weapon.bDontBob || player.GetWBobSpeed() == 0)
 		{
 			return (0, 0);
 		}

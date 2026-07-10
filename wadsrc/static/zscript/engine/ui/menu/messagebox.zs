@@ -34,8 +34,9 @@
 
 class MessageBoxMenu : Menu
 {
+	private readonly voidptr InternalHandler;
+
 	BrokenLines mMessage;
-	voidptr Handler;
 	int mMessageMode;
 	int messageSelection;
 	int mMouseLeft, mMouseRight, mMouseY;
@@ -45,7 +46,9 @@ class MessageBoxMenu : Menu
 	int destWidth, destHeight;
 	String selector;
 
-	native static void CallHandler(voidptr hnd);
+	voidptr Handler; // This is only here for backwards compat.
+
+	native void CallHandler(voidptr hnd = null);
 
 
 	//=============================================================================
@@ -95,7 +98,7 @@ class MessageBoxMenu : Menu
 		{
 			MenuSound ("menu/prompt");
 		}
-		Handler = native_handler;
+		Handler = native_handler; // Try and avoid breaking null checks from existing overrides.
 	}
 
 	//=============================================================================
@@ -164,7 +167,7 @@ class MessageBoxMenu : Menu
 		{
 			if (res) 
 			{
-				CallHandler(Handler);
+				CallHandler();
 			}
 			else
 			{

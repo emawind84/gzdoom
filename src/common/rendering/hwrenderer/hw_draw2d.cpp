@@ -78,7 +78,7 @@ void Draw2D(F2DDrawer* drawer, FRenderState& state, int x, int y, int width, int
 	state.EnableMultisampling(false);
 	state.EnableLineSmooth(gl_aalines);
 
-	bool cache_hw_2dmip = hw_2dmip; // cache cvar lookup so it's not done in a loop
+	bool cache_hw_2dmip = hw_2dmip && (!sysCallbacks.DisableAnisotropicFiltering || !sysCallbacks.DisableAnisotropicFiltering()); // cache cvar lookup so it's not done in a loop
 
 	auto &vertices = drawer->mVertices;
 	auto &indices = drawer->mIndices;

@@ -3454,3 +3454,8 @@ Incinerator,TAG_ID24INCINERATOR,,,,,,,Verbrenner,,,,,,,,,,,,,,,Incinerador,,,«�
 Calamity Blade,TAG_ID24CALAMITYBLADE,,,,,,,Unheilsschwert,,,,,,,,,,,,,,,Lâmina da Calamidade,,,Клинок бед,,,,
 Fuel Can,AMMO_ID24FUEL,,,,,,,Benzinkanister,,,,,,,,,,,,,,,Lata de Combustível,,,Топливная канистра,,,,
 Fuel Tank,AMMO_ID24FUELTANK,,,,,,,Benzintank,,,,,,,,,,,,,,,Tanque de Combustível,,,Топливный бак,,,,
+Rocket Explosion Style,DSPLYMNU_ROCKETEXPSTYLE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Translucent,OPTVAL_ROCKETEXP_STYLE_TRANS,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Additive,OPTVAL_ROCKETEXP_STYLE_ADD,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Powerup Fade Intensity,DSPLYMNU_POWERUPFADE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Footstep Volume,SNDMNU_FOOTSTEPVOLUME,,,,,,Hlasitost kroků,,Schrittlautstärke,,Laŭteco de paŝo,Volumen de los pasos,,,,,,,足音の音量,,,,,Volume dos passos,,Volum pași,Громкость шагов,,,,Гучність кроків

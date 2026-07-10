@@ -26,6 +26,15 @@ struct event_t
 	float 		y;			// mouse/joystick y move
 };
 
+// Ignore minor mouse movements if it hasn't updated in a while.
+struct mousestate_t
+{
+	TArray<EGUIEvent> HeldButtons = {};
+	int LastUpdate = -1;
+	float LastX = 0.0f;
+	float LastY = 0.0f;
+};
+
 
 
 // Called by IO functions when input is detected.
@@ -40,6 +49,7 @@ enum
 };
 
 extern	event_t 		events[MAXEVENTS];
+extern mousestate_t		LastMousePos;
 extern int eventhead;
 extern int eventtail;
 

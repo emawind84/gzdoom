@@ -60,6 +60,81 @@ EXTERN_CVAR(Int, save_sort_order)
 //
 //=============================================================================
 
+bool CheckGZDoomSaveCompat(FString &engine, FString &software)
+{
+	if(software.IndexOf("GZDoom g") == 0)
+	{
+		if(software.Len() < 11) return false; // GZDoom g????????
+
+		// GZDoom g4
+		int v0 = software[8] - '0';
+
+		//GZDoom g4.
+		// minsavever is 4556, so gzdoom 4.0.0, don't allow gzdoom g3.x, g5.x or g4x.y
+		if(v0 != 4 || software[9] != '.')
+		{
+			return false;
+		}
+
+		//GZDoom g4.#
+		int v1 = software[10] - '0';
+
+		if(software[11] >= '0' && software[11] <= '9')
+		{
+			//GZDoom g4.##
+			v1 = (v1 * 10) + (software[11] - '0');
+		}
+
+		if(v1 > 14)
+		{
+			return false; // GZDoom 4.15+, don't allow save import
+		}
+
+		if(v1 == 14)
+		{
+			if(software.Len() > 13)
+			{
+				//GZDoom g4.14.#
+				int v2 = software[13] - '0';
+				if(software.Len() > 14 && software[14] >= '0' && software[14] <= '9')
+				{
+					//GZDoom g4.14.##, don't allow
+					return false;
+				}
+				else if(v2 > 2)
+				{
+					//GZDoom g4.14.3+, don't allow
+					return false;
+				}
+				/*
+				else
+				{
+					//GZDoom g4.14.0 / GZDoom g4.14.1 / GZDoom g4.14.2, allow
+				}
+				*/
+			}
+			/*
+			else
+			{
+				//GZDoom g4.14.0, allow
+			}
+			*/
+		}
+		/*
+		else
+		{
+		//GZDoom g4.0.0 - GZDoom g4.13.2, allow
+		}
+		*/
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+
 void FSavegameManager::ReadSaveStrings()
 {
 	// re-read list if forced to sort again
@@ -103,7 +178,18 @@ void FSavegameManager::ReadSaveStrings()
 						FString title = arc.GetString("Title");
 						FString creationtime = arc.GetString("Creation Time");
 
+						#if LOAD_GZDOOM_4142_SAVES
+						FString software = arc.GetString("Software");
 
+						if(engine.Compare("GZDOOM") == 0)
+						{
+							if(!CheckGZDoomSaveCompat(engine, software))
+							{
+								continue;
+							}
+						}
+						else
+						#endif
 						if (engine.Compare(GAMESIG) != 0 || savever > SAVEVER)
 						{
 							// different engine or newer version:

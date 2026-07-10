@@ -1156,6 +1156,12 @@ OptionValue RocketTrailTypes
 	3.0, "$OPTVAL_SPRITESPARTICLES"
 }
 
+OptionValue RocketExplosionStyles
+{
+	0, "$OPTVAL_ROCKETEXP_STYLE_TRANS"
+	1, "$OPTVAL_ROCKETEXP_STYLE_ADD"
+}
+
 OptionValue BloodTypes
 {
 	0.0, "$OPTVAL_SPRITES"
@@ -1278,6 +1284,7 @@ OptionMenu "VideoOptions" protected
 	Option "$DSPLYMNU_OLDTRANS",				"r_vanillatrans", "VanillaTrans"
 	Option "$DSPLYMNU_FAKECONTRAST",			"r_fakecontrast", "Contrast"
 	Option "$DSPLYMNU_ROCKETTRAILS",			"cl_rockettrails", "RocketTrailTypes"
+	Option "$DSPLYMNU_ROCKETEXPSTYLE",			"addrocketexplosion", "RocketExplosionStyles"
 	Option "$DSPLYMNU_BLOODTYPE",				"cl_bloodtype", "BloodTypes"
 	Option "$DSPLYMNU_PUFFTYPE",				"cl_pufftype", "PuffTypes"
 	Slider "$DSPLYMNU_MAXPARTICLES",			"r_maxparticles", 100, 10000, 100, 0
@@ -1401,6 +1408,7 @@ OptionMenu "FlashOptions" protected
 	StaticText " "
 	Slider "$DSPLYMNU_BLOODFADE",				"blood_fade_scalar", 0.0, 1.0, 0.05, 2
 	Slider "$DSPLYMNU_PICKUPFADE",				"pickup_fade_scalar", 0.0, 1.0, 0.05, 2
+	Slider "$DSPLYMNU_POWERUPFADE",				"powerup_fade_scalar", 0.0, 1.0, 0.05, 2
 	Slider "$DSPLYMNU_WATERFADE",				"underwater_fade_scalar", 0.0, 1.0, 0.05, 2
 	StaticText " "
 	SafeCommand "$OPTMNU_DEFAULTS", "resetcvar pf_hexenweaps pf_poison pf_ice pf_hazard blood_fade_scalar pickup_fade_scalar underwater_fade_scalar"
@@ -1621,6 +1629,7 @@ OptionMenu "MiscOptions" protected
 
 OptionValue MapColorTypes
 {
+	-1, "$OPTVAL_DEFAULT"
 	0, "$OPTVAL_CUSTOM"
 	1, "$OPTVAL_TRADITIONALDOOM"
 	2, "$OPTVAL_TRADITIONALSTRIFE"

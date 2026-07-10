@@ -514,10 +514,20 @@ void DPSprite::SetState(FState *newstate, bool pending)
 		Owner->WeaponState |= WF_TWOHANDSTABILIZED;
 	}
 
+	int statelooplimit = 300000;
+
 	processPending = pending;
 
 	do
 	{
+		if (!(--statelooplimit))
+		{
+			Printf(TEXTCOLOR_RED "Infinite state loop in weapon state '%s'\n", FState::StaticGetStateName(State).GetChars());
+			State = nullptr;
+			Destroy();
+			return;
+		}
+
 		if (newstate == nullptr)
 		{ // Object removed itself.
 			Destroy();

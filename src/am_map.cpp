@@ -171,7 +171,7 @@ CVAR(Bool, am_showitems, false, CVAR_ARCHIVE);
 CVAR(Bool, am_showtime, true, CVAR_ARCHIVE);
 CVAR(Bool, am_showtotaltime, false, CVAR_ARCHIVE);
 CVAR(Bool, am_showlevelname, true, CVAR_ARCHIVE);
-CVAR(Int, am_colorset, 0, CVAR_ARCHIVE);
+CVAR(Int, am_colorset, -1, CVAR_ARCHIVE);
 CVAR(Bool, am_customcolors, true, CVAR_ARCHIVE);
 CVAR(Int, am_map_secrets, 1, CVAR_ARCHIVE);
 CVAR(Int, am_drawmapback, 1, CVAR_ARCHIVE);
@@ -713,28 +713,42 @@ static void AM_initColors(bool overlayed)
 	{
 		AMColors = AMMod;
 	}
-	else switch (am_colorset)
+	else 
 	{
-	default:
-		/* Use the custom colors in the am_* cvars */
-		AMColors.initFromCVars(cv_standard);
-		break;
+		int set = am_colorset;
+		if (set == -1)
+		{
+			if (gameinfo.gametype & GAME_DoomChex)
+				set = 1;
+			else if (gameinfo.gametype & GAME_Strife)
+				set = 2;
+			else if (gameinfo.gametype & GAME_Raven)
+				set = 3;
+		}
 
-	case 1:	// Doom
-		// Use colors corresponding to the original Doom's
-		AMColors.initFromColors(DoomColors, false);
-		break;
+		switch (set)
+		{
+		default:
+			/* Use the custom colors in the am_* cvars */
+			AMColors.initFromCVars(cv_standard);
+			break;
 
-	case 2:	// Strife
-		// Use colors corresponding to the original Strife's
-		AMColors.initFromColors(StrifeColors, false);
-		break;
+		case 1:	// Doom
+			// Use colors corresponding to the original Doom's
+			AMColors.initFromColors(DoomColors, false);
+			break;
 
-	case 3:	// Raven
-		// Use colors corresponding to the original Raven's
-		AMColors.initFromColors(RavenColors, true);
-		break;
+		case 2:	// Strife
+			// Use colors corresponding to the original Strife's
+			AMColors.initFromColors(StrifeColors, false);
+			break;
 
+		case 3:	// Raven
+			// Use colors corresponding to the original Raven's
+			AMColors.initFromColors(RavenColors, true);
+			break;
+
+		}
 	}
 }
 
@@ -1574,7 +1588,7 @@ void DAutomap::clearFB (const AMColor &color)
 		// only draw background when using a mod defined custom color set or Raven colors, if am_drawmapback is 2.
 		if (!am_customcolors || !AMMod.defined)
 		{
-			drawback &= (am_colorset == 3);
+			drawback &= (am_colorset == 3) || (am_colorset == -1 && (gameinfo.gametype & GAME_Raven));
 		}
 	}
 

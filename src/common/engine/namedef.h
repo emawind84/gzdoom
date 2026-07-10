@@ -172,6 +172,8 @@ xx(Sum)
 xx(Unit)
 xx(Angle)
 xx(PlusZ)
+xx(Conjugate)
+xx(Inverse)
 xx(ToVector)
 xx(Size)
 xx(Push)
@@ -275,6 +277,8 @@ xx(OptionMenuFieldBase)
 xx(OptionMenuItemColorPicker)
 xx(OptionMenuItemStaticText)
 xx(OptionMenuItemStaticTextSwitchable)
+
+xx(InternalHandler)
 
 xx(Color)
 

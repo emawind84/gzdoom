@@ -86,6 +86,7 @@ void VkSamplerManager::ResetHWSamplers()
 void VkSamplerManager::CreateHWSamplers()
 {
 	int filter = sysCallbacks.DisableTextureFilter && sysCallbacks.DisableTextureFilter()? 0 : gl_texture_filter;
+	bool anisoAvailable = !sysCallbacks.DisableAnisotropicFiltering || !sysCallbacks.DisableAnisotropicFiltering();
 
 	for (int i = CLAMP_NONE; i <= CLAMP_XY; i++)
 	{
@@ -94,7 +95,7 @@ void VkSamplerManager::CreateHWSamplers()
 		builder.MinFilter(TexFilter[filter].minFilter);
 		builder.AddressMode(TexClamp[i].clamp_u, TexClamp[i].clamp_v, VK_SAMPLER_ADDRESS_MODE_REPEAT);
 		builder.MipmapMode(TexFilter[filter].mipfilter);
-		if (TexFilter[filter].mipmapping)
+		if (TexFilter[filter].mipmapping && anisoAvailable)
 		{
 			builder.Anisotropy(gl_texture_filter_anisotropic);
 			builder.MaxLod(100.0f); // According to the spec this value is clamped so something high makes it usable for all textures.

@@ -33,39 +33,40 @@
 
 // HEADER FILES ------------------------------------------------------------
 
+#include "c_console.h"
+#include "c_dispatch.h"
 #include "i_module.h"
 #include "i_soundinternal.h"
 #include "i_system.h"
 #include "i_video.h"
 #include "m_argv.h"
+#include "printf.h"
 #include "v_video.h"
 #include "version.h"
-#include "c_console.h"
-#include "c_dispatch.h"
-#include "printf.h"
 
-#include "hardware.h"
 #include "gl_sysfb.h"
 #include "gl_system.h"
+#include "hardware.h"
 
-#include "gl_renderer.h"
 #include "gl_framebuffer.h"
+#include "gl_renderer.h"
+
 #ifdef HAVE_GLES2
 #include "gles_framebuffer.h"
 #endif
 
 #ifdef HAVE_VULKAN
 #include "vulkan/system/vk_renderdevice.h"
+#include <zvulkan/vulkanbuilders.h>
+#include <zvulkan/vulkandevice.h>
 #include <zvulkan/vulkaninstance.h>
 #include <zvulkan/vulkansurface.h>
-#include <zvulkan/vulkandevice.h>
-#include <zvulkan/vulkanbuilders.h>
 #endif
 
 // MACROS ------------------------------------------------------------------
 
 #if defined HAVE_VULKAN
-#include <SDL_vulkan.h>
+#include <SDL2/SDL_vulkan.h>
 #endif // HAVE_VULKAN
 
 // TYPES -------------------------------------------------------------------
@@ -176,10 +177,13 @@ namespace Priv
 
 		if (Priv::window != nullptr)
 		{
+			SDL_version sdlver;
+			SDL_GetVersion(&sdlver);
 			// Enforce minimum size limit
 			SDL_SetWindowMinimumSize(Priv::window, VID_MIN_WIDTH, VID_MIN_HEIGHT);
-			// Tell SDL to start sending text input on Wayland.
-			if (strncasecmp(SDL_GetCurrentVideoDriver(), "wayland", 7) == 0) SDL_StartTextInput();
+			// Tell SDL to start sending text input on Wayland if it's on affected versions.
+			if (strncasecmp(SDL_GetCurrentVideoDriver(), "wayland", 7) == 0 && sdlver.major == 2 && sdlver.minor == 0 && sdlver.patch < 18)
+				SDL_StartTextInput();
 		}
 	}
 

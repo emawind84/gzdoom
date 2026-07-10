@@ -1837,7 +1837,7 @@ void S_SetSoundPaused(int state)
 		S_PauseSound(false, true);
 		if (GSnd != nullptr)
 		{
-			GSnd->SetInactive(gamestate == GS_LEVEL || gamestate == GS_TITLELEVEL ?
+			GSnd->SetInactive(pauseext && (gamestate == GS_LEVEL || gamestate == GS_TITLELEVEL) ?
 				SoundRenderer::INACTIVE_Complete :
 				SoundRenderer::INACTIVE_Mute);
 		}

@@ -30,9 +30,11 @@
 **---------------------------------------------------------------------------
 **
 */
-#include <SDL.h>
 #include "m_argv.h"
 #include "v_video.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
 
 #include "d_eventbase.h"
 #include "d_gui.h"
