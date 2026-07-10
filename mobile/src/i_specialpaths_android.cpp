@@ -52,6 +52,21 @@ FString M_GetAppDataPath(bool create)
 	return path;
 }
 
+const char * GetConfigPath()
+{
+	return ".";
+}
+
+const char * GetCachePath()
+{
+	return ".";
+}
+
+const char * GetDataPath()
+{
+	return ".";
+}
+
 FString GetUserFile (const char *file)
 {
 	FString path;
@@ -165,4 +180,14 @@ FString M_GetSavegamesPath()
 FString M_GetDocumentsPath()
 {
 	return NicePath("./");
+}
+
+FString M_GetDemoPath()
+{
+	return NicePath("./demo/");
+}
+
+FString M_GetNormalizedPath(const char* path)
+{
+	return NicePath(path);
 }
