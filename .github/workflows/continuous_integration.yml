@@ -27,21 +27,17 @@ jobs:
 
         - name: macOS
           os: macos-14
-          extra_options:
-          deps_cmdline: brew install libvpx
+          extra_options: -DHAVE_VULKAN=ON -DHAVE_GLES2=OFF -DDYN_OPENAL=OFF -DOPENAL_INCLUDE_DIR=/opt/homebrew/opt/openal-soft/include/AL -DOPENAL_LIBRARY=/opt/homebrew/opt/openal-soft/lib/libopenal.dylib
+          deps_cmdline: |
+            brew install   \
+              dylibbundler \
+              fluid-synth  \
+              openal-soft  \
+              vulkan-volk  \
+              molten-vk    \
+              libvpx       \
+              sdl2
           build_type: Release
-
-        - name: macOS
-          os: macos-14
-          extra_options: -G Xcode -DDYN_OPENAL=OFF
-          deps_cmdline: brew install libvpx
-          build_type: Debug
-
-        - name: Linux GCC 12
-          os: ubuntu-22.04
-          extra_options: -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
-          deps_cmdline: sudo apt update && sudo apt install libsdl2-dev libvpx-dev libgtk-3-dev libwebp-dev
-          build_type: MinSizeRel
 
         - name: macOS
           os: macos-14
@@ -145,6 +141,7 @@ jobs:
         cmake --build build --config ${{ matrix.config.build_type }}
 
     - name: Create Package
+      if: runner.os == 'Windows'  # Remove to make packages of all targets
       shell: bash
       run: |
         function fetch() { { curl -L "$3" | tee "$1" | sha256sum ; } && { echo "$2 $1" | sha256sum -c - ; } ; }
@@ -164,6 +161,7 @@ jobs:
         fi
 
     - name: Upload Package
+      if: runner.os == 'Windows'  # Remove to store packages of all targets
       uses: actions/upload-artifact@v4
       with:
         path: build/package
