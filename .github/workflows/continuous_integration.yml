@@ -82,6 +82,10 @@ jobs:
         path: ''
     - run: git fetch --deepen=100
 
+    - name: Setup Git describe
+      id: ghd
+      uses: proudust/gh-describe@v2
+
     - name: Setup vcpkg
       uses: lukka/run-vcpkg@v11
       if: runner.os == 'Windows'
