@@ -1180,7 +1180,7 @@ namespace s3d
 							0.0f, 0.0f, 1.0f, overlayDrawDistance
 			};
 
-			auto oTracking = (ETrackingUniverseOrigin)openvr::vr::TrackingUniverseRawAndUncalibrated;
+			auto oTracking = (ETrackingUniverseOrigin)openvr::vr::TrackingUniverseStanding;
 			vrOverlay->SetOverlayTransformAbsolute(overlayHandle, oTracking, &oAbsTransform);
 			break;
 		}
