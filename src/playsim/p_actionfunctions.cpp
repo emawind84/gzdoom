@@ -2902,9 +2902,9 @@ DEFINE_ACTION_FUNCTION(AActor, A_SetAngle)
 
 	AActor *ref = COPY_AAPTR(self, ptr);
 
-	//We don't want to adjust the player's camera - that could make them sick
+	// In VR, avoid forcing player view angles from script to prevent headset desync.
 	player_t *player = self->player;
-	if (player != nullptr && ref != nullptr && player->mo == ref)
+	if (player != nullptr && player->PlayInVR && ref != nullptr && player->mo == ref)
 	{
 		return 0;
 	}
@@ -2933,9 +2933,9 @@ DEFINE_ACTION_FUNCTION(AActor, A_SetPitch)
 
 	AActor *ref = COPY_AAPTR(self, ptr);
 
-	//We don't want to adjust the player's camera - that could make them sick
+	// In VR, avoid forcing player view angles from script to prevent headset desync.
 	player_t *player = self->player;
-	if (player != nullptr && ref != nullptr && player->mo == ref)
+	if (player != nullptr && player->PlayInVR && ref != nullptr && player->mo == ref)
 	{
 		return 0;
 	}
