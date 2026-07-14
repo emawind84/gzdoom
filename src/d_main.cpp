@@ -1086,6 +1086,15 @@ void D_ErrorCleanup ()
 void D_DoomLoop ()
 {
 	int lasttic = 0;
+	auto RestartRequested = []() -> bool
+	{
+		if (!wantToRestart)
+		{
+			return false;
+		}
+		wantToRestart = false;
+		return true;
+	};
 
 	// Clamp the timer to TICRATE until the playloop has been entered.
 	r_NoInterpolate = true;
@@ -1099,6 +1108,8 @@ void D_DoomLoop ()
 	{
 		try
 		{
+			if (RestartRequested()) return;
+
 			// frame syncronous IO operations
 			if (gametic > lasttic)
 			{
@@ -1133,11 +1144,6 @@ void D_DoomLoop ()
 			//I_StartTic ();
 			D_Display ();
 			S_UpdateMusic();
-			if (wantToRestart)
-			{
-				wantToRestart = false;
-				return;
-			}
 		}
 		catch (CRecoverableError &error)
 		{
