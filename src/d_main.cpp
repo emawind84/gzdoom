@@ -1257,6 +1257,15 @@ void D_ErrorCleanup ()
 void D_DoomLoop ()
 {
 	int lasttic = 0;
+	auto RestartRequested = []() -> bool
+	{
+		if (!wantToRestart)
+		{
+			return false;
+		}
+		wantToRestart = false;
+		return true;
+	};
 
 	// Clamp the timer to TICRATE until the playloop has been entered.
 	r_NoInterpolate = true;
@@ -1270,6 +1279,7 @@ void D_DoomLoop ()
 	{
 		try
 		{
+			if (RestartRequested()) return;
 			GStrings.SetDefaultGender(players[consoleplayer].userinfo.GetGender()); // cannot be done when the CVAR changes because we don't know if it's for the consoleplayer.
 
 			// frame syncronous IO operations
@@ -1307,11 +1317,6 @@ void D_DoomLoop ()
 			D_ProcessEvents();
 			D_Display ();
 			S_UpdateMusic();
-			if (wantToRestart)
-			{
-				wantToRestart = false;
-				return;
-			}
 		}
 		catch (const CRecoverableError &error)
 		{
