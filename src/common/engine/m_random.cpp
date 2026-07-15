@@ -65,6 +65,7 @@
 #include "c_dispatch.h"
 #include "printf.h"
 #include "doomdef.h"
+#include "g_levellocals.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -271,6 +272,26 @@ FRandom::~FRandom ()
 	}
 }
 
+// [BB] Moved implementation here.
+int FRandom::operator()()
+{
+	// [BB] Use Doom's original random numbers if the user wants it.
+	if ( level.i_compatflags2 & COMPATF2_OLD_RANDOM_GENERATOR )
+		return P_Random();
+
+	return GenRand32() & 255;
+}
+
+// [BB] Moved implementation here.
+int FRandom::Random2()
+{
+	// [BB] Use Doom's original random numbers if the user wants it.
+	if ( level.i_compatflags2 & COMPATF2_OLD_RANDOM_GENERATOR )
+		return ( P_Random() - P_Random() );
+
+	return Random2(255);
+}
+
 //==========================================================================
 //
 // FRandom :: StaticClearRandom
@@ -362,6 +383,7 @@ void FRandom::StaticReadRNGState(FSerializer &arc)
 
 	// Call StaticClearRandom in order to ensure that SFMT is initialized
 	FRandom::StaticClearRandom ();
+	M_ClearRandom();
 
 	if (arc.BeginArray("rngs"))
 	{
