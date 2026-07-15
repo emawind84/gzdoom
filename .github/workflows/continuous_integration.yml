@@ -136,7 +136,16 @@ jobs:
         if [[ "${{ runner.os }}" == 'Windows' ]]; then
           cp ${{ matrix.config.build_type }}/qzdoom.exe ${{ matrix.config.build_type }}/*.pk3 package
         elif [[ "${{ runner.os }}" == 'macOS' ]]; then
-          cp -r qzdoom.app package
+          if [[ -d "${{ matrix.config.build_type }}/qzdoom.app" ]]; then
+            cp -r "${{ matrix.config.build_type }}/qzdoom.app" package
+          elif [[ -d "qzdoom.app" ]]; then
+            cp -r qzdoom.app package
+          else
+            echo "qzdoom.app not found in expected paths"
+            ls -la
+            ls -la "${{ matrix.config.build_type }}" || true
+            exit 1
+          fi
         elif [[ "${{ runner.os }}" == 'Linux' ]]; then
           cp qzdoom *.pk3 package
         fi
