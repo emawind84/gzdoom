@@ -145,7 +145,7 @@ jobs:
         cmake --build build --config ${{ matrix.config.build_type }}
 
     - name: Create Package
-      if: runner.os == 'Windows'  # Remove to make packages of all targets
+      # if: runner.os == 'Windows'  # Remove to make packages of all targets
       shell: bash
       run: |
         function fetch() { { curl -L "$3" | tee "$1" | sha256sum ; } && { echo "$2 $1" | sha256sum -c - ; } ; }
@@ -165,7 +165,7 @@ jobs:
         fi
 
     - name: Upload Package
-      if: runner.os == 'Windows'  # Remove to store packages of all targets
+      # if: runner.os == 'Windows'  # Remove to store packages of all targets
       uses: actions/upload-artifact@v4
       with:
         path: build/package
