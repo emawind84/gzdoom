@@ -62,6 +62,7 @@ static ScaleOverrider *CurrentScaleOverrider;
 //
 CVAR (Int, m_showinputgrid, 0, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 CVAR(Bool, m_blockcontrollers, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
+CVAR(Bool, m_invertdigitalaxisbuttons, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG)
 
 CVAR (Float, snd_menuvolume, 0.6f, CVAR_ARCHIVE)
 CVAR(Int, m_use_mouse, 2, CVAR_ARCHIVE|CVAR_GLOBALCONFIG)
@@ -694,6 +695,38 @@ bool M_Responder (event_t *ev)
 			keyup = ev->type == EV_KeyUp;
 
 			ch = ev->data1;
+			if (m_invertdigitalaxisbuttons)
+			{
+				switch (ch)
+				{
+				case KEY_PAD_LTHUMB_UP:
+					ch = KEY_PAD_LTHUMB_DOWN;
+					break;
+
+				case KEY_PAD_LTHUMB_DOWN:
+					ch = KEY_PAD_LTHUMB_UP;
+					break;
+
+				case KEY_JOYAXIS2PLUS:
+					ch = KEY_JOYAXIS2MINUS;
+					break;
+
+				case KEY_JOYAXIS2MINUS:
+					ch = KEY_JOYAXIS2PLUS;
+					break;
+
+				case KEY_JOYAXIS4PLUS:
+					ch = KEY_JOYAXIS4MINUS;
+					break;
+
+				case KEY_JOYAXIS4MINUS:
+					ch = KEY_JOYAXIS4PLUS;
+					break;
+
+				default:
+					break;
+				}
+			}
 			switch (ch)
 			{
 			case KEY_JOY1:

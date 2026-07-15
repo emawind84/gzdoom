@@ -1080,6 +1080,7 @@ OptionMenu "JoystickOptionsDefaults" protected
 	Title "$JOYMNU_OPTIONS"
 	Option "$JOYMNU_ENABLE", "use_joystick", "YesNo"
 	Option "$JOYMNU_NOMENU", "m_blockcontrollers", "YesNo"
+	Option "$JOYMNU_INVERTDIGITALAXISBUTTONS", "m_invertdigitalaxisbuttons", "YesNo"
 	IfOption(Windows)
 	{
 		Option "$JOYMNU_DINPUT", "joy_dinput", "YesNo"
