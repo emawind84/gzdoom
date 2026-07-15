@@ -73,6 +73,12 @@ jobs:
           deps_cmdline: sudo apt-get update && sudo apt-get install libsdl2-dev libvpx-dev libwebp-dev waylandpp-dev libbz2-dev libomp-dev libopenal-dev
           build_type: Release
 
+        - name: Linux ARM64 GCC
+          os: ubuntu-24.04-arm
+          extra_options: -DDYN_OPENAL=OFF
+          deps_cmdline: sudo apt update && sudo apt install libsdl2-dev libvpx-dev libgtk-3-dev libwebp-dev
+          build_type: Release
+
     steps:
     - name: Checkout QuestZDoom
       uses: actions/checkout@v4
