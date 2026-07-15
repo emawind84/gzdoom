@@ -58,7 +58,7 @@ jobs:
         - name: Linux ARM64 GCC
           os: ubuntu-24.04-arm
           extra_options: -DDYN_OPENAL=OFF
-          deps_cmdline: sudo apt update && sudo apt install libsdl2-dev libvpx-dev libgtk-3-dev libwebp-dev
+          deps_cmdline: sudo apt update && sudo apt install libsdl2-dev libvpx-dev libgtk-3-dev libwebp-dev libopenal-dev
           build_type: Release
 
     steps:
