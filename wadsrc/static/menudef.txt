@@ -1235,7 +1235,6 @@ OptionMenu "SWROptions" protected
 	Option "$DSPLYMNU_GZDFULLBRIGHT",			"r_fullbrightignoresectorcolor", "OnOff"
 	Option "$DSPLYMNU_SCALEFUZZ",				"r_fuzzscale", "OnOff"
 	Option "$DSPLYMNU_MODELS",					"r_models", "OnOff"
-	Option "$DSPLYMNU_MODELSCARMACK",			"r_models_carmack", "OnOff"
 	StaticText " "
 	ScaleSlider "$DSPLYMNU_SPRITECULL",			"r_sprite_distance_cull", 0.0, 8000.0, 500.0, "Culling disabled"
 	ScaleSlider "$DSPLYMNU_LINECULL",			"r_line_distance_cull", 0.0, 16000.0, 1000.0, "Culling disabled"
@@ -1556,7 +1555,7 @@ OptionMenu "MiscOptions" protected
 	{
 		Option "$MISCMNU_MACFULLSCREENTOGGLE",	"k_allowfullscreentoggle", "OnOff"
 	}
-	//Option "$MISCMNU_QUERYIWAD",				"queryiwad", "OnOff"
+	Option "$MISCMNU_QUERYIWAD",				"queryiwad", "OnOff"
 	Option "$MISCMNU_DISABLEAUTOLOAD",			"disableautoload", "OnOff"
 	Option "$MISCMNU_LOADLIGHTS",				"autoloadlights", "OnOff"
 	Option "$MISCMNU_LOADBRIGHTMAPS",			"autoloadbrightmaps", "OnOff"
@@ -2331,6 +2330,8 @@ OptionMenu AdvSoundOptions protected
 	Title "$ADVSNDMNU_TITLE"
 	Option "$ADVSNDMNU_SAMPLERATE",			"snd_samplerate", "SampleRates"
 	Option "$ADVSNDMNU_HRTF",				"snd_hrtf", "AutoOffOn"
+	StaticText " "
+	Option "$SNDMNU_BACKGROUND",			"i_soundinbackground", "OnOff"
 	StaticText " "
 
 	ifoption(openal)
@@ -3217,6 +3218,7 @@ OptionMenu "GLTextureGLOptions" protected
 OptionMenu "GLLightOptions" protected
 {
 	Title "$GLLIGHTMNU_TITLE"
+	Option "$TCMNU_DYNLIGHTS",					"r_dynlights", "OnOff"
 	Option "$GLLIGHTMNU_LIGHTSENABLED",			gl_lights,				"OnOff"
 	Option "$GLLIGHTMNU_LIGHTSPRITES",			gl_light_sprites,		"YesNo"
 	Option "$GLLIGHTMNU_LIGHTWEAPONS",			gl_light_weapons,		"YesNo"
