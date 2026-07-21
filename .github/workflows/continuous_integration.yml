@@ -19,47 +19,63 @@ jobs:
           os: windows-2022
           extra_options: -DENABLE_OPENVR=ON
           build_type: Release
+          cflags: ""
+          cxxflags: ""
 
         - name: Visual Studio 2022
           os: windows-2022
           extra_options: -DENABLE_OPENVR=ON
           build_type: Debug
+          cflags: ""
+          cxxflags: ""
 
         - name: macOS
           os: macos-14
-          extra_options:
+          extra_options: ""
           deps_cmdline: brew install libvpx
           build_type: Release
+          cflags: ""
+          cxxflags: ""
 
         - name: macOS
           os: macos-14
           extra_options: -G Xcode -DDYN_OPENAL=OFF
           deps_cmdline: brew install libvpx
           build_type: RelWithDebInfo
+          cflags: ""
+          cxxflags: ""
 
         - name: Linux GCC 12
           os: ubuntu-22.04
           extra_options: -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
           deps_cmdline: sudo apt update && sudo apt install libsdl2-dev libvpx-dev libgtk-3-dev libwebp-dev
           build_type: MinSizeRel
+          cflags: ""
+          cxxflags: ""
 
         - name: Linux Clang 11
           os: ubuntu-22.04
           extra_options: -DCMAKE_C_COMPILER=clang-11 -DCMAKE_CXX_COMPILER=clang++-11 -DDYN_OPENAL=OFF
           deps_cmdline: sudo apt update && sudo apt install clang-11 libsdl2-dev libvpx-dev libopenal-dev libwebp-dev
           build_type: Debug
+          cflags: ""
+          cxxflags: ""
 
         - name: Linux Clang 15
           os: ubuntu-22.04
           extra_options: -DCMAKE_C_COMPILER=clang-15 -DCMAKE_CXX_COMPILER=clang++-15
           deps_cmdline: sudo apt update && sudo apt install clang-15 libsdl2-dev libvpx-dev libwebp-dev
           build_type: Release
+          cflags: ""
+          cxxflags: ""
 
         - name: Linux ARM64 GCC
           os: ubuntu-24.04-arm
           extra_options: -DDYN_OPENAL=OFF
           deps_cmdline: sudo apt update && sudo apt install libsdl2-dev libvpx-dev libgtk-3-dev libwebp-dev libopenal-dev
           build_type: Release
+          cflags: "-D__MOBILE__"
+          cxxflags: "-D__MOBILE__"
 
     steps:
     - name: Checkout QuestZDoom
@@ -135,6 +151,8 @@ jobs:
       env:
         ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
         ACTIONS_CACHE_URL: ${{ env.ACTIONS_CACHE_URL }}
+        CFLAGS: ${{ matrix.config.cflags }}
+        CXXFLAGS: ${{ matrix.config.cxxflags }}
       run: >
         cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} 
         -DCMAKE_PREFIX_PATH=`pwd`/build/zmusic_install -DPK3_QUIET_ZIPDIR=ON
