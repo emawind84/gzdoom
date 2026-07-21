@@ -120,6 +120,7 @@
 #include "shiftstate.h"
 #include "hw_vrmodes.h"
 #include "profiledef.h"
+#include "hwrenderer/postprocessing/hw_postprocessshader.h"
 
 #include <QzDoom/VrCommon.h>
 
@@ -4032,6 +4033,8 @@ void D_Cleanup()
 	LightDefaults.DeleteAndClear();			// this can leak heap memory if it isn't cleared.
 	TexAnim.DeleteAll();
 	TexMan.DeleteAll();
+	PostProcessShaders.Reset();
+	hw_postprocess.customShaders.ClearShaders();
 	
 	// delete DoomStartupInfo data
 	GameStartupInfo.Name = "";

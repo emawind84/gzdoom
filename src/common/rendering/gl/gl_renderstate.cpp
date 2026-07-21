@@ -101,6 +101,7 @@ bool FGLRenderState::ApplyShader()
 		activeShader = GLRenderer->mShaderManager->Get(mTextureEnabled ? mEffectState : SHADER_NoTexture, mAlphaThreshold >= 0.f, mPassType);
 		activeShader->Bind();
 	}
+	if (activeShader == nullptr) return false;
 
 	int fogset = 0;
 

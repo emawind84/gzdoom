@@ -814,6 +814,7 @@ class PPCustomShaders
 {
 public:
 	void Run(PPRenderState *renderstate, FString target);
+	void ClearShaders() { mShaders.clear(); }
 
 private:
 	void CreateShaders();
