@@ -38,6 +38,7 @@ namespace openvr {
 	struct VR_IVRCompositor_FnTable;
 	struct VR_IVROverlay_FnTable;
 	struct VR_IVRRenderModels_FnTable;
+	typedef uint32_t TrackedDeviceIndex_t;
 }
 
 /* stereoscopic 3D API */
