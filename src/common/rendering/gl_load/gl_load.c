@@ -41,7 +41,7 @@ static void* PosixGetProcAddress (const GLubyte* name)
 #endif /* __sgi || __sun || __unix__ */
 
 
-#ifdef __MOBILE__
+#ifdef __ANDROID__
 
 #include <android/log.h>
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO,"GZDOOM", __VA_ARGS__))
@@ -202,7 +202,7 @@ static PROC WinGetProcAddress(const char *name)
 	#if defined(__APPLE__)
 		#define IntGetProcAddress(name) AppleGLGetProcAddress(name)
 	#else
-		#if defined (__MOBILE__)
+		#if defined (__ANDROID__)
 			#define IntGetProcAddress(name) MOBILE_GetProcAddress((const char*)name)
 		#elif defined(__sgi) || defined(__sun) || defined(__unix__) || defined(__HAIKU__)
 			void* SDL_GL_GetProcAddress(const char* proc);

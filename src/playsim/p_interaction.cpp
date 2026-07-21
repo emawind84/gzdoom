@@ -1424,7 +1424,7 @@ static int DamageMobj (AActor *target, AActor *inflictor, AActor *source, int da
 			auto vrmode = VRMode::GetVRMode(true);
 			vrmode->Vibrate(200, 0, level);
 			vrmode->Vibrate(200, 1, level);
-#ifdef __MOBILE__
+#if defined(__MOBILE__) && !defined(_WIN32)
 			if (source == NULL)
             {
                 if (strcasestr(mod.GetChars(), "slime"))
