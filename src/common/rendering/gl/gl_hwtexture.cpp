@@ -149,7 +149,13 @@ unsigned int FHardwareTexture::CreateTexture(unsigned char * buffer, int w, int 
 		sourcetype = GL_BGRA;
 	}
 #ifdef __MOBILE__
-    texformat = sourcetype = GL_BGRA;
+	// Only the 4-byte-per-pixel case actually has enough data for BGRA (which needs
+	// GL_EXT_texture_format_BGRA8888, internalformat == format == GL_BGRA). Forcing
+	// this for 1/2/3-byte textures (palette indices, brightmaps, etc.) feeds the
+	// driver a buffer that's too small for what it's told, so glTexImage2D rejects
+	// it and the texture never gets created.
+	if (glTextureBytes == 4)
+		texformat = sourcetype = GL_BGRA;
 #endif
 	if (!firstCall && glBufferID > 0)
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, rw, rh, sourcetype, GL_UNSIGNED_BYTE, buffer);
