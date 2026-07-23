@@ -21,6 +21,14 @@ protected:
 	bool mPersistent = false;
 	bool nomap = true;
 	GLsync mGLSync = 0;
+#ifdef __MOBILE__
+	// Some mobile GLES drivers (e.g. ARM Mali) are unreliable with glMapBufferRange/
+	// glUnmapBuffer on these buffers, producing "buffer is already mapped" errors at
+	// draw time. Avoid real GL buffer mapping on mobile: keep a CPU-side shadow copy
+	// and push changes with glBufferSubData instead, mirroring what the OpenGL ES
+	// backend already does successfully (gles_buffers.cpp, gles.useMappedBuffers).
+	char *mShadowBuffer = nullptr;
+#endif
 
 	GLBuffer(int usetype);
 	~GLBuffer();

@@ -33,6 +33,7 @@
 **/
 
 #include <algorithm>
+#include <string.h>
 #include "gl_load.h"
 #include "gl_buffers.h"
 #include "gl_renderstate.h"
@@ -64,10 +65,15 @@ GLBuffer::~GLBuffer()
 	if (mBufferId != 0)
 	{
 		glBindBuffer(mUseType, mBufferId);
+#ifndef __MOBILE__
 		glUnmapBuffer(mUseType);
+#endif
 		glBindBuffer(mUseType, 0);
 		glDeleteBuffers(1, &mBufferId);
 	}
+#ifdef __MOBILE__
+	if (mShadowBuffer) delete[] mShadowBuffer;
+#endif
 }
 
 void GLBuffer::Bind()
@@ -78,6 +84,10 @@ void GLBuffer::Bind()
 
 void GLBuffer::SetData(size_t size, const void *data, BufferUsageType usage)
 {
+#ifdef __MOBILE__
+	if (mShadowBuffer) delete[] mShadowBuffer;
+	mShadowBuffer = (usage == BufferUsageType::Persistent || usage == BufferUsageType::Mappable) ? new char[size] : nullptr;
+#endif
 	Bind();
 	if (usage == BufferUsageType::Static)
 	{
@@ -115,22 +125,43 @@ void GLBuffer::SetSubData(size_t offset, size_t size, const void *data)
 {
 	Bind();
 	glBufferSubData(mUseType, offset, size, data);
+#ifdef __MOBILE__
+	if (mShadowBuffer && offset + size <= buffersize)
+		memcpy(mShadowBuffer + offset, data, size);
+#endif
 }
 
 void GLBuffer::Map()
 {
 	assert(nomap == false);	// do not allow mapping of static buffers. Vulkan cannot do that so it should be blocked in OpenGL, too.
+#ifdef __MOBILE__
+	if (!mPersistent && !nomap)
+	{
+		map = mShadowBuffer;
+		InvalidateBufferState();
+	}
+#else
 	if (!mPersistent && !nomap)
 	{
 		Bind();
 		map = (FFlatVertex*)glMapBufferRange(mUseType, 0, buffersize, GL_MAP_WRITE_BIT|GL_MAP_UNSYNCHRONIZED_BIT);
 		InvalidateBufferState();
 	}
+#endif
 }
 
 void GLBuffer::Unmap()
 {
 	assert(nomap == false);
+#ifdef __MOBILE__
+	if (!mPersistent && map != nullptr)
+	{
+		Bind();
+		glBufferSubData(mUseType, 0, buffersize, mShadowBuffer);
+		InvalidateBufferState();
+		map = nullptr;
+	}
+#else
 	if (!mPersistent && map != nullptr)
 	{
 		Bind();
@@ -138,30 +169,60 @@ void GLBuffer::Unmap()
 		InvalidateBufferState();
 		map = nullptr;
 	}
+#endif
 }
 
 void *GLBuffer::Lock(unsigned int size)
 {
 	// This initializes this buffer as a static object with no data.
 	SetData(size, nullptr, BufferUsageType::Mappable);
+#ifdef __MOBILE__
+	return mShadowBuffer;
+#else
 	return glMapBufferRange(mUseType, 0, size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+#endif
 }
 
 void GLBuffer::Unlock()
 {
 	Bind();
+#ifdef __MOBILE__
+	glBufferSubData(mUseType, 0, buffersize, mShadowBuffer);
+#else
 	glUnmapBuffer(mUseType);
+#endif
 	InvalidateBufferState();
 }
 
 void GLBuffer::Resize(size_t newsize)
 {
-	assert(!nomap);	// only mappable buffers can be resized. 
+	assert(!nomap);	// only mappable buffers can be resized.
 	if (newsize > buffersize && !nomap)
 	{
 		// reallocate the buffer with twice the size
 		unsigned int oldbuffer = mBufferId;
+		size_t oldsize = buffersize;
 
+#ifdef __MOBILE__
+		// The old buffer was never actually GL-mapped on mobile (see Map()/Unmap()
+		// above), so there is nothing to unmap here. The CPU shadow copy is the
+		// authoritative data; carry it over into the new, larger shadow buffer and
+		// push it to the new GPU buffer directly instead of a GPU-side copy.
+		char *oldShadow = mShadowBuffer;
+		mShadowBuffer = nullptr;	// don't let SetData delete the buffer we still need
+
+		glGenBuffers(1, &mBufferId);
+		SetData(newsize, nullptr, BufferUsageType::Persistent);
+
+		if (oldShadow)
+		{
+			memcpy(mShadowBuffer, oldShadow, oldsize);
+			delete[] oldShadow;
+			Bind();
+			glBufferSubData(mUseType, 0, oldsize, mShadowBuffer);
+		}
+		glDeleteBuffers(1, &oldbuffer);
+#else
 		// first unmap the old buffer
 		Bind();
 		glUnmapBuffer(mUseType);
@@ -171,9 +232,10 @@ void GLBuffer::Resize(size_t newsize)
 		glBindBuffer(GL_COPY_READ_BUFFER, oldbuffer);
 
 		// copy contents and delete the old buffer.
-		glCopyBufferSubData(GL_COPY_READ_BUFFER, mUseType, 0, 0, buffersize);
+		glCopyBufferSubData(GL_COPY_READ_BUFFER, mUseType, 0, 0, oldsize);
 		glBindBuffer(GL_COPY_READ_BUFFER, 0);
 		glDeleteBuffers(1, &oldbuffer);
+#endif
 		buffersize = newsize;
 		InvalidateBufferState();
 	}
