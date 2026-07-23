@@ -3539,7 +3539,7 @@ static int D_InitGame(const FIWADInfo* iwad_info, std::vector<std::string>& allw
 	SetDefaultMenuColors();
 	M_Init();
 	M_CreateGameMenus();
-
+	UpdateJoystickMenu(NULL);
 
 	// clean up the compiler symbols which are not needed any longer.
 	RemoveUnusedSymbols();
@@ -3651,7 +3651,7 @@ static int D_InitGame(const FIWADInfo* iwad_info, std::vector<std::string>& allw
 		twod->Begin(screen->GetWidth(), screen->GetHeight());
 		twod->End();
 		twod->ClearScreen();
-		UpdateJoystickMenu(NULL);
+		
 		UpdateVRModes();
 		Local_Job_Init();
 
