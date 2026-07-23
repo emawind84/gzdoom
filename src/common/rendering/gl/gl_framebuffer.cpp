@@ -591,12 +591,34 @@ FTexture *OpenGLFrameBuffer::WipeStartScreen()
 	const auto &viewport = screen->mScreenViewport;
 
 	auto tex = new FWrapperTexture(viewport.width, viewport.height, 1);
-	tex->GetSystemTexture()->CreateTexture(nullptr, viewport.width, viewport.height, 0, false, "WipeStartScreen");
+	auto systemTex = static_cast<FHardwareTexture*>(tex->GetSystemTexture());
+	systemTex->CreateTexture(nullptr, viewport.width, viewport.height, 0, false, "WipeStartScreen");
+
+#ifdef __MOBILE__
+	// Some mobile GLES drivers (e.g. ARM Mali) require glCopyTexSubImage2D's source and
+	// destination to have matching component types. The current pipeline texture is
+	// floating point (GL_RGBA16F) while this capture texture is 8-bit, so the copy below
+	// is rejected outright there. Do a shader blit through the same present pass used for
+	// the final screen output instead - that performs the conversion normally rather than
+	// through the restricted copy command.
+	FGLPostProcessState savedState;
+	savedState.SaveTextureBindings(2);
+	GLRenderer->StartOffscreen();
+	systemTex->BindToFrameBuffer(viewport.width, viewport.height);
+	GLRenderer->mBuffers->BindCurrentTexture(0);
+	IntRect box;
+	box.left = box.top = 0;
+	box.width = viewport.width;
+	box.height = viewport.height;
+	GLRenderer->DrawPresentTexture(box, false);
+	GLRenderer->EndOffscreen();
+#else
 	glFinish();
-	static_cast<FHardwareTexture*>(tex->GetSystemTexture())->Bind(0, false);
+	systemTex->Bind(0, false);
 
 	GLRenderer->mBuffers->BindCurrentFB();
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, viewport.left, viewport.top, viewport.width, viewport.height);
+#endif
 	return tex;
 }
 
@@ -613,11 +635,29 @@ FTexture *OpenGLFrameBuffer::WipeEndScreen()
 	GLRenderer->Flush();
 	const auto &viewport = screen->mScreenViewport;
 	auto tex = new FWrapperTexture(viewport.width, viewport.height, 1);
-	tex->GetSystemTexture()->CreateTexture(NULL, viewport.width, viewport.height, 0, false, "WipeEndScreen");
+	auto systemTex = static_cast<FHardwareTexture*>(tex->GetSystemTexture());
+	systemTex->CreateTexture(NULL, viewport.width, viewport.height, 0, false, "WipeEndScreen");
+
+#ifdef __MOBILE__
+	// See WipeStartScreen() - avoid glCopyTexSubImage2D's source/destination type
+	// mismatch (GL_RGBA16F pipeline texture -> 8-bit capture texture) on mobile GLES.
+	FGLPostProcessState savedState;
+	savedState.SaveTextureBindings(2);
+	GLRenderer->StartOffscreen();
+	systemTex->BindToFrameBuffer(viewport.width, viewport.height);
+	GLRenderer->mBuffers->BindCurrentTexture(0);
+	IntRect box;
+	box.left = box.top = 0;
+	box.width = viewport.width;
+	box.height = viewport.height;
+	GLRenderer->DrawPresentTexture(box, false);
+	GLRenderer->EndOffscreen();
+#else
 	glFinish();
-	static_cast<FHardwareTexture*>(tex->GetSystemTexture())->Bind(0, false);
+	systemTex->Bind(0, false);
 	GLRenderer->mBuffers->BindCurrentFB();
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, viewport.left, viewport.top, viewport.width, viewport.height);
+#endif
 	return tex;
 }
 
