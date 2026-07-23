@@ -69,6 +69,7 @@
 #include "s_music.h"
 #include "hwrenderer/scene/hw_drawinfo.h"
 #include "profiledef.h"
+#include "m_joy.h"
 
 EXTERN_CVAR(Int, cl_gfxlocalization)
 EXTERN_CVAR(Bool, m_quickexit)
@@ -89,6 +90,8 @@ CUSTOM_CVAR(Bool, menu_showexperimental, false, CVAR_ARCHIVE | CVAR_NOINITCALL)
 	DeinitMenus();
 	InitMenuDelegate();
 	M_Init();
+	M_CreateGameMenus();
+	UpdateJoystickMenu(NULL);
 	M_StartControlPanel (true);
 	M_SetMenu(NAME_Optionsmenu, -1);
 	Printf("Experimental menu has been %s\n", self ? "enabled" : "disabled");
@@ -99,6 +102,8 @@ CUSTOM_CVAR(Bool, menu_showdoublebindings, false, CVAR_NOINITCALL)
 	DeinitMenus();
 	InitMenuDelegate();
 	M_Init();
+	M_CreateGameMenus();
+	UpdateJoystickMenu(NULL);
 	M_StartControlPanel (true);
 	M_SetMenu(NAME_CustomizeControls, -1);
 }
