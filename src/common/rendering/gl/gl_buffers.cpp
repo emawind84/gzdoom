@@ -150,14 +150,35 @@ void GLBuffer::Map()
 #endif
 }
 
+void GLBuffer::Upload(size_t start, size_t size)
+{
+#ifdef __MOBILE__
+	if (mShadowBuffer && size > 0)
+	{
+		Bind();
+		glBufferSubData(mUseType, start, size, mShadowBuffer + start);
+	}
+#endif
+}
+
 void GLBuffer::Unmap()
 {
 	assert(nomap == false);
 #ifdef __MOBILE__
 	if (!mPersistent && map != nullptr)
 	{
-		Bind();
-		glBufferSubData(mUseType, 0, buffersize, mShadowBuffer);
+		// GL_ARRAY_BUFFER (the growable per-frame flat vertex buffer) always gets an
+		// explicit Upload(start, size) call right after this, for just the range
+		// written since Map() (see FFlatVertexBuffer::Unmap() in flatvertices.h).
+		// Pushing the whole buffer here too would mean re-uploading everything
+		// accumulated so far every frame, which only gets worse as a level session
+		// goes on. Other buffer types (index/uniform/storage) have no such follow-up
+		// call, so they still need the full push here.
+		if (mUseType != GL_ARRAY_BUFFER)
+		{
+			Bind();
+			glBufferSubData(mUseType, 0, buffersize, mShadowBuffer);
+		}
 		InvalidateBufferState();
 		map = nullptr;
 	}

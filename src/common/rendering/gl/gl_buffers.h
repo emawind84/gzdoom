@@ -34,6 +34,7 @@ protected:
 	~GLBuffer();
 	void SetData(size_t size, const void *data, BufferUsageType usage) override;
 	void SetSubData(size_t offset, size_t size, const void *data) override;
+	void Upload(size_t start, size_t size) override;
 	void Map() override;
 	void Unmap() override;
 	void Resize(size_t newsize) override;
