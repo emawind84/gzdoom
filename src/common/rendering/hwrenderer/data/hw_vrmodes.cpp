@@ -47,9 +47,10 @@
 #include "actorinlines.h"
 #include "LSMatrix.h"
 #include "gl/stereo3d/gl_openvr.h"
-#include "gl/stereo3d/gl_openxrdevice.h"
-
-using namespace OpenGLRenderer;
+#include "hw_openxrdevice.h"
+#ifdef HAVE_GLES2
+#include "gles_renderer.h"
+#endif
 
 // Set up 3D-specific console variables:
 CUSTOM_CVAR(Int, vr_mode, 0, CVAR_GLOBALCONFIG|CVAR_ARCHIVE)
@@ -281,7 +282,17 @@ void VRMode::AdjustViewport(DFrameBuffer *screen) const
 }
 
 void VRMode::Present() const {
-	GLRenderer->PresentStereo();
+	// This is the ONLY place in the entire engine where the backend-dependent
+	// parts of the desktop Stereo3D code need to be dealt with - there's no
+	// need for a full virtual-dispatch class hierarchy just for this.
+#ifdef HAVE_GLES2
+	if (screen->Backend() == 2)
+	{
+		OpenGLESRenderer::GLRenderer->PresentStereo();
+		return;
+	}
+#endif
+	OpenGLRenderer::GLRenderer->PresentStereo();
 }
 
 VSMatrix VRMode::GetHUDSpriteProjection() const

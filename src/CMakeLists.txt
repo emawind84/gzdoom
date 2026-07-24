@@ -839,6 +839,7 @@ if (HAVE_GLES2)
 	set (GLES_SOURCES
 		common/rendering/gles/gles_system.cpp
 		common/rendering/gles/gles_renderer.cpp
+		common/rendering/gles/gles_stereo3d.cpp
 		common/rendering/gles/gles_framebuffer.cpp
 		common/rendering/gles/gles_renderstate.cpp
 		common/rendering/gles/gles_renderbuffers.cpp
@@ -987,7 +988,7 @@ set (PCH_SOURCES
 	rendering/hwrenderer/scene/hw_drawlistadd.cpp
 	rendering/hwrenderer/scene/hw_setcolor.cpp
 	QzDoom/qzdoom_common.cpp
-	gl/stereo3d/gl_openxrdevice.cpp
+	common/rendering/hwrenderer/data/hw_openxrdevice.cpp
 	maploader/edata.cpp
 	maploader/specials.cpp
 	maploader/maploader.cpp

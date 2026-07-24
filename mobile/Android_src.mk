@@ -12,7 +12,7 @@ LOCAL_CFLAGS   := -D__MOBILE__ -DOPNMIDI_DISABLE_GX_EMULATOR -DGZDOOM -D__STDINT
 LOCAL_CPPFLAGS := -include g_pch.h -std=c++17 -Wno-switch -Wno-inconsistent-missing-override -Werror=format-security \
     -fexceptions -fpermissive -Dstricmp=strcasecmp -Dstrnicmp=strncasecmp -D__forceinline=inline -DNO_GTK -DNO_SSE -fsigned-char
 
-LOCAL_CFLAGS  += -DNO_SEND_STATS -DMINIZ_NO_STDIO -DUSE_OPENXR -DNO_SWRENDERER
+LOCAL_CFLAGS  += -DNO_SEND_STATS -DMINIZ_NO_STDIO -DUSE_OPENXR -DNO_SWRENDERER -DHAVE_GLES2
 
 LOCAL_CFLAGS  += -DOPNMIDI_USE_LEGACY_EMULATOR
 LOCAL_CFLAGS  += -DADLMIDI_DISABLE_MUS_SUPPORT -DADLMIDI_DISABLE_XMI_SUPPORT -DADLMIDI_DISABLE_MIDI_SEQUENCER
@@ -278,7 +278,7 @@ PCH_SOURCES = \
 	rendering/hwrenderer/scene/hw_lighting.cpp \
 	rendering/hwrenderer/scene/hw_drawlistadd.cpp \
 	rendering/hwrenderer/scene/hw_setcolor.cpp \
-	gl/stereo3d/gl_openxrdevice.cpp \
+	common/rendering/hwrenderer/data/hw_openxrdevice.cpp \
 	maploader/edata.cpp \
 	maploader/specials.cpp \
 	maploader/maploader.cpp \
@@ -515,6 +515,19 @@ PCH_SOURCES = \
 	common/rendering/gl/gl_samplers.cpp \
 	common/rendering/gl/gl_shader.cpp \
 	common/rendering/gl/gl_shaderprogram.cpp \
+	common/rendering/gles/gles_system.cpp \
+	common/rendering/gles/gles_renderer.cpp \
+	common/rendering/gles/gles_stereo3d.cpp \
+	common/rendering/gles/gles_framebuffer.cpp \
+	common/rendering/gles/gles_renderstate.cpp \
+	common/rendering/gles/gles_renderbuffers.cpp \
+	common/rendering/gles/gles_postprocess.cpp \
+	common/rendering/gles/gles_postprocessstate.cpp \
+	common/rendering/gles/gles_buffers.cpp \
+	common/rendering/gles/gles_hwtexture.cpp \
+	common/rendering/gles/gles_shader.cpp \
+	common/rendering/gles/gles_shaderprogram.cpp \
+	common/rendering/gles/gles_samplers.cpp \
 	common/scripting/core/maps.cpp \
 	common/scripting/core/dictionary.cpp \
 	common/scripting/core/dynarrays.cpp \

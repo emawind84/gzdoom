@@ -20,14 +20,18 @@
 //--------------------------------------------------------------------------
 //
 /*
-** gl_openxrdevice.cpp
+** hw_openxrdevice.cpp
 ** Stereoscopic virtual reality mode for OpenXR Support
 **
+** Only OpenXRDeviceEyePose::submitFrame() below is backend-specific (it
+** binds the current eye texture and draws the present quad); everything
+** else - VR input, teleport, weapon/HMD tracking, HUD projection - is
+** identical regardless of which renderer backend is active.
 */
 
 #ifdef USE_OPENXR
 
-#include "gl_openxrdevice.h"
+#include "hw_openxrdevice.h"
 
 #include <string>
 #include <map>
@@ -57,6 +61,9 @@
 #include "hwrenderer/scene/hw_drawinfo.h"
 #include "hwrenderer/data/flatvertices.h"
 #include "hwrenderer/data/hw_viewpointbuffer.h"
+#ifdef HAVE_GLES2
+#include "gles_renderer.h"
+#endif
 
 using namespace OpenGLRenderer;
 
@@ -233,9 +240,19 @@ namespace s3d
     {
         TBXR_prepareEyeBuffer(eye);
 
-        GLRenderer->mBuffers->BindEyeTexture(eye, 0);
         IntRect box = {0, 0, screen->mSceneViewport.width, screen->mSceneViewport.height};
-        GLRenderer->DrawPresentTexture(box, true);
+#ifdef HAVE_GLES2
+        if (screen->Backend() == 2)
+        {
+            OpenGLESRenderer::GLRenderer->mBuffers->BindEyeTexture(eye, 0);
+            OpenGLESRenderer::GLRenderer->DrawPresentTexture(box, true);
+        }
+        else
+#endif
+        {
+            GLRenderer->mBuffers->BindEyeTexture(eye, 0);
+            GLRenderer->DrawPresentTexture(box, true);
+        }
 
         TBXR_finishEyeBuffer(eye);
 
