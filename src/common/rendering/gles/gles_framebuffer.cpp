@@ -340,12 +340,12 @@ FRenderState* OpenGLFrameBuffer::RenderState()
 
 void OpenGLFrameBuffer::FirstEye()
 {
-	//GLRenderer->mBuffers->CurrentEye() = 0;  // always begin at zero, in case eye count changed
+	GLRenderer->mBuffers->CurrentEye() = 0;  // always begin at zero, in case eye count changed
 }
 
 void OpenGLFrameBuffer::NextEye(int eyecount)
 {
-	//GLRenderer->mBuffers->NextEye(eyecount);
+	GLRenderer->mBuffers->NextEye(eyecount);
 }
 
 void OpenGLFrameBuffer::SetSceneRenderTarget(bool useSSAO)

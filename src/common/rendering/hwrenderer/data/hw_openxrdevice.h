@@ -20,13 +20,17 @@
 //--------------------------------------------------------------------------
 //
 /*
-** gl_oculusquest.cpp
-** Stereoscopic virtual reality mode for the Oculus Quest HMD
+** hw_openxrdevice.h
+** Stereoscopic virtual reality mode for the Oculus Quest HMD (OpenXR)
 **
+** Lives alongside hw_vrmodes.cpp rather than under gl/ because only one
+** function here (OpenXRDeviceEyePose::submitFrame, in the .cpp) actually
+** touches a backend-specific renderer object; it dispatches internally on
+** screen->Backend() to support both the GL and GLES backends.
 */
 
-#ifndef _GL_OCULUSQUEST_H
-#define _GL_OCULUSQUEST_H
+#ifndef _HW_OPENXRDEVICE_H
+#define _HW_OPENXRDEVICE_H
 
 #include "hw_vrmodes.h"
 
@@ -101,4 +105,4 @@ private:
 } /* namespace st3d */
 
 
-#endif /* _GL_OCULUSQUEST_H */
+#endif /* _HW_OPENXRDEVICE_H */

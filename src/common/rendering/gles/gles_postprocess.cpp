@@ -35,8 +35,10 @@
 
 #include "hw_vrmodes.h"
 #include "v_draw.h"
+#include "gamestate.h"
 
 extern bool vid_hdr_active;
+bool VR_UseScreenLayer();
 
 
 namespace OpenGLESRenderer
@@ -69,7 +71,41 @@ void FGLRenderer::PostProcessScene(int fixedcm, float flash, const std::function
 
 void FGLRenderer::Flush()
 {
-	CopyToBackbuffer(nullptr, true);
+	auto vrmode = VRMode::GetVRMode(true);
+	if (vrmode->mEyeCount == 1)
+	{
+		CopyToBackbuffer(nullptr, true);
+	}
+	else
+	{
+		const bool is2D = (gamestate != GS_LEVEL && gamestate != GS_TITLELEVEL);
+		if (is2D) vrmode->SetUp();
+		// Render 2D to eye textures
+		int eyeCount = vrmode->mEyeCount;
+		screen->FirstEye();
+		for (int eye_ix = 0; eye_ix < eyeCount; ++eye_ix)
+		{
+			const auto &eye = vrmode->mEyes[mBuffers->CurrentEye()];
+			if (vrmode->IsVR())
+			{
+				eye->AdjustBlend(nullptr);
+				screen->Draw2D(true);
+			}
+			if (!VR_UseScreenLayer())
+			{
+				eye->AdjustHud();
+			}
+
+			screen->Draw2D(false);
+			mBuffers->NextEye(eyeCount);
+		}
+		twod->Clear();
+
+		// Note: This here is the ONLY place in the entire engine where the OpenGL dependent parts of the Stereo3D code need to be dealt with.
+		// There's absolutely no need to create a overly complex class hierarchy for just this.
+		vrmode->Present();
+		if (is2D) vrmode->TearDown();
+	}
 }
 
 //-----------------------------------------------------------------------------

@@ -56,6 +56,7 @@ namespace OpenGLESRenderer
 	FGLRenderBuffers::~FGLRenderBuffers()
 	{
 		ClearScene();
+		ClearEyeBuffers();
 
 		DeleteTexture(mDitherTexture);
 	}
@@ -65,6 +66,18 @@ namespace OpenGLESRenderer
 		DeleteFrameBuffer(mSceneFB);
 		DeleteRenderBuffer(mSceneDepthStencilBuf);
 		DeleteRenderBuffer(mSceneStencilBuf);
+	}
+
+	void FGLRenderBuffers::ClearEyeBuffers()
+	{
+		for (auto handle : mEyeFBs)
+			DeleteFrameBuffer(handle);
+
+		for (auto handle : mEyeTextures)
+			DeleteTexture(handle);
+
+		mEyeTextures.Clear();
+		mEyeFBs.Clear();
 	}
 
 	void FGLRenderBuffers::DeleteTexture(PPGLTexture& tex)
@@ -160,7 +173,38 @@ namespace OpenGLESRenderer
 
 	void FGLRenderBuffers::CreatePipeline(int width, int height)
 	{
+		ClearEyeBuffers();
+
 		mSceneTex = Create2DTexture("PipelineTexture", GL_RGBA, width, height);
+	}
+
+	//==========================================================================
+	//
+	// Creates eye buffers if needed
+	//
+	//==========================================================================
+
+	void FGLRenderBuffers::CreateEyeBuffers(int eye)
+	{
+		if (mEyeFBs.Size() > unsigned(eye))
+			return;
+
+		GLint activeTex, textureBinding, frameBufferBinding;
+		glGetIntegerv(GL_ACTIVE_TEXTURE, &activeTex);
+		glActiveTexture(GL_TEXTURE0);
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &textureBinding);
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &frameBufferBinding);
+
+		while (mEyeFBs.Size() <= unsigned(eye))
+		{
+			PPGLTexture texture = Create2DTexture("EyeTexture", GL_RGBA, mWidth, mHeight);
+			mEyeTextures.Push(texture);
+			mEyeFBs.Push(CreateFrameBuffer("EyeFB", texture));
+		}
+
+		glBindTexture(GL_TEXTURE_2D, textureBinding);
+		glActiveTexture(activeTex);
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBufferBinding);
 	}
 
 
@@ -347,6 +391,54 @@ namespace OpenGLESRenderer
 	}
 
 
+	//==========================================================================
+	//
+	// Eye textures and their frame buffers
+	//
+	//==========================================================================
+
+	void FGLRenderBuffers::BlitToEyeTexture(int eye)
+	{
+		CreateEyeBuffers(eye);
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, mSceneFB.handle);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mEyeFBs[eye].handle);
+		glBlitFramebuffer(0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
+
+	void FGLRenderBuffers::BlitFromEyeTexture(int eye)
+	{
+		if (mEyeFBs.Size() <= unsigned(eye)) return;
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mSceneFB.handle);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, mEyeFBs[eye].handle);
+		glBlitFramebuffer(0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
+
+	void FGLRenderBuffers::BindEyeTexture(int eye, int texunit)
+	{
+		CreateEyeBuffers(eye);
+		glActiveTexture(GL_TEXTURE0 + texunit);
+		glBindTexture(GL_TEXTURE_2D, mEyeTextures[eye].handle);
+	}
+
+	// Store the current stereo 3D eye buffer, and load the next one
+	int FGLRenderBuffers::NextEye(int eyeCount)
+	{
+		int nextEye = (mCurrentEye + 1) % eyeCount;
+		if (nextEye == mCurrentEye) return mCurrentEye;
+		BlitToEyeTexture(mCurrentEye);
+		mCurrentEye = nextEye;
+		BlitFromEyeTexture(mCurrentEye);
+		return mCurrentEye;
+	}
+
 	void FGLRenderBuffers::BindDitherTexture(int texunit)
 	{
 		if (!mDitherTexture)
@@ -427,4 +519,4 @@ namespace OpenGLESRenderer
 
 
 
-}  // namespace OpenGLRenderer
+}  // namespace OpenGLESRenderer

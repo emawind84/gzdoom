@@ -1,5 +1,5 @@
-#ifndef __GL_RENDERER_H
-#define __GL_RENDERER_H
+#ifndef __GLES_RENDERER_H
+#define __GLES_RENDERER_H
 
 #include "v_video.h"
 #include "vectors.h"
@@ -33,9 +33,6 @@ namespace OpenGLESRenderer
 	class OpenGLFrameBuffer;
 	class FPresentShaderBase;
 	class FPresentShader;
-	class FPresent3DCheckerShader;
-	class FPresent3DColumnShader;
-	class FPresent3DRowShader;
 	class FShadowMapShader;
 
 class FGLRenderer
@@ -81,15 +78,9 @@ public:
 
 private:
 
-	bool QuadStereoCheckInitialRenderContextState();
 	void PresentAnaglyph(bool r, bool g, bool b);
 	void PresentSideBySide(int);
 	void PresentTopBottom();
-	void prepareInterleavedPresent(FPresentShaderBase& shader);
-	void PresentColumnInterleaved();
-	void PresentRowInterleaved();
-	void PresentCheckerInterleaved();
-	void PresentQuadStereo();
 
 };
 

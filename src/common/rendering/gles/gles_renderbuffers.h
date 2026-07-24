@@ -103,6 +103,12 @@ public:
 
 	void BindOutputFB();
 
+	void BlitToEyeTexture(int eye);
+	void BlitFromEyeTexture(int eye);
+	void BindEyeTexture(int eye, int texunit);
+	int NextEye(int eyeCount);
+	int & CurrentEye() { return mCurrentEye; }
+
 	void BindDitherTexture(int texunit);
 
 	int GetWidth() const { return mWidth; }
@@ -113,9 +119,11 @@ public:
 
 private:
 	void ClearScene();
+	void ClearEyeBuffers();
 
 	void CreateScene(int width, int height);
 	void CreatePipeline(int width, int height);
+	void CreateEyeBuffers(int eye);
 
 	PPGLTexture Create2DTexture(const char *name, GLuint format, int width, int height, const void *data = nullptr);
 	PPGLRenderBuffer CreateRenderBuffer(const char *name, GLuint format, int width, int height);
@@ -141,6 +149,11 @@ private:
 	PPGLRenderBuffer mSceneStencilBuf; // This is only use when combined depth-stencil is not avaliable
 	PPGLFrameBuffer mSceneFB;
 	bool mSceneUsesTextures = false;
+
+	// Eye buffers
+	TArray<PPGLTexture> mEyeTextures;
+	TArray<PPGLFrameBuffer> mEyeFBs;
+	int mCurrentEye = 0;
 
 	PPGLTexture mDitherTexture;
 

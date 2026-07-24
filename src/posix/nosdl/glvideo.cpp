@@ -49,6 +49,9 @@
 #include "r_defs.h"
 
 #include "gl_framebuffer.h"
+#ifdef HAVE_GLES2
+#include "gles_framebuffer.h"
+#endif
 
 //#include <QzDoom/VrCommon.h>
 
@@ -114,7 +117,19 @@ int TBXR_GetRefresh();
 
 DFrameBuffer *NoSDLGLVideo::CreateFrameBuffer ()
 {
+	// Vulkan (1) isn't supported on this platform; anything else falls back
+	// to the OpenGL backend (0). Backend 2 (OpenGL ES) is honored when
+	// explicitly selected via vid_preferbackend.
+#ifdef HAVE_GLES2
+	if (vid_preferbackend != 2)
+		vid_preferbackend = 0;
+
+	if (vid_preferbackend == 2)
+		return new OpenGLESRenderer::OpenGLFrameBuffer(0, true);
+#else
 	vid_preferbackend = 0;
+#endif
+
 	SystemGLFrameBuffer *fb = new OpenGLRenderer::OpenGLFrameBuffer(0, true);
 
 	return fb;

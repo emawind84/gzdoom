@@ -22,7 +22,7 @@ public:
 
 	OpenGLFrameBuffer(void *hMonitor, bool fullscreen) ;
 	~OpenGLFrameBuffer();
-	int Backend() override { return 2; }
+	int Backend() override { return 0; }
 	bool CompileNextShader() override;
 	void InitializeState() override;
 	void Update() override;
