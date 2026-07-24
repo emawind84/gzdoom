@@ -66,6 +66,24 @@
 
 #include <QzDoom/VrCommon.h>
 
+#if defined(__MOBILE__) && defined(_WIN32)
+// MSVC's CRT has no strcasestr (a BSD/glibc extension) - needed here for the
+// haptic damage-type matching below when testing the __MOBILE__ code paths
+// on a Windows desktop build.
+#include <ctype.h>
+static const char *strcasestr(const char *haystack, const char *needle)
+{
+	if (!*needle) return haystack;
+	for (; *haystack; ++haystack)
+	{
+		const char *h = haystack, *n = needle;
+		while (*h && *n && tolower((unsigned char)*h) == tolower((unsigned char)*n)) { ++h; ++n; }
+		if (!*n) return haystack;
+	}
+	return nullptr;
+}
+#endif
+
 static FRandom pr_botrespawn ("BotRespawn");
 static FRandom pr_killmobj ("ActorDie");
 FRandom pr_damagemobj ("ActorTakeDamage");
