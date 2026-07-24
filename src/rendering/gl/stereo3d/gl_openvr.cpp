@@ -40,6 +40,9 @@
 #include "g_game.h" // G_Add...
 #include "p_local.h" // P_TryMove
 #include "gl_renderer.h"
+#ifdef HAVE_GLES2
+#include "gles_renderer.h"
+#endif
 #include "v_2ddrawer.h" // crosshair
 #include "models.h"
 #include "hw_material.h"
@@ -855,6 +858,25 @@ namespace s3d
 		}
 	}
 
+	// Binds the given eye's rendered texture and draws the present quad into
+	// whatever framebuffer is currently bound. Backend-specific because
+	// GLRenderer (unqualified, from "using namespace OpenGLRenderer") is only
+	// ever the GL backend's singleton; on backend 2 it must go through
+	// OpenGLESRenderer::GLRenderer instead.
+	static void PresentEyeTexture(int eye, const IntRect &box)
+	{
+#ifdef HAVE_GLES2
+		if (screen->Backend() == 2)
+		{
+			OpenGLESRenderer::GLRenderer->mBuffers->BindEyeTexture(eye, 0);
+			OpenGLESRenderer::GLRenderer->DrawPresentTexture(box, true);
+			return;
+		}
+#endif
+		GLRenderer->mBuffers->BindEyeTexture(eye, 0);
+		GLRenderer->DrawPresentTexture(box, true);
+	}
+
 	bool OpenVREyePose::submitFrame(VR_IVRCompositor_FnTable* vrCompositor, VR_IVROverlay_FnTable* vrOverlay) const
 	{
 		if (eyeTexture == nullptr)
@@ -883,9 +905,8 @@ namespace s3d
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			return false;
-		GLRenderer->mBuffers->BindEyeTexture(eye, 0);
 		IntRect box = { 0, 0, screen->mSceneViewport.width, screen->mSceneViewport.height };
-		GLRenderer->DrawPresentTexture(box, true);
+		PresentEyeTexture(eye, box);
 
 		// Maybe this would help with AMD boards?
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1324,11 +1345,26 @@ namespace s3d
 
 	/* virtual */
 	void OpenVRMode::Present() const {
-		GLRenderer->mBuffers->BlitToEyeTexture(GLRenderer->mBuffers->CurrentEye(), false);
+#ifdef HAVE_GLES2
+		if (screen->Backend() == 2)
+			OpenGLESRenderer::GLRenderer->mBuffers->BlitToEyeTexture(OpenGLESRenderer::GLRenderer->mBuffers->CurrentEye());
+		else
+#endif
+			GLRenderer->mBuffers->BlitToEyeTexture(GLRenderer->mBuffers->CurrentEye(), false);
 		// TODO: For performance, don't render to the desktop screen here
 		if (doRenderToDesktop && vr_desktop_view != -1) {
-			GLRenderer->mBuffers->BindOutputFB();
-			GLRenderer->ClearBorders();
+#ifdef HAVE_GLES2
+			if (screen->Backend() == 2)
+			{
+				OpenGLESRenderer::GLRenderer->mBuffers->BindOutputFB();
+				OpenGLESRenderer::GLRenderer->ClearBorders();
+			}
+			else
+#endif
+			{
+				GLRenderer->mBuffers->BindOutputFB();
+				GLRenderer->ClearBorders();
+			}
 
 			// Compute screen regions to use for left and right eye views
 			int leftWidth;
@@ -1345,14 +1381,10 @@ namespace s3d
 			rightHalfScreen.width = rightWidth;
 			rightHalfScreen.left += leftWidth;
 
-			if (vr_desktop_view < 2) {
-				GLRenderer->mBuffers->BindEyeTexture(0, 0);
-				GLRenderer->DrawPresentTexture(leftHalfScreen, true);
-			}
-			if (vr_desktop_view != 1) {
-				GLRenderer->mBuffers->BindEyeTexture(1, 0);
-				GLRenderer->DrawPresentTexture(rightHalfScreen, true);
-			}
+			if (vr_desktop_view < 2)
+				PresentEyeTexture(0, leftHalfScreen);
+			if (vr_desktop_view != 1)
+				PresentEyeTexture(1, rightHalfScreen);
 		}
 		if (doRenderToHmd)
 		{
@@ -2323,16 +2355,32 @@ namespace s3d
 		if (gamestate != GS_TITLELEVEL) {
 			// TODO: Draw a more interesting background behind the 2D screen
 			const int eyeCount = mEyeCount;
-			GLRenderer->mBuffers->CurrentEye() = 0;  // always begin at zero, in case eye count changed
-			for (int eye_ix = 0; eye_ix < eyeCount; ++eye_ix)
+#ifdef HAVE_GLES2
+			if (screen->Backend() == 2)
 			{
-				const auto& eye = mEyes[GLRenderer->mBuffers->CurrentEye()];
+				OpenGLESRenderer::GLRenderer->mBuffers->CurrentEye() = 0;  // always begin at zero, in case eye count changed
+				for (int eye_ix = 0; eye_ix < eyeCount; ++eye_ix)
+				{
+					OpenGLESRenderer::GLRenderer->mBuffers->BindCurrentFB();
+					glClearColor(0.f, 0.f, 0.f, 1.0f);
+					glClear(GL_COLOR_BUFFER_BIT);
+					OpenGLESRenderer::GLRenderer->mBuffers->NextEye(eyeCount);
+				}
+			}
+			else
+#endif
+			{
+				GLRenderer->mBuffers->CurrentEye() = 0;  // always begin at zero, in case eye count changed
+				for (int eye_ix = 0; eye_ix < eyeCount; ++eye_ix)
+				{
+					const auto& eye = mEyes[GLRenderer->mBuffers->CurrentEye()];
 
-				GLRenderer->mBuffers->BindCurrentFB();
-				glClearColor(0.f, 0.f, 0.f, 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT);
-				//if (eyeCount - eye_ix > 1)
-					GLRenderer->mBuffers->NextEye(eyeCount);
+					GLRenderer->mBuffers->BindCurrentFB();
+					glClearColor(0.f, 0.f, 0.f, 1.0f);
+					glClear(GL_COLOR_BUFFER_BIT);
+					//if (eyeCount - eye_ix > 1)
+						GLRenderer->mBuffers->NextEye(eyeCount);
+				}
 			}
 			//GLRenderer->mBuffers->BlitToEyeTexture(GLRenderer->mBuffers->CurrentEye(), false);
 			
