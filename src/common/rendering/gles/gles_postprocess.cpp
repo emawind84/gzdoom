@@ -27,6 +27,7 @@
 #include "gles_renderer.h"
 #include "gles_postprocessstate.h"
 #include "gles_shaderprogram.h"
+#include "gles_debug.h"
 #include "hwrenderer/postprocessing/hw_postprocess.h"
 #include "hwrenderer/postprocessing/hw_postprocess_cvars.h"
 #include "flatvertices.h"
@@ -101,9 +102,10 @@ void FGLRenderer::Flush()
 		}
 		twod->Clear();
 
-		// Note: This here is the ONLY place in the entire engine where the OpenGL dependent parts of the Stereo3D code need to be dealt with.
-		// There's absolutely no need to create a overly complex class hierarchy for just this.
+		FGLPostProcessState savedState;
+		FGLDebug::PushGroup("PresentEyes");
 		vrmode->Present();
+		FGLDebug::PopGroup();
 		if (is2D) vrmode->TearDown();
 	}
 }

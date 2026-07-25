@@ -43,6 +43,7 @@
 #include "gles_renderer.h"
 #include "gles_samplers.h"
 #include "gles_renderbuffers.h"
+#include "gles_debug.h"
 #include "hw_clock.h"
 #include "hw_vrmodes.h"
 #include "hw_skydome.h"
@@ -160,6 +161,9 @@ void OpenGLFrameBuffer::InitializeState()
 	GLRenderer->Initialize(GetWidth(), GetHeight());
 	static_cast<GLDataBuffer*>(mLights->GetBuffer())->BindBase();
 	static_cast<GLDataBuffer*>(mBones->GetBuffer())->BindBase();
+
+	mDebug = std::make_unique<FGLDebug>();
+	mDebug->Update();
 }
 
 //==========================================================================
