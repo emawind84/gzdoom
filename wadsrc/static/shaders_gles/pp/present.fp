@@ -13,7 +13,13 @@ vec4 ApplyGamma(vec4 c)
 	vec3 val = valgray * Contrast - (Contrast - 1.0) * 0.5;
 	val += Brightness * 0.5;
 	val = pow(max(val, vec3(0.0)), vec3(InvGamma));
-	return vec4(val, c.a);
+	// Unlike the desktop GL backend, this GLES pipeline has no HDR/tonemap
+	// pass to force alpha back to 1 beforehand, so translucent draws (e.g.
+	// the sky dome) can leave it <1 here. That's harmless for the 2D
+	// window backbuffer (alpha is ignored), but SteamVR's compositor/
+	// overlay does composite on submitted alpha, causing a black VR sky.
+	// Force opaque unconditionally to match backend GL's effective output.
+	return vec4(val, 1.0);
 }
 
 //vec4 Dither(vec4 c)
