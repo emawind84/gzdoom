@@ -21,12 +21,15 @@ protected:
 	bool mPersistent = false;
 	bool nomap = true;
 	GLsync mGLSync = 0;
-#ifdef __MOBILE__
-	// Some mobile GLES drivers (e.g. ARM Mali) are unreliable with glMapBufferRange/
-	// glUnmapBuffer on these buffers, producing "buffer is already mapped" errors at
-	// draw time. Avoid real GL buffer mapping on mobile: keep a CPU-side shadow copy
-	// and push changes with glBufferSubData instead, mirroring what the OpenGL ES
-	// backend already does successfully (gles_buffers.cpp, gles.useMappedBuffers).
+#ifdef MALI_BUFFER_WORKAROUND
+	// ARM Mali GLES drivers are unreliable with glMapBufferRange/glUnmapBuffer on
+	// these buffers, producing "buffer is already mapped" errors at draw time.
+	// This has not been observed on Quest's Adreno GPU, so this workaround is
+	// gated on its own macro (defined only for the Mali/R36S build, e.g. the
+	// desktop CMake path - NOT by Android_src.mk) rather than the general
+	// __MOBILE__ flag, which both Quest and R36S define. Real GL mapping stays
+	// in effect wherever MALI_BUFFER_WORKAROUND isn't defined. Mirrors the
+	// OpenGL ES backend's own approach (gles_buffers.cpp, gles.useMappedBuffers).
 	char *mShadowBuffer = nullptr;
 #endif
 
