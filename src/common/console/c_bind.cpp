@@ -53,6 +53,8 @@
 CVARD(Bool, cl_custombinds, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG, "Enable custom binds reading from IWAD and Mods")
 CVARD(Bool, cl_custombinds_override, false, CVAR_ARCHIVE | CVAR_GLOBALCONFIG, "Permit Mods to override user bindings")
 
+EXTERN_CVAR(Int, vr_mode);
+
 const char *KeyNames[NUM_KEYS] =
 {
 	// We use the DirectInput codes and assume a qwerty keyboard layout.
@@ -734,9 +736,9 @@ void ReadBindings(int lump, bool override)
 
 void C_SetDefaultKeys(const char* baseconfig)
 {
-	auto vrmode = VRMode::GetVRMode(true);
+	bool isVR = (vr_mode == VR_OPENVR || vr_mode == VR_OPENXR_MOBILE);
 	auto commonbinds = "engine/commonbinds.txt";
-	if (vrmode->IsVR())
+	if (isVR)
 		commonbinds = "engine/vr/commonbinds.txt";
 	auto lump = fileSystem.CheckNumForFullName(commonbinds);
 	if (lump >= 0)

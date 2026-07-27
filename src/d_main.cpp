@@ -3354,8 +3354,6 @@ static int D_InitGame(const FIWADInfo* iwad_info, std::vector<std::string>& allw
 	}
 
 	StartScreen = nostartscreen? nullptr : GetGameStartScreen(per_shader_progress > 0 ? max_progress * 10 / 9 : max_progress + 3);
-	
-	GameConfig->DoKeySetup(gameinfo.ConfigName.GetChars());
 
 	// Now that wads are loaded, define mod-specific cvars.
 	ParseCVarInfo();
@@ -3367,6 +3365,8 @@ static int D_InitGame(const FIWADInfo* iwad_info, std::vector<std::string>& allw
 		delete exec;
 		exec = NULL;
 	}
+
+	GameConfig->DoKeySetup(gameinfo.ConfigName.GetChars());
 
 	if (!restart)
 		V_Init2();
