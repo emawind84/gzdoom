@@ -74,8 +74,8 @@ jobs:
           extra_options: -DDYN_OPENAL=OFF
           deps_cmdline: sudo apt update && sudo apt install libsdl2-dev libvpx-dev libgtk-3-dev libwebp-dev libopenal-dev
           build_type: Release
-          cflags: "-D__MOBILE__"
-          cxxflags: "-D__MOBILE__"
+          cflags: "-D__MOBILE__ -DMALI_BUFFER_WORKAROUND"
+          cxxflags: "-D__MOBILE__ -DMALI_BUFFER_WORKAROUND"
 
     steps:
     - name: Checkout QuestZDoom
