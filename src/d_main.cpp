@@ -3341,7 +3341,7 @@ static int D_InitGame(const FIWADInfo* iwad_info, std::vector<std::string>& allw
 
 	int max_progress = TexMan.GuesstimateNumTextures();
 	int per_shader_progress = 0;//screen->GetShaderCount()? (max_progress / 10 / screen->GetShaderCount()) : 0;
-	bool nostartscreen = batchrun || restart || Args->CheckParm("-join") || Args->CheckParm("-host") || Args->CheckParm("-norun");
+	bool nostartscreen = batchrun || Args->CheckParm("-join") || Args->CheckParm("-host") || Args->CheckParm("-norun");
 
 	if (GameStartupInfo.Type == FStartupInfo::DefaultStartup)
 	{
@@ -3587,16 +3587,13 @@ static int D_InitGame(const FIWADInfo* iwad_info, std::vector<std::string>& allw
 		}
 	}
 
-	if (!restart)
+	if (!batchrun) Printf ("D_CheckNetGame: Checking network game status.\n");
+	if (StartScreen) StartScreen->LoadingStatus ("Checking network game status.", 0x3f);
+	if (!D_CheckNetGame ())
 	{
-		if (!batchrun) Printf ("D_CheckNetGame: Checking network game status.\n");
-		if (StartScreen) StartScreen->LoadingStatus ("Checking network game status.", 0x3f);
-		if (!D_CheckNetGame ())
-		{
-			return 0;
-		}
+		return 0;
 	}
-
+	
 	// [SP] Force vanilla transparency auto-detection to re-detect our game lumps now
 	UpdateVanillaTransparency();
 
