@@ -192,11 +192,43 @@ void OpenGLFrameBuffer::CopyScreenToBuffer(int width, int height, uint8_t* scr)
 	bounds.top = 0;
 	bounds.width = width;
 	bounds.height = height;
+
+#ifdef __MOBILE__
+	auto tex = new FWrapperTexture(width, height, 1);
+	auto systemTex = static_cast<FHardwareTexture*>(tex->GetSystemTexture());
+	systemTex->CreateTexture(nullptr, width, height, 0, false, "CopyScreenToBufferMobile");
+
+	{
+		FGLPostProcessState savedState;
+		savedState.SaveTextureBindings(2);
+		GLRenderer->StartOffscreen();
+		systemTex->BindToFrameBuffer(width, height);
+		GLRenderer->mBuffers->BindCurrentTexture(0);
+		GLRenderer->DrawPresentTexture(bounds, false);
+
+		glFinish();
+
+		TArray<uint8_t> bgra;
+		bgra.Resize(width * height * 4);
+
+		glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, bgra.Data());
+		for (int i = 0; i < width * height; i++)
+		{
+			scr[i * 3 + 0] = bgra[i * 4 + 2]; // R
+			scr[i * 3 + 1] = bgra[i * 4 + 1]; // G
+			scr[i * 3 + 2] = bgra[i * 4 + 0]; // B
+		}
+
+		GLRenderer->EndOffscreen();
+	}
+
+	delete tex;
+#else
 	GLRenderer->CopyToBackbuffer(&bounds, false);
 
-	// strictly speaking not needed as the glReadPixels should block until the scene is rendered, but this is to safeguard against shitty drivers
 	glFinish();
 	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, scr);
+#endif
 }
 
 //===========================================================================
@@ -396,7 +428,41 @@ TArray<uint8_t> OpenGLFrameBuffer::GetScreenshotBuffer(int &pitch, ESSType &colo
 	TArray<uint8_t> pixels;
 	pixels.Resize(viewport.width * viewport.height * 3);
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+#ifdef __MOBILE__
+	auto tex = new FWrapperTexture(viewport.width, viewport.height, 1);
+	auto systemTex = static_cast<FHardwareTexture*>(tex->GetSystemTexture());
+	systemTex->CreateTexture(nullptr, viewport.width, viewport.height, 0, false, "GetScreenshotBuffer");
+
+	{
+		FGLPostProcessState savedState;
+		savedState.SaveTextureBindings(2);
+		GLRenderer->StartOffscreen();
+		systemTex->BindToFrameBuffer(viewport.width, viewport.height);
+		GLRenderer->mBuffers->BindCurrentTexture(0);
+
+		IntRect box = viewport;
+		box.left = 0;
+		box.top = 0;
+		GLRenderer->DrawPresentTexture(box, false);
+
+		glFinish();
+
+		TArray<uint8_t> bgra;
+		bgra.Resize(viewport.width * viewport.height * 4);
+		glReadPixels(viewport.left, viewport.top, viewport.width, viewport.height, GL_BGRA, GL_UNSIGNED_BYTE, bgra.Data());
+		for (int i = 0; i < viewport.width * viewport.height; i++)
+		{
+			pixels[i * 3 + 0] = bgra[i * 4 + 2]; // R
+			pixels[i * 3 + 1] = bgra[i * 4 + 1]; // G
+			pixels[i * 3 + 2] = bgra[i * 4 + 0]; // B
+		}
+
+		GLRenderer->EndOffscreen();
+	}
+	delete tex;
+#else
 	glReadPixels(viewport.left, viewport.top, viewport.width, viewport.height, GL_RGB, GL_UNSIGNED_BYTE, &pixels[0]);
+#endif
 	glPixelStorei(GL_PACK_ALIGNMENT, 4);
 
 	// Copy to screenshot buffer:
