@@ -115,8 +115,8 @@ void ProfileManager::CollectProfiles()
 	}
 
 	std::sort(cmdlineProfiles.begin() + 1, cmdlineProfiles.end(), 
-	[](const FCommandLineInfo left, const FCommandLineInfo right){
-		return std::tolower(*left.mTitle.GetChars()) < std::tolower(*right.mTitle.GetChars());
+	[](const FCommandLineInfo &left, const FCommandLineInfo &right){
+		return left.mTitle.CompareNoCase(right.mTitle) < 0;
 	});
 }
 
