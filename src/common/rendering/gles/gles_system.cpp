@@ -175,9 +175,6 @@ namespace OpenGLESRenderer
 		gles.modelstring = (char*)glGetString(GL_RENDERER);
 		gles.vendorstring = (char*)glGetString(GL_VENDOR);
 
-
-		gl_customshader = false; // Disable user shaders for GLES renderer
-
 		GLint maxTextureSize[1];
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, maxTextureSize);
 		gles.max_texturesize = maxTextureSize[0];

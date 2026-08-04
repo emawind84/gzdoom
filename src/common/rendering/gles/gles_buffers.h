@@ -22,6 +22,7 @@ protected:
 	GLsync mGLSync = 0;
 
 	bool isData = false;
+	bool hasGLBuffer = false; // true once a real glGenBuffers() object backs mBufferId
 	char *memory = nullptr;
 
 	GLBuffer(int usetype);

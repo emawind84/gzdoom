@@ -56,10 +56,38 @@ void FGLRenderer::RenderScreenQuad()
 
 void FGLRenderer::PostProcessScene(int fixedcm, float flash, const std::function<void()> &afterBloomDrawEndScene2D)
 {
+	int sceneWidth = mBuffers->GetSceneWidth();
+	int sceneHeight = mBuffers->GetSceneHeight();
+
+	GLPPRenderState renderstate(mBuffers);
+
+	hw_postprocess.Pass1(&renderstate, fixedcm, sceneWidth, sceneHeight);
 #ifndef NO_RENDER_BUFFER
 	mBuffers->BindCurrentFB();
 #endif
 	if (afterBloomDrawEndScene2D) afterBloomDrawEndScene2D();
+	hw_postprocess.Pass2(&renderstate, fixedcm, flash, sceneWidth, sceneHeight);
+}
+
+void FGLRenderer::BlurScene(float gameinfobluramount)
+{
+	int sceneWidth = mBuffers->GetSceneWidth();
+	int sceneHeight = mBuffers->GetSceneHeight();
+
+	GLPPRenderState renderstate(mBuffers);
+
+	auto vrmode = VRMode::GetVRMode(true);
+	int eyeCount = vrmode->mEyeCount;
+	for (int i = 0; i < eyeCount; ++i)
+	{
+		hw_postprocess.bloom.RenderBlur(&renderstate, sceneWidth, sceneHeight, gameinfobluramount);
+		mBuffers->NextEye(eyeCount);
+	}
+}
+
+void FGLRenderer::ClearTonemapPalette()
+{
+	hw_postprocess.tonemap.ClearTonemapPalette();
 }
 
 

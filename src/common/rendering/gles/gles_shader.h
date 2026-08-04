@@ -292,6 +292,7 @@ class FShader
 	FString mFragProg2;
 	FString mLightProg;
 	FString mDefinesBase;
+	bool mUserShaderPath = false; // if true, mFragProg2 is a mod-supplied file path and must not be rewritten to the shaders_gles/ tree
 
 	/////
 public: class ShaderVariantData
@@ -387,7 +388,7 @@ public:
 	~FShader();
 
 	bool Load(const char * name, const char * vert_prog_lump, const char * fragprog, const char * fragprog2, const char * light_fragprog, const char *defines);
-	bool Configure(const char* name, const char* vert_prog_lump, const char* fragprog, const char* fragprog2, const char* light_fragprog, const char* defines);
+	bool Configure(const char* name, const char* vert_prog_lump, const char* fragprog, const char* fragprog2, const char* light_fragprog, const char* defines, bool userShaderPath = false);
 
 	void LoadVariant();
 
@@ -468,7 +469,7 @@ class FShaderCollection
 public:
 	FShaderCollection(EPassType passType);
 	~FShaderCollection();
-	FShader *Compile(const char *ShaderName, const char *ShaderPath, const char *LightModePath, const char *shaderdefines, bool usediscard, EPassType passType);
+	FShader *Compile(const char *ShaderName, const char *ShaderPath, const char *LightModePath, const char *shaderdefines, bool usediscard, EPassType passType, bool userShaderPath = false);
 	int Find(const char *mame);
 	FShader *BindEffect(int effect, ShaderFlavourData& flavour);
 

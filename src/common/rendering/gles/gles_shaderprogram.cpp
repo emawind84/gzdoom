@@ -183,7 +183,12 @@ void FShaderProgram::Link(const char *name)
 
 void FShaderProgram::SetUniformBufferLocation(int index, const char *name)
 {
-
+	if (screen->glslversion < 4.20)
+	{
+		GLuint uniformBlockIndex = glGetUniformBlockIndex(mProgram, name);
+		if (uniformBlockIndex != GL_INVALID_INDEX)
+			glUniformBlockBinding(mProgram, uniformBlockIndex, index);
+	}
 }
 
 //==========================================================================

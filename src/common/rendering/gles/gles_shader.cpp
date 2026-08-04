@@ -47,6 +47,8 @@
 #include <map>
 #include <memory>
 
+EXTERN_CVAR(Bool, gl_customshader)
+
 namespace OpenGLESRenderer
 {
 
@@ -220,13 +222,14 @@ void SaveCachedProgramBinary(const FString &vertex, const FString &fragment, con
 	SaveShaders();
 }
 
-bool FShader::Configure(const char* name, const char* vert_prog_lump, const char* fragprog, const char* fragprog2, const char* light_fragprog, const char* defines)
+bool FShader::Configure(const char* name, const char* vert_prog_lump, const char* fragprog, const char* fragprog2, const char* light_fragprog, const char* defines, bool userShaderPath)
 {
 	mVertProg = vert_prog_lump;
 	mFragProg = fragprog;
 	mFragProg2 = fragprog2;
 	mLightProg = light_fragprog;
 	mDefinesBase = defines;
+	mUserShaderPath = userShaderPath;
 
 	return true;
 }
@@ -248,7 +251,10 @@ bool FShader::Load(const char * name, const char * vert_prog_lump_, const char *
 
 	vert_prog_lump.Substitute("shaders/", "shaders_gles/");
 	frag_prog_lump.Substitute("shaders/", "shaders_gles/");
-	proc_prog_lump.Substitute("shaders/", "shaders_gles/");
+	// A user/mod-supplied custom shader lives at its own literal path and has no
+	// counterpart under shaders_gles/, so it must not be rewritten.
+	if (!mUserShaderPath)
+		proc_prog_lump.Substitute("shaders/", "shaders_gles/");
 	light_fragprog.Substitute("shaders/", "shaders_gles/");
 
 	//light_fragprog.Substitute("material_pbr", "material_normal");
@@ -351,6 +357,7 @@ bool FShader::Load(const char * name, const char * vert_prog_lump_, const char *
 		uniform sampler2D texture9;
 		uniform sampler2D texture10;
 		uniform sampler2D texture11;
+		uniform sampler2D texture12;
 
 		// timer data
 		uniform float timer;
@@ -737,7 +744,7 @@ bool FShader::Bind(ShaderFlavourData& flavour)
 //
 //==========================================================================
 
-FShader *FShaderCollection::Compile (const char *ShaderName, const char *ShaderPath, const char *LightModePath, const char *shaderdefines, bool usediscard, EPassType passType)
+FShader *FShaderCollection::Compile (const char *ShaderName, const char *ShaderPath, const char *LightModePath, const char *shaderdefines, bool usediscard, EPassType passType, bool userShaderPath)
 {
 	FString defines;
 	defines += shaderdefines;
@@ -745,7 +752,7 @@ FShader *FShaderCollection::Compile (const char *ShaderName, const char *ShaderP
 	if (!usediscard) defines += "#define NO_ALPHATEST\n";
 
 	FShader *shader = new FShader(ShaderName);
-	shader->Configure(ShaderName, "shaders_gles/glsl/main.vp", "shaders_gles/glsl/main.fp", ShaderPath, LightModePath, defines.GetChars());
+	shader->Configure(ShaderName, "shaders_gles/glsl/main.vp", "shaders_gles/glsl/main.fp", ShaderPath, LightModePath, defines.GetChars(), userShaderPath);
 	return shader;
 }
 
@@ -843,15 +850,16 @@ void FShaderCollection::CompileShaders(EPassType passType)
 		}
 	}
 
-#if 0
-	for(unsigned i = 0; i < usershaders.Size(); i++)
+	if (gl_customshader)
 	{
-		FString name = ExtractFileBase(usershaders[i].shader);
-		FString defines = defaultshaders[usershaders[i].shaderType].Defines + usershaders[i].defines;
-		FShader *shc = Compile(name, usershaders[i].shader, defaultshaders[usershaders[i].shaderType].lightfunc, defines, true, passType);
-		mMaterialShaders.Push(shc);
+		for(unsigned i = 0; i < usershaders.Size(); i++)
+		{
+			FString name = ExtractFileBase(usershaders[i].shader.GetChars());
+			FString defines = defaultshaders[usershaders[i].shaderType].Defines + usershaders[i].defines;
+			FShader *shc = Compile(name.GetChars(), usershaders[i].shader.GetChars(), defaultshaders[usershaders[i].shaderType].lightfunc, defines.GetChars(), true, passType, true);
+			mMaterialShaders.Push(shc);
+		}
 	}
-#endif
 
 	for(int i=0;i<MAX_EFFECTS;i++)
 	{
