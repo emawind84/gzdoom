@@ -23,6 +23,7 @@
 #include "v_video.h"
 #include "printf.h"
 #include "hw_cvars.h"
+#include "gles_debug.h"
 #include "gles_renderer.h"
 #include "gles_renderbuffers.h"
 #include "gles_postprocessstate.h"
@@ -56,6 +57,7 @@ namespace OpenGLESRenderer
 	FGLRenderBuffers::~FGLRenderBuffers()
 	{
 		ClearScene();
+		ClearPipeline();
 		ClearEyeBuffers();
 
 		DeleteTexture(mDitherTexture);
@@ -66,6 +68,17 @@ namespace OpenGLESRenderer
 		DeleteFrameBuffer(mSceneFB);
 		DeleteRenderBuffer(mSceneDepthStencilBuf);
 		DeleteRenderBuffer(mSceneStencilBuf);
+	}
+
+	void FGLRenderBuffers::ClearPipeline()
+	{
+		for (int i = 0; i < NumPipelineTextures; i++)
+		{
+			DeleteFrameBuffer(mPipelineFB[i]);
+			DeleteTexture(mPipelineTexture[i]);
+		}
+		DeleteRenderBuffer(mPipelineDepthStencilBuf);
+		DeleteRenderBuffer(mPipelineStencilBuf);
 	}
 
 	void FGLRenderBuffers::ClearEyeBuffers()
@@ -162,7 +175,9 @@ namespace OpenGLESRenderer
 			mSceneDepthStencilBuf = CreateRenderBuffer("SceneDepthStencil", GL_DEPTH_COMPONENT16, width, height);
 			mSceneStencilBuf = CreateRenderBuffer("SceneStencil", GL_STENCIL_INDEX8, width, height);
 		}
-		mSceneFB= CreateFrameBuffer("SceneFB", mSceneTex, mSceneDepthStencilBuf, mSceneStencilBuf);
+		// The scene is rendered directly into pipeline texture 0, which then doubles as
+		// the first postprocess ping-pong buffer (no separate scene texture/blit needed).
+		mSceneFB = CreateFrameBuffer("SceneFB", mPipelineTexture[0], mSceneDepthStencilBuf, mSceneStencilBuf);
 	}
 
 	//==========================================================================
@@ -173,9 +188,24 @@ namespace OpenGLESRenderer
 
 	void FGLRenderBuffers::CreatePipeline(int width, int height)
 	{
+		ClearPipeline();
 		ClearEyeBuffers();
 
-		mSceneTex = Create2DTexture("PipelineTexture", GL_RGBA, width, height);
+		for (int i = 0; i < NumPipelineTextures; i++)
+			mPipelineTexture[i] = Create2DTexture("PipelineTexture", GL_RGBA, width, height);
+
+		// Pipeline FBOs get their own depth/stencil buffer, distinct from the scene's,
+		// since they're used for 2D-only postprocess quads (depth test always disabled there).
+		if (gles.depthStencilAvailable)
+			mPipelineDepthStencilBuf = CreateRenderBuffer("PipelineDepthStencil", GL_DEPTH24_STENCIL8, width, height);
+		else
+		{
+			mPipelineDepthStencilBuf = CreateRenderBuffer("PipelineDepthStencil", GL_DEPTH_COMPONENT16, width, height);
+			mPipelineStencilBuf = CreateRenderBuffer("PipelineStencil", GL_STENCIL_INDEX8, width, height);
+		}
+
+		for (int i = 0; i < NumPipelineTextures; i++)
+			mPipelineFB[i] = CreateFrameBuffer("PipelineFB", mPipelineTexture[i], mPipelineDepthStencilBuf, mPipelineStencilBuf);
 	}
 
 	//==========================================================================
@@ -481,7 +511,18 @@ namespace OpenGLESRenderer
 
 	void FGLRenderBuffers::BindCurrentTexture(int index, int filter, int wrap)
 	{
-		mSceneTex.Bind(index, filter, wrap);
+		mPipelineTexture[mCurrentPipelineTexture].Bind(index, filter, wrap);
+	}
+
+	//==========================================================================
+	//
+	// Binds the current scene color texture to the specified texture unit
+	//
+	//==========================================================================
+
+	void FGLRenderBuffers::BindSceneColorTexture(int index)
+	{
+		mPipelineTexture[0].Bind(index, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	}
 
 	//==========================================================================
@@ -493,8 +534,44 @@ namespace OpenGLESRenderer
 	void FGLRenderBuffers::BindCurrentFB()
 	{
 #ifndef NO_RENDER_BUFFER
-		mSceneFB.Bind();
+		mPipelineFB[mCurrentPipelineTexture].Bind();
 #endif
+	}
+
+	//==========================================================================
+	//
+	// Makes the frame buffer for the next texture active
+	//
+	//==========================================================================
+
+	void FGLRenderBuffers::BindNextFB()
+	{
+		int nextPipelineTexture = (mCurrentPipelineTexture + 1) % NumPipelineTextures;
+		mPipelineFB[nextPipelineTexture].Bind();
+	}
+
+	//==========================================================================
+	//
+	// Advances to the next pipeline texture (after having rendered into it)
+	//
+	//==========================================================================
+
+	void FGLRenderBuffers::NextTexture()
+	{
+		mCurrentPipelineTexture = (mCurrentPipelineTexture + 1) % NumPipelineTextures;
+	}
+
+	//==========================================================================
+	//
+	// Resets the postprocess ping-pong chain to point back at the rendered scene
+	// (pipeline texture 0). GLES has no multisampled scene buffer, so the scene
+	// is already rendered directly into pipeline texture 0 - no actual blit needed.
+	//
+	//==========================================================================
+
+	void FGLRenderBuffers::BlitSceneToTexture()
+	{
+		mCurrentPipelineTexture = 0;
 	}
 
 	//==========================================================================
@@ -516,7 +593,187 @@ namespace OpenGLESRenderer
 
 	bool FGLRenderBuffers::FailedCreate = false;
 
+	//==========================================================================
+	//
+	// Creates or updates textures used by postprocess effects
+	//
+	//==========================================================================
 
+	PPGLTextureBackend *GLPPRenderState::GetGLTexture(PPTexture *texture)
+	{
+		if (!texture->Backend)
+		{
+			FGLPostProcessState savedState;
 
+			auto backend = std::make_unique<PPGLTextureBackend>();
+
+			// GLES only has an 8-bit RGBA pipeline - downgrade any HDR/higher precision
+			// pixel format requests to something the GLES driver actually supports.
+			GLuint glformat = GL_RGBA;
+
+			if (texture->Data)
+				backend->Tex = buffers->Create2DTexture("PPTexture", glformat, texture->Width, texture->Height, texture->Data.get());
+			else
+				backend->Tex = buffers->Create2DTexture("PPTexture", glformat, texture->Width, texture->Height);
+
+			texture->Backend = std::move(backend);
+		}
+		return static_cast<PPGLTextureBackend*>(texture->Backend.get());
+	}
+
+	//==========================================================================
+	//
+	// Compile the shaders declared by post process effects
+	//
+	//==========================================================================
+
+	FShaderProgram *GLPPRenderState::GetGLShader(PPShader *shader)
+	{
+		if (!shader->Backend)
+		{
+			auto glshader = std::make_unique<FShaderProgram>();
+
+			FString prolog;
+			if (!shader->Uniforms.empty())
+				prolog = UniformBlockDecl::Create("Uniforms", shader->Uniforms, POSTPROCESS_BINDINGPOINT);
+			prolog += shader->Defines;
+
+			glshader->Compile(FShaderProgram::Vertex, shader->VertexShader.GetChars(), "", shader->Version);
+			glshader->Compile(FShaderProgram::Fragment, shader->FragmentShader.GetChars(), prolog.GetChars(), shader->Version);
+			glshader->Link(shader->FragmentShader.GetChars());
+			if (!shader->Uniforms.empty())
+				glshader->SetUniformBufferLocation(POSTPROCESS_BINDINGPOINT, "Uniforms");
+
+			shader->Backend = std::move(glshader);
+		}
+		return static_cast<FShaderProgram*>(shader->Backend.get());
+	}
+
+	//==========================================================================
+	//
+	// Renders one post process effect
+	//
+	//==========================================================================
+
+	void GLPPRenderState::Draw()
+	{
+		FGLPostProcessState savedState;
+
+		// Bind input textures
+		for (unsigned int index = 0; index < Textures.Size(); index++)
+		{
+			savedState.SaveTextureBindings(index + 1);
+
+			const PPTextureInput &input = Textures[index];
+			int filter = (input.Filter == PPFilterMode::Nearest) ? GL_NEAREST : GL_LINEAR;
+			int wrap = (input.Wrap == PPWrapMode::Clamp) ? GL_CLAMP_TO_EDGE : GL_REPEAT;
+
+			switch (input.Type)
+			{
+			default:
+			case PPTextureType::CurrentPipelineTexture:
+				buffers->BindCurrentTexture(index, filter, wrap);
+				break;
+
+			case PPTextureType::NextPipelineTexture:
+				I_FatalError("PPTextureType::NextPipelineTexture not allowed as input\n");
+				break;
+
+			case PPTextureType::PPTexture:
+				GetGLTexture(input.Texture)->Tex.Bind(index, filter, wrap);
+				break;
+
+			case PPTextureType::SceneColor:
+				buffers->BindSceneColorTexture(index);
+				break;
+
+			case PPTextureType::SceneFog:
+			case PPTextureType::SceneNormal:
+			case PPTextureType::SceneDepth:
+				// GLES has no separate G-buffer - these are not used by any effect enabled on this backend.
+				buffers->BindSceneColorTexture(index);
+				break;
+			}
+		}
+
+		// Set render target
+		switch (Output.Type)
+		{
+		default:
+			I_FatalError("Unsupported postprocess output type\n");
+			break;
+
+		case PPTextureType::CurrentPipelineTexture:
+			buffers->BindCurrentFB();
+			break;
+
+		case PPTextureType::NextPipelineTexture:
+			buffers->BindNextFB();
+			break;
+
+		case PPTextureType::PPTexture:
+			if (GetGLTexture(Output.Texture)->FB)
+				GetGLTexture(Output.Texture)->FB.Bind();
+			else
+				GetGLTexture(Output.Texture)->FB = buffers->CreateFrameBuffer("PPTextureFB"/*Output.Texture.GetChars()*/, GetGLTexture(Output.Texture)->Tex);
+			break;
+
+		case PPTextureType::SceneColor:
+			buffers->BindSceneFB(false);
+			break;
+		}
+
+		// Set blend mode
+		if (BlendMode.BlendOp == STYLEOP_Add && BlendMode.SrcAlpha == STYLEALPHA_One && BlendMode.DestAlpha == STYLEALPHA_Zero && BlendMode.Flags == 0)
+		{
+			glDisable(GL_BLEND);
+		}
+		else
+		{
+			// To do: support all the modes
+			glEnable(GL_BLEND);
+			glBlendEquation(GL_FUNC_ADD);
+			if (BlendMode.SrcAlpha == STYLEALPHA_One && BlendMode.DestAlpha == STYLEALPHA_One)
+				glBlendFunc(GL_ONE, GL_ONE);
+			else
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+
+		// Setup viewport
+		glViewport(Viewport.left, Viewport.top, Viewport.width, Viewport.height);
+
+		auto shader = GetGLShader(Shader);
+
+		// Set uniforms
+		if (Uniforms.Data.Size() > 0)
+		{
+			if (!shader->Uniforms)
+				shader->Uniforms.reset(screen->CreateDataBuffer(POSTPROCESS_BINDINGPOINT, false, false));
+			shader->Uniforms->SetData(Uniforms.Data.Size(), Uniforms.Data.Data(), BufferUsageType::Static);
+			static_cast<GLDataBuffer*>(shader->Uniforms.get())->BindBase();
+		}
+
+		// Set shader
+		shader->Bind();
+
+		// Draw the screen quad
+		GLRenderer->RenderScreenQuad();
+
+		// Advance to next PP texture if our output was sent there
+		if (Output.Type == PPTextureType::NextPipelineTexture)
+			buffers->NextTexture();
+
+		glViewport(screen->mScreenViewport.left, screen->mScreenViewport.top, screen->mScreenViewport.width, screen->mScreenViewport.height);
+	}
+
+	void GLPPRenderState::PushGroup(const FString &name)
+	{
+		FGLDebug::PushGroup(name.GetChars());
+	}
+
+	void GLPPRenderState::PopGroup()
+	{
+		FGLDebug::PopGroup();
+	}
 
 }  // namespace OpenGLESRenderer

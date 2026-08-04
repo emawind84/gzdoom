@@ -83,6 +83,21 @@ public:
 
 class FShaderProgram;
 
+class GLPPRenderState : public PPRenderState
+{
+public:
+	GLPPRenderState(FGLRenderBuffers *buffers) : buffers(buffers) { }
+
+	void PushGroup(const FString &name) override;
+	void PopGroup() override;
+	void Draw() override;
+
+private:
+	PPGLTextureBackend *GetGLTexture(PPTexture *texture);
+	FShaderProgram *GetGLShader(PPShader *shader);
+
+	FGLRenderBuffers *buffers;
+};
 
 class FGLRenderBuffers
 {
@@ -93,13 +108,15 @@ public:
 	void Setup(int width, int height, int sceneWidth, int sceneHeight);
 
 	void BindSceneFB(bool sceneData);
-
+	void BindSceneColorTexture(int index);
+	void BlitSceneToTexture();
 
 	void BindCurrentTexture(int index, int filter = GL_NEAREST, int wrap = GL_CLAMP_TO_EDGE);
 	void BindCurrentFB();
 	void BindNextFB();
 	void NextTexture();
 
+	PPGLFrameBuffer GetCurrentFB() const { return mPipelineFB[mCurrentPipelineTexture]; }
 
 	void BindOutputFB();
 
@@ -119,6 +136,7 @@ public:
 
 private:
 	void ClearScene();
+	void ClearPipeline();
 	void ClearEyeBuffers();
 
 	void CreateScene(int width, int height);
@@ -144,11 +162,18 @@ private:
 
 	// Buffers for the scene
 	PPGLTexture mSceneDepthStencilTex;
-	PPGLTexture mSceneTex;
 	PPGLRenderBuffer mSceneDepthStencilBuf;
 	PPGLRenderBuffer mSceneStencilBuf; // This is only use when combined depth-stencil is not avaliable
 	PPGLFrameBuffer mSceneFB;
 	bool mSceneUsesTextures = false;
+
+	// Effect/postprocess ping-pong buffers (also holds the rendered scene in slot 0)
+	static const int NumPipelineTextures = 2;
+	int mCurrentPipelineTexture = 0;
+	PPGLTexture mPipelineTexture[NumPipelineTextures];
+	PPGLFrameBuffer mPipelineFB[NumPipelineTextures];
+	PPGLRenderBuffer mPipelineDepthStencilBuf;
+	PPGLRenderBuffer mPipelineStencilBuf; // This is only used when combined depth-stencil is not available
 
 	// Eye buffers
 	TArray<PPGLTexture> mEyeTextures;

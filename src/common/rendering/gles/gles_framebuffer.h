@@ -59,6 +59,8 @@ public:
 
 	void Draw2D(bool outside2D = false) override;
 	void PostProcessScene(bool swscene, int fixedcm, float flash, const std::function<void()> &afterBloomDrawEndScene2D) override;
+	void BlurScene(float amount) override;
+	void UpdatePalette() override;
 
 	bool HWGammaActive = false;			// Are we using hardware or software gamma?
 	std::unique_ptr<OpenGLESRenderer::FGLDebug> mDebug;	// Debug API

@@ -60,6 +60,22 @@ GLBuffer::GLBuffer(int usetype)
 	{
 		glGenBuffers(1, &mBufferId);
 		isData = false;
+		hasGLBuffer = true;
+	}
+	else if ((usetype == GL_UNIFORM_BUFFER) || (usetype == GL_SHADER_STORAGE_BUFFER))
+	{
+		// GLDataBuffer stays a CPU-side buffer for viewpoint/lights/bones,
+		// which read it back via a raw pointer into `memory` and never touch
+		// the GPU object (gles_renderstate.cpp's ApplyShader()/ApplyViewport()),
+		// so isData stays true and that CPU shadow copy is kept exactly as
+		// before. But real postprocess/custom shaders declare a genuine
+		// `layout(std140) uniform Uniforms{}` block and can only read it via
+		// an actually-uploaded, actually-bound GL buffer, so also create and
+		// track a real one here - mirroring gl_buffers.cpp, whose GLBuffer
+		// always has a real buffer object regardless of type.
+		glGenBuffers(1, &mBufferId);
+		hasGLBuffer = true;
+		isData = true;
 	}
 	else
 	{
@@ -71,7 +87,11 @@ GLBuffer::~GLBuffer()
 {
 	if (mBufferId != 0)
 	{
-		if (gles.useMappedBuffers)
+		// Only real vertex/index buffers are ever glMapBufferRange'd (Map()/
+		// Lock() below are still gated on !isData); data buffers (isData ==
+		// true, including the uniform/storage ones above) are only ever
+		// written via SetData()/glBufferData, so must not be glUnmapBuffer'd.
+		if (!isData && gles.useMappedBuffers)
 		{
 			glBindBuffer(mUseType, mBufferId);
 			glUnmapBuffer(mUseType);
@@ -86,12 +106,11 @@ GLBuffer::~GLBuffer()
 
 void GLBuffer::Bind()
 {
-	if (!isData)
+	if (hasGLBuffer)
 	{
 		glBindBuffer(mUseType, mBufferId);
 	}
 }
-
 
 void GLBuffer::SetData(size_t size, const void* data, BufferUsageType usage)
 {
@@ -107,7 +126,7 @@ void GLBuffer::SetData(size_t size, const void* data, BufferUsageType usage)
 			memcpy(memory, data, size);
 	}
 
-	if (!isData)
+	if (hasGLBuffer)
 	{
 		Bind();
 		glBufferData(mUseType, size, data, staticdata ? GL_STATIC_DRAW : GL_STREAM_DRAW);
@@ -132,7 +151,7 @@ void GLBuffer::SetSubData(size_t offset, size_t size, const void *data)
 
 	memcpy(memory + offset, data, size);
 
-	if (!isData)
+	if (hasGLBuffer)
 	{
 		glBufferSubData(mUseType, offset, size, data);
 	}
@@ -332,12 +351,12 @@ void GLDataBuffer::BindRange(FRenderState *state, size_t start, size_t length)
 
 void GLDataBuffer::BindBase()
 {
-
+	glBindBufferBase(mUseType, mBindingPoint, mBufferId);
 }
 
 
 GLVertexBuffer::GLVertexBuffer() : GLBuffer(GL_ARRAY_BUFFER) {}
 GLIndexBuffer::GLIndexBuffer() : GLBuffer(GL_ELEMENT_ARRAY_BUFFER) {}
-GLDataBuffer::GLDataBuffer(int bindingpoint, bool is_ssbo) : GLBuffer(0), mBindingPoint(bindingpoint) {}
+GLDataBuffer::GLDataBuffer(int bindingpoint, bool is_ssbo) : GLBuffer(is_ssbo ? GL_SHADER_STORAGE_BUFFER : GL_UNIFORM_BUFFER), mBindingPoint(bindingpoint) {}
 
 }

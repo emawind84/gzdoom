@@ -356,6 +356,18 @@ IDataBuffer *OpenGLFrameBuffer::CreateDataBuffer(int bindingpoint, bool ssbo, bo
 	return new GLDataBuffer(bindingpoint, ssbo);
 }
 
+void OpenGLFrameBuffer::BlurScene(float amount)
+{
+	if (GLRenderer != nullptr)
+		GLRenderer->BlurScene(amount);
+}
+
+void OpenGLFrameBuffer::UpdatePalette()
+{
+	if (GLRenderer != nullptr)
+		GLRenderer->ClearTonemapPalette();
+}
+
 
 void OpenGLFrameBuffer::SetViewportRects(IntRect *bounds)
 {
@@ -516,7 +528,7 @@ void OpenGLFrameBuffer::Draw2D(bool outside2D)
 
 void OpenGLFrameBuffer::PostProcessScene(bool swscene, int fixedcm, float flash, const std::function<void()> &afterBloomDrawEndScene2D)
 {
-	//if (!swscene) GLRenderer->mBuffers->BlitSceneToTexture(); // Copy the resulting scene to the current post process texture
+	if (!swscene) GLRenderer->mBuffers->BlitSceneToTexture(); // Copy the resulting scene to the current post process texture
 	GLRenderer->PostProcessScene(fixedcm, flash, afterBloomDrawEndScene2D);
 }
 
