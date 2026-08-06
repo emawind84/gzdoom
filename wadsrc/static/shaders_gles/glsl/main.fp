@@ -1,4 +1,11 @@
 
+#if __VERSION__ >= 300
+#define varying in
+out vec4 FragColor;
+#define gl_FragColor FragColor
+#define texture2D texture
+#endif
+
 varying vec4 vTexCoord;
 varying vec4 vColor;
 varying vec4 pixelpos;
