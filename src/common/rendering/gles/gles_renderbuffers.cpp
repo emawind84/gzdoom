@@ -638,7 +638,10 @@ namespace OpenGLESRenderer
 				prolog = UniformBlockDecl::Create("Uniforms", shader->Uniforms, POSTPROCESS_BINDINGPOINT);
 			prolog += shader->Defines;
 
-			glshader->Compile(FShaderProgram::Vertex, shader->VertexShader.GetChars(), "", shader->Version);
+			FString vertexShaderPath = shader->VertexShader;
+			vertexShaderPath.Substitute("shaders/", "shaders_gles/");
+
+			glshader->Compile(FShaderProgram::Vertex, vertexShaderPath.GetChars(), "", shader->Version);
 			glshader->Compile(FShaderProgram::Fragment, shader->FragmentShader.GetChars(), prolog.GetChars(), shader->Version);
 			glshader->Link(shader->FragmentShader.GetChars());
 			if (!shader->Uniforms.empty())
