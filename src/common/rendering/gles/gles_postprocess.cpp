@@ -61,18 +61,29 @@ void FGLRenderer::PostProcessScene(int fixedcm, float flash, const std::function
 
 	GLPPRenderState renderstate(mBuffers);
 
-	hw_postprocess.Pass1(&renderstate, fixedcm, sceneWidth, sceneHeight);
+	if (strcmp(gles.shaderVersionString, "100") != 0)
+	{
+		hw_postprocess.Pass1(&renderstate, fixedcm, sceneWidth, sceneHeight);
+	}
 #ifndef NO_RENDER_BUFFER
 	mBuffers->BindCurrentFB();
 #endif
 	if (afterBloomDrawEndScene2D) afterBloomDrawEndScene2D();
-	hw_postprocess.Pass2(&renderstate, fixedcm, flash, sceneWidth, sceneHeight);
+	if (strcmp(gles.shaderVersionString, "100") != 0)
+	{
+		hw_postprocess.Pass2(&renderstate, fixedcm, flash, sceneWidth, sceneHeight);
+	}
 }
 
 void FGLRenderer::BlurScene(float gameinfobluramount)
 {
 	int sceneWidth = mBuffers->GetSceneWidth();
 	int sceneHeight = mBuffers->GetSceneHeight();
+
+	if (strcmp(gles.shaderVersionString, "100") == 0)
+	{
+		return;
+	}
 
 	GLPPRenderState renderstate(mBuffers);
 

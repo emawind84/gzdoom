@@ -333,7 +333,7 @@ void GLVertexBuffer::Bind(int *offsets)
 				glVertexAttribPointer(i, attrinf.size, attrinf.format, attrinf.normalize, (GLsizei)mStride, (void*)(intptr_t)ofs);
 			else
 			{
-				if (gles.glesMode >= GLES_MODE_OGL3)
+				if (strcmp(gles.shaderVersionString, "100") != 0)
 					glVertexAttribIPointer(i, attrinf.size, attrinf.format, (GLsizei)mStride, (void*)(intptr_t)ofs);
 			}
 		}

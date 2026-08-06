@@ -346,7 +346,7 @@ bool FGLRenderState::ApplyShader()
 		activeShader->cur->muLightRange.Set(range);
 	}
 
-	if (gles.glesMode >= GLES_MODE_OGL3)
+	if (strcmp(gles.shaderVersionString, "100") != 0)
 	{
 		// Upload bone data
 		// NOTE, this is pretty inefficient, it will be reloading the same data over and over in a single frame
@@ -354,11 +354,8 @@ bool FGLRenderState::ApplyShader()
 		if ((mBoneIndexBase >= 0))
 		{
 			float* bonesPtr = ((float*)screen->mBones->GetBuffer()->Memory());
-
 			int number = screen->mBones->GetCurrentIndex();
-
 			glUniformMatrix4fv(activeShader->cur->bones_index, number, false, bonesPtr);
-
 			activeShader->cur->muBoneIndexBase.Set(mBoneIndexBase);
 		}
 	}

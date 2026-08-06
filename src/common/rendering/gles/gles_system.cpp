@@ -8,7 +8,7 @@
 CVAR(Bool, gles_use_mapped_buffer, false, 0);
 CVAR(Bool, gles_force_glsl_v100, false, 0);
 CVAR(Int, gles_max_lights_per_surface, 32, 0);
-EXTERN_CVAR(Bool, gl_customshader);
+
 void setGlVersion(double glv);
 
 
@@ -227,6 +227,12 @@ namespace OpenGLESRenderer
 			gles.useMappedBuffers = true;
 			gles.depthClampAvailable = true;
 			gles.anistropicFilterAvailable = true;
+		}
+
+		if (gles.forceGLSLv100)
+		{
+			Printf("GLES forcing GLSL version 100\n");
+			gles.shaderVersionString = "100";
 		}
 		
 		setGlVersion(glVersion);
