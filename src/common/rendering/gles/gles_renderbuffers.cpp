@@ -431,7 +431,7 @@ namespace OpenGLESRenderer
 	{
 		CreateEyeBuffers(eye);
 
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, mSceneFB.handle);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, GetCurrentFB().handle);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mEyeFBs[eye].handle);
 		glBlitFramebuffer(0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
@@ -443,7 +443,7 @@ namespace OpenGLESRenderer
 	{
 		if (mEyeFBs.Size() <= unsigned(eye)) return;
 
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mSceneFB.handle);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GetCurrentFB().handle);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, mEyeFBs[eye].handle);
 		glBlitFramebuffer(0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
