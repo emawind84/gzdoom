@@ -141,7 +141,6 @@ void gl_LoadExtensions()
 #ifdef __MOBILE__
 	gl_version = 3.31;
 	gl.flags |= RFL_NO_CLIP_PLANES;
-	gl.flags |= RFL_INVALIDATE_BUFFER;
 	gl.flags |= RFL_SHADER_STORAGE_BUFFER;
 #endif
 	// Don't even start if it's lower than 2.0 or no framebuffers are available (The framebuffer extension is needed for glGenerateMipmapsEXT!)
@@ -156,6 +155,8 @@ void gl_LoadExtensions()
 
 	gl.vendorstring = (char*)glGetString(GL_VENDOR);
 	gl.modelstring = (char*)glGetString(GL_RENDERER);
+
+	bool isGLES = strstr(glversion, "OpenGL ES") != NULL;
 
 	// first test for optional features
 	if (CheckExtension("GL_ARB_texture_compression")) gl.flags |= RFL_TEXTURE_COMPRESSION;
@@ -194,8 +195,10 @@ void gl_LoadExtensions()
 	if (gl_no_clip_planes)
 		gl.flags |= RFL_NO_CLIP_PLANES;
 
-	if (gl_version >= 4.3f || CheckExtension("GL_ARB_invalidate_subdata")) gl.flags |= RFL_INVALIDATE_BUFFER;
-	if (gl_version >= 4.3f || CheckExtension("GL_KHR_debug")) gl.flags |= RFL_DEBUG;
+	if (((isGLES && gl_version >= 3.0f) || (!isGLES && gl_version >= 4.3f)) || CheckExtension("GL_ARB_invalidate_subdata"))
+		gl.flags |= RFL_INVALIDATE_BUFFER;
+	if (((isGLES && gl_version >= 3.2f) || (!isGLES && gl_version >= 4.3f)) || CheckExtension("GL_KHR_debug"))
+		gl.flags |= RFL_DEBUG;
 
 	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, &v);
 	gl.maxuniforms = v;

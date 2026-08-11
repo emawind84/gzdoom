@@ -165,7 +165,16 @@ namespace OpenGLESRenderer
 
 		Printf("GL Version parsed = %f\n", glVersion);
 
+		bool isGLES = !strncmp(glVersionStr, "OpenGL ES", strlen("OpenGL ES"));
+
 		gles.flags = RFL_NO_CLIP_PLANES;
+
+		// KHR_debug is core (unsuffixed) in GLES 3.2 and desktop GL 4.3,
+		// but the extension may also be present on older drivers.
+		if ((isGLES && glVersion >= 3.2) || (!isGLES && glVersion >= 4.3) || CheckExtension("GL_KHR_debug"))
+		{
+			gles.flags |= RFL_DEBUG;
+		}
 
 		gles.useMappedBuffers = gles_use_mapped_buffer;
 		gles.forceGLSLv100 = gles_force_glsl_v100;
