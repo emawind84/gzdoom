@@ -304,7 +304,6 @@ void FGLDebug::DebugCallback(GLenum source, GLenum type, GLuint id, GLenum sever
 		return;
 
 	PrintMessage(source, type, id, severity, length, message);
-	assert(severity == GL_DEBUG_SEVERITY_NOTIFICATION);
 }
 
 //-----------------------------------------------------------------------------
